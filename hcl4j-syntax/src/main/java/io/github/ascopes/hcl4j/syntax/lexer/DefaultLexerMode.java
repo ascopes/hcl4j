@@ -393,7 +393,7 @@ public final class DefaultLexerMode implements LexerMode {
 
       case '.':
         return source.peek() == '.'
-            ? handleEllipsesOperator(location, firstChar, source.take())
+            ? handleEllipsisOperator(location, firstChar, source.take())
             : new OperatorToken(location, Operator.DOT, firstChar);
 
       case ',':
@@ -410,22 +410,22 @@ public final class DefaultLexerMode implements LexerMode {
   }
 
   /**
-   * Parse the ellipses {@code ...} operator, assuming the first two characters are already known,
+   * Parse the ellipsis {@code ...} operator, assuming the first two characters are already known,
    * consumed, and validated.
    *
    * @param location   the location.
    * @param firstChar  the first character, always '{@code .}'.
    * @param secondChar the second character, always '{@code .}'.
-   * @return the ellipses operator token, or an error token.
+   * @return the ellipsis operator token, or an error token.
    * @throws IOException if a failure occurred reading the input stream.
    */
-  private Token handleEllipsesOperator(
+  private Token handleEllipsisOperator(
       Location location,
       int firstChar,
       int secondChar
   ) throws IOException {
     if (source.peek() == '.') {
-      return new OperatorToken(location, Operator.ELLIPSES, firstChar, secondChar, source.take());
+      return new OperatorToken(location, Operator.ELLIPSIS, firstChar, secondChar, source.take());
     }
 
     return unknownOperator(location, firstChar, secondChar);

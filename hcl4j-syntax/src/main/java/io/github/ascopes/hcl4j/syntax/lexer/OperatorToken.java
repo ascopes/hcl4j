@@ -88,7 +88,7 @@ public final class OperatorToken extends AbstractToken {
     QUESTION_MARK,
     COLON,
     DOT,
-    ELLIPSES,
+    ELLIPSIS,
     COMMA,
     FAT_ARROW,
 
