@@ -71,7 +71,7 @@ public final class TextUtils {
    * {@code false} otherwise.
    */
   public static boolean isIdContinue(int c) {
-    return Character.isUnicodeIdentifierPart(c);
+    return Character.isUnicodeIdentifierPart(c) || c == '-';
   }
 
   /**
