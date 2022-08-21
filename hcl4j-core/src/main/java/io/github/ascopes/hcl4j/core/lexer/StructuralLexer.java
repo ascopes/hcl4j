@@ -23,12 +23,12 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public final class Lexer implements LexerModeControl {
+public final class StructuralLexer implements LexerModeControl {
 
   private final Deque<LexerMode> modeStack;
 
   @SuppressWarnings("ThisEscapedInObjectConstruction")
-  public Lexer(CharSource source) {
+  public StructuralLexer(CharSource source) {
     modeStack = new LinkedList<>();
     modeStack.push(new DefaultLexerMode(source, this));
   }

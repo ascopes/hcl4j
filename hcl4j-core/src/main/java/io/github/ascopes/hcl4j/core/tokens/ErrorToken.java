@@ -32,7 +32,7 @@ public final class ErrorToken extends AbstractToken {
 
   private final String errorDetail;
 
-  public ErrorToken(Location location, ErrorType errorType, String errorDetail, CharSequence raw) {
+  public ErrorToken(Location location, ErrorType errorType, String errorDetail, String raw) {
     super(location, raw);
     this.errorType = errorType;
     this.errorDetail = errorDetail;
@@ -65,7 +65,10 @@ public final class ErrorToken extends AbstractToken {
     UNEXPECTED_CHARACTER,
     MALFORMED_NEWLINE_SEQUENCE,
     UNKNOWN_OPERATOR,
-    MALFORMED_HEREDOC_ANCHOR,
-    MALFORMED_NUMBER_LITERAL
+    MALFORMED_OPENING_HEREDOC_ANCHOR,
+    MALFORMED_CLOSING_HEREDOC_ANCHOR,
+    MALFORMED_NUMBER_LITERAL,
+    UNEXPECTED_END_OF_FILE,
+    MALFORMED_UNICODE_ESCAPE_SEQUENCE,
   }
 }

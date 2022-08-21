@@ -24,7 +24,7 @@ public final class NumberToken extends AbstractToken {
 
   private final BigDecimal number;
 
-  public NumberToken(Location location, BigDecimal number, CharSequence raw) {
+  public NumberToken(Location location, BigDecimal number, String raw) {
     super(location, raw);
     this.number = number;
   }

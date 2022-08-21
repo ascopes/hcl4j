@@ -16,24 +16,26 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
+import static io.github.ascopes.hcl4j.core.utils.HclTextUtils.join;
+
 import io.github.ascopes.hcl4j.core.lexer.Location;
 import io.github.ascopes.hcl4j.core.utils.ToStringBuilder;
 
-public final class QuotedStartToken extends AbstractToken {
+public final class RawTextToken extends AbstractToken {
 
-  public QuotedStartToken(Location location, int rawChar) {
-    super(location, rawChar);
+  public RawTextToken(Location location, String raw) {
+    super(location, raw);
   }
 
-  public CharSequence getQuoteCharacter() {
-    return getRaw();
+  public RawTextToken(Location location, int... rawChars) {
+    super(location, join(rawChars));
   }
 
   @Override
   public String toString() {
     return new ToStringBuilder(this)
         .add("location", getLocation())
-        .add("quoteCharacter", getQuoteCharacter())
+        .add("raw", getRaw())
         .toString();
   }
 }

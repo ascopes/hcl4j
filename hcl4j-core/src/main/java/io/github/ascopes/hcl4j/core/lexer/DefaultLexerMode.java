@@ -26,7 +26,7 @@ import io.github.ascopes.hcl4j.core.tokens.IdentifierToken;
 import io.github.ascopes.hcl4j.core.tokens.NumberToken;
 import io.github.ascopes.hcl4j.core.tokens.OperatorToken;
 import io.github.ascopes.hcl4j.core.tokens.OperatorToken.Operator;
-import io.github.ascopes.hcl4j.core.tokens.QuotedStartToken;
+import io.github.ascopes.hcl4j.core.tokens.QuotedAnchor;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.utils.HclTextUtils;
 import io.github.ascopes.hcl4j.core.utils.Nullable;
@@ -82,8 +82,8 @@ public final class DefaultLexerMode implements LexerMode {
       return wsError;
     }
 
-    var nextChar = source.take();
-    var location = source.getLocation();
+    var location = source.createLocation();
+    var nextChar = source.eat();
 
     if (HclTextUtils.isEof(nextChar)) {
       return handleEof(location);
@@ -102,7 +102,7 @@ public final class DefaultLexerMode implements LexerMode {
     }
 
     if (nextChar == '<' && source.peek() == '<') {
-      return handleHereDocAnchor(location, nextChar, source.take());
+      return handleHereDocAnchor(location, nextChar, source.eat());
     }
 
     return handleOperatorOrUnknown(location, nextChar);
@@ -144,16 +144,16 @@ public final class DefaultLexerMode implements LexerMode {
         .append((char) firstChar);
 
     while (HclTextUtils.isNumeric(source.peek())) {
-      raw.append((char) source.take());
+      raw.append((char) source.eat());
     }
 
     if (source.peek() == '.') {
-      raw.append(source.take());
+      raw.append(source.eat());
 
       if (!HclTextUtils.isNumeric(source.peek())) {
         return new ErrorToken(
             // Use the current location to improve the error message accuracy.
-            source.getLocation(),
+            source.createLocation(),
             ErrorType.MALFORMED_NUMBER_LITERAL,
             "Expected at least one digit after the decimal point in a number literal",
             raw.toString()
@@ -161,21 +161,21 @@ public final class DefaultLexerMode implements LexerMode {
       }
 
       while (HclTextUtils.isNumeric(source.peek())) {
-        raw.append((char) source.take());
+        raw.append((char) source.eat());
       }
     }
 
     if (source.peek() == 'e' || source.peek() == 'E') {
-      raw.append(source.take());
+      raw.append(source.eat());
 
       if (source.peek() == '+' || source.peek() == '-') {
-        raw.append(source.take());
+        raw.append(source.eat());
       }
 
       if (!HclTextUtils.isNumeric(source.peek())) {
         return new ErrorToken(
             // Use the current location to improve the error message accuracy.
-            source.getLocation(),
+            source.createLocation(),
             ErrorType.MALFORMED_NUMBER_LITERAL,
             "Expected at least one digit after the exponent in a number literal",
             raw.toString()
@@ -183,7 +183,7 @@ public final class DefaultLexerMode implements LexerMode {
       }
 
       while (HclTextUtils.isNumeric(source.peek())) {
-        raw.append((char) source.take());
+        raw.append((char) source.eat());
       }
     }
 
@@ -214,7 +214,7 @@ public final class DefaultLexerMode implements LexerMode {
         .append((char) firstChar);
 
     while (HclTextUtils.isIdContinue(source.peek())) {
-      raw.append((char) source.take());
+      raw.append((char) source.eat());
     }
 
     return new IdentifierToken(location, raw.toString());
@@ -232,8 +232,8 @@ public final class DefaultLexerMode implements LexerMode {
    * @return the parsed token.
    */
   private Token handleQuotedStart(Location location, int firstChar) {
-    var startToken = new QuotedStartToken(location, firstChar);
-    lexer.pushMode(new QuotedLexerMode(source, lexer, startToken));
+    var startToken = new QuotedAnchor(location, firstChar);
+    lexer.pushMode(new QuotedLexerMode(source, lexer));
     return startToken;
   }
 
@@ -267,7 +267,7 @@ public final class DefaultLexerMode implements LexerMode {
 
     if (source.peek() == '-') {
       indented = true;
-      raw.append((char) source.take());
+      raw.append((char) source.eat());
     } else {
       indented = false;
     }
@@ -276,31 +276,31 @@ public final class DefaultLexerMode implements LexerMode {
     if (!HclTextUtils.isIdStart(source.peek())) {
       return new ErrorToken(
           // Use the current location to improve the error message accuracy.
-          source.getLocation(),
-          ErrorType.MALFORMED_HEREDOC_ANCHOR,
+          source.createLocation(),
+          ErrorType.MALFORMED_CLOSING_HEREDOC_ANCHOR,
           "Heredoc anchor is missing a valid identifier",
           raw.toString()
       );
     }
 
-    var id = new StringBuilder().append((char) source.take());
+    var id = new StringBuilder().append((char) source.eat());
     while (HclTextUtils.isIdContinue(source.peek())) {
-      id.append((char) source.take());
+      id.append((char) source.eat());
     }
     raw.append(id);
 
     // Take the newline.
     if (source.peek() == HclTextUtils.CR) {
-      raw.append((char) source.take());
+      raw.append((char) source.eat());
     }
 
     if (source.peek() == HclTextUtils.LF) {
-      raw.append((char) source.take());
+      raw.append((char) source.eat());
     } else {
       return new ErrorToken(
           // Use the current location to improve the error message accuracy.
-          source.getLocation(),
-          ErrorType.MALFORMED_HEREDOC_ANCHOR,
+          source.createLocation(),
+          ErrorType.MALFORMED_OPENING_HEREDOC_ANCHOR,
           "Expected CRLF or LF new line after heredoc anchor declaration",
           raw.toString()
       );
@@ -339,37 +339,37 @@ public final class DefaultLexerMode implements LexerMode {
 
       case '&':
         return source.peek() == '&'
-            ? new OperatorToken(location, Operator.AND, firstChar, source.take())
-            : unknownOperator(location, firstChar, source.take());
+            ? new OperatorToken(location, Operator.AND, firstChar, source.eat())
+            : unknownOperator(location, firstChar, source.eat());
 
       case '|':
         return source.peek() == '|'
-            ? new OperatorToken(location, Operator.OR, firstChar, source.take())
-            : unknownOperator(location, firstChar, source.take());
+            ? new OperatorToken(location, Operator.OR, firstChar, source.eat())
+            : unknownOperator(location, firstChar, source.eat());
 
       case '!':
         return source.peek() == '='
-            ? new OperatorToken(location, Operator.NOT_EQUAL, firstChar, source.take())
+            ? new OperatorToken(location, Operator.NOT_EQUAL, firstChar, source.eat())
             : new OperatorToken(location, Operator.NOT, firstChar);
 
       case '=':
         switch (source.peek()) {
           case '=':
-            return new OperatorToken(location, Operator.EQUAL, firstChar, source.take());
+            return new OperatorToken(location, Operator.EQUAL, firstChar, source.eat());
           case '>':
-            return new OperatorToken(location, Operator.FAT_ARROW, firstChar, source.take());
+            return new OperatorToken(location, Operator.FAT_ARROW, firstChar, source.eat());
           default:
             return new OperatorToken(location, Operator.ASSIGN, firstChar);
         }
 
       case '<':
         return source.peek() == '='
-            ? new OperatorToken(location, Operator.LESS_EQUAL, firstChar, source.take())
+            ? new OperatorToken(location, Operator.LESS_EQUAL, firstChar, source.eat())
             : new OperatorToken(location, Operator.LESS, firstChar);
 
       case '>':
         return source.peek() == '='
-            ? new OperatorToken(location, Operator.GREATER_EQUAL, firstChar, source.take())
+            ? new OperatorToken(location, Operator.GREATER_EQUAL, firstChar, source.eat())
             : new OperatorToken(location, Operator.GREATER, firstChar);
 
       case '(':
@@ -398,7 +398,7 @@ public final class DefaultLexerMode implements LexerMode {
 
       case '.':
         return source.peek() == '.'
-            ? handleEllipsisOperator(location, firstChar, source.take())
+            ? handleEllipsisOperator(location, firstChar, source.eat())
             : new OperatorToken(location, Operator.DOT, firstChar);
 
       case ',':
@@ -430,7 +430,7 @@ public final class DefaultLexerMode implements LexerMode {
       int secondChar
   ) throws IOException {
     if (source.peek() == '.') {
-      return new OperatorToken(location, Operator.ELLIPSIS, firstChar, secondChar, source.take());
+      return new OperatorToken(location, Operator.ELLIPSIS, firstChar, secondChar, source.eat());
     }
 
     return unknownOperator(location, firstChar, secondChar);
@@ -462,12 +462,12 @@ public final class DefaultLexerMode implements LexerMode {
         case ' ':
         case HclTextUtils.TAB:
         case HclTextUtils.LF:
-          source.take();
+          source.skip(1);
           break;
 
         case HclTextUtils.CR: {
-          var location = source.getLocation();
-          var cr = source.take();
+          var location = source.createLocation();
+          var cr = source.eat();
 
           if (source.peek() != HclTextUtils.LF) {
             return new ErrorToken(
@@ -475,7 +475,7 @@ public final class DefaultLexerMode implements LexerMode {
                 location,
                 ErrorType.MALFORMED_NEWLINE_SEQUENCE,
                 "Expected CRLF or LF newlines, found CR",
-                cr, source.take()
+                cr, source.eat()
             );
           }
 

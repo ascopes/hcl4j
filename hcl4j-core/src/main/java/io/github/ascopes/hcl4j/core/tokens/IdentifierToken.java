@@ -21,7 +21,7 @@ import io.github.ascopes.hcl4j.core.utils.ToStringBuilder;
 
 public final class IdentifierToken extends AbstractToken {
 
-  public IdentifierToken(Location location, CharSequence raw) {
+  public IdentifierToken(Location location, String raw) {
     super(location, raw);
   }
 
@@ -33,7 +33,7 @@ public final class IdentifierToken extends AbstractToken {
         .toString();
   }
 
-  public CharSequence getIdentifier() {
+  public String getIdentifier() {
     return getRaw();
   }
 

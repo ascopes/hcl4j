@@ -1,3 +1,5 @@
+"foo""bar"
+
 terraform {
   required_providers {
     aws = {

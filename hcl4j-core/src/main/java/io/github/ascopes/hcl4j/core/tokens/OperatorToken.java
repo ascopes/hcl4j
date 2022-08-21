@@ -24,7 +24,7 @@ public final class OperatorToken extends AbstractToken {
 
   private final Operator type;
 
-  public OperatorToken(Location location, Operator type, CharSequence raw) {
+  public OperatorToken(Location location, Operator type, String raw) {
     super(location, raw);
     this.type = type;
   }
@@ -100,6 +100,7 @@ public final class OperatorToken extends AbstractToken {
     /////////////////////////
     // Template characters //
     /////////////////////////
+    TEMPLATE_DEDENT,
     INTERP_START,
     CONTROL_START,
   }

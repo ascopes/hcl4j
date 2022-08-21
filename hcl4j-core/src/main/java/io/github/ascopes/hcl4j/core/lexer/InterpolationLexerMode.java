@@ -14,33 +14,29 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.lexer;
 
-import io.github.ascopes.hcl4j.core.lexer.Location;
+import io.github.ascopes.hcl4j.core.tokens.Token;
+import java.io.IOException;
 
-public abstract class AbstractToken implements Token {
+/**
+ * Lexer mode for handling interpolation sequences.
+ *
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public final class InterpolationLexerMode implements LexerMode {
 
-  private final Location location;
+  private final CharSource source;
+  private final LexerModeControl lexer;
 
-  private final String raw;
-
-  protected AbstractToken(Location location, String raw) {
-    this.location = location;
-    this.raw = raw;
-  }
-
-  protected AbstractToken(Location location, int rawChar) {
-    this(location, Character.toString(rawChar));
+  public InterpolationLexerMode(CharSource source, LexerModeControl lexer) {
+    this.source = source;
+    this.lexer = lexer;
   }
 
   @Override
-  public abstract String toString();
-
-  public Location getLocation() {
-    return location;
-  }
-
-  public String getRaw() {
-    return raw;
+  public Token nextToken() throws IOException {
+    throw new UnsupportedOperationException();
   }
 }

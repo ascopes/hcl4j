@@ -54,6 +54,16 @@ public final class HclTextUtils {
   }
 
   /**
+   * Determine if the given character is a hexadecimal digit (ASCII 0-9, A-F, a-f).
+   *
+   * @param c the character to check.
+   * @return {@code true} if the character is a hexadecimal digit, {@code false} otherwise.
+   */
+  public static boolean isHexadecimal(int c) {
+    return '0' <= c && c <= '9' || 'a' <= c && c <= 'f' || 'A' <= c && c <= 'F';
+  }
+
+  /**
    * Determine if the given character is a valid Unicode {@code ID_START} character (start of a
    * Unicode identifier).
    *
@@ -85,7 +95,7 @@ public final class HclTextUtils {
    * @param chars the characters to join.
    * @return the string of characters.
    */
-  public static CharSequence join(int... chars) {
+  public static String join(int... chars) {
     if (chars.length == 0 || isEof(chars[0])) {
       return "";
     }

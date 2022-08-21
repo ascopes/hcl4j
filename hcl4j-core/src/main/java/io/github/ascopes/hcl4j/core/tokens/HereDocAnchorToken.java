@@ -21,15 +21,15 @@ import io.github.ascopes.hcl4j.core.utils.ToStringBuilder;
 
 public final class HereDocAnchorToken extends AbstractToken {
 
-  private final CharSequence identifier;
+  private final String identifier;
 
   private final boolean indented;
 
   public HereDocAnchorToken(
       Location location,
-      CharSequence identifier,
+      String identifier,
       boolean indented,
-      CharSequence raw
+      String raw
   ) {
     super(location, raw);
     this.identifier = identifier;
@@ -45,7 +45,7 @@ public final class HereDocAnchorToken extends AbstractToken {
         .toString();
   }
 
-  public CharSequence getIdentifier() {
+  public String getIdentifier() {
     return identifier;
   }
 
