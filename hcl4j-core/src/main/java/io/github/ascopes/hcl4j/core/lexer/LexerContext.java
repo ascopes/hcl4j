@@ -11,6 +11,8 @@ import java.util.NoSuchElementException;
  * <p>This is passed between lexer modes to represent the global lexer state. Lexer modes can
  * be pushed and popped to change the source of the next token.
  *
+ * <p>This class is <strong>not</strong> thread-safe.
+ *
  * @author Ashley Scopes
  * @since 0.0.1
  */
@@ -54,7 +56,7 @@ public final class LexerContext {
    */
   public void popMode() throws NoSuchElementException {
     if (modeStack.pop() == null) {
-      throw new NoSuchElementException("LexerContext mode stack is empty");
+      throw expectAtLeastOne();
     }
   }
 
@@ -67,9 +69,13 @@ public final class LexerContext {
     var active = modeStack.peek();
 
     if (active == null) {
-      throw new NoSuchElementException("LexerContext mode stack is empty");
+      throw expectAtLeastOne();
     }
 
     return active;
+  }
+
+  private NoSuchElementException expectAtLeastOne() {
+    return new NoSuchElementException("LexerContext mode stack is empty");
   }
 }

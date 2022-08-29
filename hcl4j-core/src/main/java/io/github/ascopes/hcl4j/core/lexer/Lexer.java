@@ -12,6 +12,8 @@ import java.io.IOException;
  * used. This enables parsing context-bound grammars easily without a mess of code all in a single
  * class.
  *
+ * <p>This class is <strong>not</strong> thread-safe.
+ *
  * @author Ashley Scopes
  * @since 0.0.1
  */

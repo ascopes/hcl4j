@@ -5,6 +5,8 @@ import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 /**
  * Wrapper around a string builder that handles common mistakes with int return values.
  *
+ * <p>This class is <strong>not</strong> thread-safe.
+ *
  * @author Ashley Scopes
  * @since 0.0.1
  */

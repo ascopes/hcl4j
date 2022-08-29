@@ -13,6 +13,11 @@ import java.util.Queue;
 
 /**
  * Default lexer mode used to parse HCL expressions outside templates.
+ *
+ * <p>This class is <strong>not</strong> thread-safe.
+ *
+ * @author Ashley Scopes
+ * @since 0.0.1
  */
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
 public class DefaultLexerMode implements LexerMode {
