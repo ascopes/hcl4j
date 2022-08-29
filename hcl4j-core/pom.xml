@@ -11,7 +11,7 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>hcl4j-syntax</artifactId>
+  <artifactId>hcl4j-core</artifactId>
 
   <dependencies>
     <dependency>

@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>hcl4j-syntax</module>
+    <module>hcl4j-core</module>
   </modules>
 
   <properties>
