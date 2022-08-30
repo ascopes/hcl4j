@@ -2,6 +2,8 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+
 /**
  * Wrapper around a string builder that handles common mistakes with int return values.
  *
@@ -58,7 +60,21 @@ public final class RawTokenBuilder {
    *
    * @return the raw content as a string.
    */
+  @CheckReturnValue
   public CharSequence raw() {
+    return builder.toString();
+  }
+
+  /**
+   * Convert the builder content to a string and return it.
+   *
+   * @return the raw content as a string.
+   * @deprecated use {@link #raw()} instead of this method.
+   */
+  @CheckReturnValue
+  @Deprecated
+  @SuppressWarnings("DeprecatedStillUsed")
+  public String toString() {
     return builder.toString();
   }
 }

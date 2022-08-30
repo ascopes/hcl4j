@@ -1,5 +1,7 @@
 package io.github.ascopes.hcl4j.core.inputs;
 
+import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +26,7 @@ public final class CharInputStream implements CharSource {
   private static final long INITIAL_LINE = 1;
   private static final long INITIAL_COLUMN = 1;
 
-  private final String fileName;
+  private final String name;
   private final BufferedReader reader;
   private long position;
   private long line;
@@ -33,11 +35,11 @@ public final class CharInputStream implements CharSource {
   /**
    * Initialize the character source.
    *
-   * @param fileName    the symbolic name of the file that the {@code inputStream} is for.
+   * @param name    the symbolic name of the file that the {@code inputStream} is for.
    * @param inputStream the unbuffered input stream source to use (will be buffered internally).
    */
-  public CharInputStream(String fileName, InputStream inputStream) {
-    this.fileName = fileName;
+  public CharInputStream(@Nullable String name, InputStream inputStream) {
+    this.name = name == null ? UNNAMED_FILE : name;
     var inputReader = new InputStreamReader(inputStream, CHARSET);
     reader = new BufferedReader(inputReader, BUFFER_SIZE);
 
@@ -75,11 +77,19 @@ public final class CharInputStream implements CharSource {
     reader.close();
   }
 
+  @CheckReturnValue
   @Override
   public Location location() {
-    return new Location(fileName, position, line, column);
+    return new Location(name, position, line, column);
   }
 
+  @CheckReturnValue
+  @Override
+  public String name() {
+    return name;
+  }
+
+  @CheckReturnValue
   @Override
   @SuppressWarnings("ResultOfMethodCallIgnored")
   public int peek(int offset) throws IOException {
@@ -97,11 +107,13 @@ public final class CharInputStream implements CharSource {
     }
   }
 
+  @CheckReturnValue
   @Override
   public int read() throws IOException {
     return reader.read();
   }
 
+  @CheckReturnValue
   @Override
   @SuppressWarnings("ResultOfMethodCallIgnored")
   public CharSequence readString(int count) throws IOException {
@@ -119,6 +131,7 @@ public final class CharInputStream implements CharSource {
         : charBuffer.rewind();
   }
 
+  @CheckReturnValue
   @Override
   public boolean startsWith(CharSequence match) throws IOException {
     var len = match.length();

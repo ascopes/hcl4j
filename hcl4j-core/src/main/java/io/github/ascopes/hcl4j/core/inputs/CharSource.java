@@ -1,5 +1,7 @@
 package io.github.ascopes.hcl4j.core.inputs;
 
+import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +25,11 @@ public interface CharSource extends AutoCloseable {
   int EOF = -1;
 
   /**
+   * Default name for an unnamed file.
+   */
+  String UNNAMED_FILE = "<unnamed>";
+
+  /**
    * Advance the current location forwards by {@code count} characters.
    *
    * @param count the number of characters to advance the position by.
@@ -43,7 +50,18 @@ public interface CharSource extends AutoCloseable {
    *
    * @return the object representing the file location.
    */
+  @CheckReturnValue
   Location location();
+
+  /**
+   * Get the name of the file.
+   *
+   * <p>This may be {@link #UNNAMED_FILE} if no name was provided in the implementation.
+   *
+   * @return the name of the file.
+   */
+  @CheckReturnValue
+  String name();
 
   /**
    * Peek at the character codepoint at the given {@code offset} from the current position.
@@ -54,6 +72,7 @@ public interface CharSource extends AutoCloseable {
    * @return the character codepoint, or {@link #EOF}.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
+  @CheckReturnValue
   int peek(int offset) throws IOException;
 
   /**
@@ -64,6 +83,7 @@ public interface CharSource extends AutoCloseable {
    * @return the character codepoint, or {@link #EOF}.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
+  @CheckReturnValue
   int read() throws IOException;
 
   /**
@@ -85,6 +105,7 @@ public interface CharSource extends AutoCloseable {
    * @return the read character sequence.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
+  @CheckReturnValue
   CharSequence readString(int count) throws IOException;
 
   /**
@@ -97,5 +118,6 @@ public interface CharSource extends AutoCloseable {
    * {@code false} if it does not.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
+  @CheckReturnValue
   boolean startsWith(CharSequence match) throws IOException;
 }

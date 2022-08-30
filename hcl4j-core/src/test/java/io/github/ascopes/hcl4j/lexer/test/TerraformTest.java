@@ -1,7 +1,7 @@
 package io.github.ascopes.hcl4j.lexer.test;
 
 import io.github.ascopes.hcl4j.core.inputs.CharInputStream;
-import io.github.ascopes.hcl4j.core.lexer.DefaultLexerMode;
+import io.github.ascopes.hcl4j.core.lexer.DefaultLexerStrategy;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.ByteArrayInputStream;
@@ -58,7 +58,7 @@ class TerraformTest {
         """.stripIndent().getBytes(StandardCharsets.UTF_8);
 
     try (var stream = new CharInputStream("example.tf", new ByteArrayInputStream(source))) {
-      var lexer = new Lexer(stream, DefaultLexerMode::new);
+      var lexer = new Lexer(stream, DefaultLexerStrategy::new);
 
       while (true) {
         var next = lexer.nextToken();

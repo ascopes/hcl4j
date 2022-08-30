@@ -10,8 +10,11 @@ public enum TokenType {
   // LexerContext control symbols.
   END_OF_FILE,
   ERROR,
-  NEW_LINE,
 
+  // Whitespace tokens
+  NEW_LINE, WHITESPACE,
+
+  // Comments
   INLINE_COMMENT, LINE_COMMENT,
 
   // Arithmetic operators
@@ -22,9 +25,6 @@ public enum TokenType {
 
   // Logic operators
   AND, OR, NOT,
-
-  // Whitespace handling symbols
-  TRIM_DIRECTIVE_MARKER,
 
   // Block symbols
   LEFT_BRACE, RIGHT_BRACE, LEFT_INTERPOLATION, LEFT_DIRECTIVE,
@@ -45,6 +45,7 @@ public enum TokenType {
   // Other symbols
   LEFT_PAREN, RIGHT_PAREN,
   COMMA,
+  TILDE,
 
   // Literal values
   IDENTIFIER,

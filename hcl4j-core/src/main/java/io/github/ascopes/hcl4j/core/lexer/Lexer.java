@@ -1,5 +1,6 @@
 package io.github.ascopes.hcl4j.core.lexer;
 
+import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.io.IOException;
@@ -7,7 +8,7 @@ import java.io.IOException;
 /**
  * Lexer implementation.
  *
- * <p>This will work by delegating to a {@link LexerMode} provided by the constructor. This lexer
+ * <p>This will work by delegating to a {@link LexerStrategy} provided by the constructor. This lexer
  * mode can push additional lexer modes onto the internal stack to change the lexing strategy being
  * used. This enables parsing context-bound grammars easily without a mess of code all in a single
  * class.
@@ -39,6 +40,7 @@ public final class Lexer {
    * @throws IOException if an {@link IOException} occurs internally while reading the input
    *                     source.
    */
+  @CheckReturnValue
   public Token nextToken() throws IOException {
     return context.activeMode().nextToken();
   }
@@ -56,6 +58,7 @@ public final class Lexer {
      * @param context the lexer context to use.
      * @return the lexer mode to initialize.
      */
-    LexerMode initialize(LexerContext context);
+    @CheckReturnValue
+    LexerStrategy initialize(LexerContext context);
   }
 }

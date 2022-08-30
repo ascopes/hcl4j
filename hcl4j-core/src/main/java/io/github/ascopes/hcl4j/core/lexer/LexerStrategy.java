@@ -1,5 +1,6 @@
 package io.github.ascopes.hcl4j.core.lexer;
 
+import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.io.IOException;
 
@@ -9,7 +10,7 @@ import java.io.IOException;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface LexerMode {
+public interface LexerStrategy {
 
   /**
    * Get the next token in the file.
@@ -18,5 +19,6 @@ public interface LexerMode {
    * @throws IOException if an {@link IOException} occurs internally while reading the input
    *                     source.
    */
+  @CheckReturnValue
   Token nextToken() throws IOException;
 }

@@ -1,5 +1,6 @@
 package io.github.ascopes.hcl4j.core.lexer;
 
+import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -19,7 +20,7 @@ import java.util.NoSuchElementException;
 public final class LexerContext {
 
   private final CharSource charSource;
-  private final Deque<LexerMode> modeStack;
+  private final Deque<LexerStrategy> strategyStack;
 
   /**
    * Initialize the lexer context.
@@ -28,7 +29,7 @@ public final class LexerContext {
    */
   public LexerContext(CharSource charSource) {
     this.charSource = charSource;
-    modeStack = new LinkedList<>();
+    strategyStack = new LinkedList<>();
   }
 
   /**
@@ -36,6 +37,7 @@ public final class LexerContext {
    *
    * @return the character source.
    */
+  @CheckReturnValue
   public CharSource charSource() {
     return charSource;
   }
@@ -45,8 +47,8 @@ public final class LexerContext {
    *
    * @param mode the lexer mode to use.
    */
-  public void pushMode(LexerMode mode) {
-    modeStack.push(mode);
+  public void pushMode(LexerStrategy mode) {
+    strategyStack.push(mode);
   }
 
   /**
@@ -55,7 +57,7 @@ public final class LexerContext {
    * @throws NoSuchElementException if the stack is empty.
    */
   public void popMode() throws NoSuchElementException {
-    if (modeStack.pop() == null) {
+    if (strategyStack.pop() == null) {
       throw expectAtLeastOne();
     }
   }
@@ -65,8 +67,9 @@ public final class LexerContext {
    *
    * @throws NoSuchElementException if the stack is empty.
    */
-  public LexerMode activeMode() throws NoSuchElementException {
-    var active = modeStack.peek();
+  @CheckReturnValue
+  public LexerStrategy activeMode() throws NoSuchElementException {
+    var active = strategyStack.peek();
 
     if (active == null) {
       throw expectAtLeastOne();
