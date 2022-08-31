@@ -1,10 +1,26 @@
+/*
+ * Copyright (C) 2022 Ashley Scopes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.lexer.utils.LexerContext;
-import io.github.ascopes.hcl4j.core.lexer.utils.RawTokenBuilder;
-import io.github.ascopes.hcl4j.core.tokens.LexerError;
+import io.github.ascopes.hcl4j.core.lexer.LexerContext;
+import io.github.ascopes.hcl4j.core.lexer.LexerStrategy;
 import io.github.ascopes.hcl4j.core.tokens.Token;
+import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import io.github.ascopes.hcl4j.core.tokens.impl.EofToken;
 import io.github.ascopes.hcl4j.core.tokens.impl.ErrorToken;
@@ -60,7 +76,7 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @throws IOException if an {@link IOException} occurred internally.
    */
   @CheckReturnValue
-  protected Token newError(LexerError error, int length) throws IOException {
+  protected Token newError(TokenErrorMessage error, int length) throws IOException {
     var location = context.charSource().location();
     var raw = context.charSource().readString(length);
     assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
@@ -85,7 +101,7 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token consumeUnrecognisedCharacter() throws IOException {
-    return newError(LexerError.UNRECOGNISED_CHAR, 1);
+    return newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
   }
 
   /**
@@ -151,9 +167,9 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
     return switch (context.charSource().peek(0)) {
       case '\r' -> context.charSource().peek(1) == '\n'
           ? newToken(TokenType.NEW_LINE, 2)
-          : newError(LexerError.UNRECOGNISED_CHAR, 1);
+          : newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
       case '\n' -> newToken(TokenType.NEW_LINE, 1);
-      default -> newError(LexerError.UNRECOGNISED_CHAR, 1);
+      default -> newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
     };
   }
 
@@ -195,7 +211,7 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    *
    * @param codePoint the code point to check.
    * @return {@code true} if it is an ASCII digit or hexadecimal character, or {@code false}
-   * otherwise.
+   *     otherwise.
    */
   @SuppressWarnings("BooleanMethodIsAlwaysInverted")
   @CheckReturnValue

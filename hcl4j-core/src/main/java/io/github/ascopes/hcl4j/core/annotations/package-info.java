@@ -14,28 +14,16 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens.impl;
-
-import io.github.ascopes.hcl4j.core.inputs.Location;
-import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
-
 /**
- * Standard representation of token that represents part of an HCL file.
+ * Internally used annotations to assist in linting and documentation.
  *
- * @param type     the token type.
- * @param raw      the token content.
- * @param location the location in the file.
- * @author Ashley Scopes
- * @since 0.0.1
+ * <p>While these annotations are publicly exposed, they are not considered to be part of the
+ * public API, and thus should not be used outside the HCL4J project itself.
+ *
+ * <p>They may be moved, renamed, or removed at any time without prior deprecation notice.
  */
 @API(since = "0.0.1", status = Status.INTERNAL)
-public record SimpleToken(
-    TokenType type,
-    CharSequence raw,
-    Location location
-) implements Token {
+package io.github.ascopes.hcl4j.core.annotations;
 
-}
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;

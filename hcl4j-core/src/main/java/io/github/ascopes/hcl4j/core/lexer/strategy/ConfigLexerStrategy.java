@@ -1,12 +1,27 @@
+/*
+ * Copyright (C) 2022 Ashley Scopes
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.lexer.utils.LexerContext;
-import io.github.ascopes.hcl4j.core.lexer.utils.RawTokenBuilder;
-import io.github.ascopes.hcl4j.core.tokens.LexerError;
+import io.github.ascopes.hcl4j.core.lexer.LexerContext;
 import io.github.ascopes.hcl4j.core.tokens.Token;
+import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import io.github.ascopes.hcl4j.core.tokens.impl.SimpleToken;
 import java.io.IOException;
@@ -184,7 +199,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
   private Token consumeAmpersand() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '&' -> newToken(TokenType.AND, 2);
-      default -> newError(LexerError.UNKNOWN_OPERATOR, 2);
+      default -> newError(TokenErrorMessage.UNKNOWN_OPERATOR, 2);
     };
   }
 
@@ -201,7 +216,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
   private Token consumePipe() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '|' -> newToken(TokenType.OR, 2);
-      default -> newError(LexerError.UNKNOWN_OPERATOR, 2);
+      default -> newError(TokenErrorMessage.UNKNOWN_OPERATOR, 2);
     };
   }
 

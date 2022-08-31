@@ -20,16 +20,18 @@
     <junit.version>5.9.0</junit.version>
 
     <!-- Plugin versions -->
+    <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
     <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
     <maven-jar-plugin.version>3.2.2</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.4.1</maven-javadoc-plugin.version>
     <maven-surefire-plugin.version>3.0.0-M7</maven-surefire-plugin.version>
 
     <!-- Plugin dependency versions -->
     <maven-surefire-junit5-tree-reporter.version>1.1.0</maven-surefire-junit5-tree-reporter.version>
 
-    <!-- Compiler configuration -->
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <!-- Plugin dependency component versions -->
+    <checkstyle.version>10.3.2</checkstyle.version>
+    <maven-surefire-junit5-tree-reporter.version>1.1.0</maven-surefire-junit5-tree-reporter.version>
 
     <!-- Maven configuration -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,9 +65,84 @@
     <pluginManagement>
       <plugins>
         <plugin>
+          <!-- Coverage tracing -->
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco-maven-plugin.version}</version>
+
+          <executions>
+            <execution>
+              <id>add-coverage-agent-to-surefire-args</id>
+              <phase>initialize</phase>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+            </execution>
+
+            <execution>
+              <id>report-coverage</id>
+              <phase>test</phase>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <!-- Checking style of code matches the Google code style -->
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>${maven-checkstyle-plugin.version}</version>
+
+          <executions>
+            <execution>
+              <id>checkstyle</id>
+              <phase>compile</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+              <configuration>
+                <configLocation>
+                  <!--suppress UnresolvedMavenProperty -->
+                  ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/checkstyle.xml
+                </configLocation>
+                <consoleOutput>true</consoleOutput>
+                <encoding>UTF-8</encoding>
+                <failsOnError>true</failsOnError>
+                <!--suppress UnresolvedMavenProperty -->
+                <headerLocation>
+                  ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/license-header.txt
+                </headerLocation>
+                <includeResources>true</includeResources>
+                <sourceDirectories>${project.basedir}/src</sourceDirectories>
+                <suppressionsLocation>
+                  <!--suppress UnresolvedMavenProperty -->
+                  ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/suppressions.xml
+                </suppressionsLocation>
+                <violationSeverity>info</violationSeverity>
+              </configuration>
+            </execution>
+          </executions>
+
+          <dependencies>
+            <dependency>
+              <!-- Force the usage of checkstyle v10 rather than v8.28 -->
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>${checkstyle.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
+        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
+
+          <configuration>
+            <release>17</release>
+          </configuration>
         </plugin>
 
         <plugin>
