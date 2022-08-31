@@ -6,7 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.CharBuffer;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * An {@link CharSource} that wraps a given {@link InputStream} internally, buffering it and
@@ -18,6 +19,7 @@ import java.nio.CharBuffer;
  * @author Ashley Scopes
  * @since 0.0.1
  */
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 public final class CharInputStream implements CharSource {
 
   private static final int BUFFER_SIZE = 1_024;
@@ -35,7 +37,7 @@ public final class CharInputStream implements CharSource {
   /**
    * Initialize the character source.
    *
-   * @param name    the symbolic name of the file that the {@code inputStream} is for.
+   * @param name        the symbolic name of the file that the {@code inputStream} is for.
    * @param inputStream the unbuffered input stream source to use (will be buffered internally).
    */
   public CharInputStream(@Nullable String name, InputStream inputStream) {
@@ -55,19 +57,10 @@ public final class CharInputStream implements CharSource {
     }
 
     for (var i = 0; i < count; ++i) {
-      switch (reader.read()) {
-        case EOF -> {
-          return;
-        }
-        case '\n' -> {
-          ++position;
-          ++line;
-          column = INITIAL_COLUMN;
-        }
-        default -> {
-          ++position;
-          ++line;
-        }
+      var next = reader.read();
+      processNextChar(next);
+      if (next == EOF) {
+        break;
       }
     }
   }
@@ -110,25 +103,30 @@ public final class CharInputStream implements CharSource {
   @CheckReturnValue
   @Override
   public int read() throws IOException {
-    return reader.read();
+    var next = reader.read();
+    processNextChar(next);
+    return next;
   }
 
   @CheckReturnValue
   @Override
-  @SuppressWarnings("ResultOfMethodCallIgnored")
   public CharSequence readString(int count) throws IOException {
     if (count < 0) {
       throw new IllegalArgumentException("Cannot read a negative number of characters");
     }
 
-    var charBuffer = CharBuffer.allocate(count);
-    reader.read(charBuffer);
+    var buff = new StringBuilder();
 
-    // Shrink the allocated buffer size if we didn't fill the full buffer.
-    // If we did, then don't bother compacting it.
-    return charBuffer.position() < charBuffer.capacity()
-        ? charBuffer.mark().rewind().compact()
-        : charBuffer.rewind();
+    for (var i = 0; i < count; ++i) {
+      var next = reader.read();
+      processNextChar(next);
+      if (next == EOF) {
+        break;
+      }
+      buff.append((char) next);
+    }
+
+    return buff.toString();
   }
 
   @CheckReturnValue
@@ -151,6 +149,23 @@ public final class CharInputStream implements CharSource {
       return true;
     } finally {
       reader.reset();
+    }
+  }
+
+  private void processNextChar(int codePoint) {
+    switch (codePoint) {
+      case EOF -> {
+        // Do nothing.
+      }
+      case '\n' -> {
+        ++position;
+        ++line;
+        column = INITIAL_COLUMN;
+      }
+      default -> {
+        ++position;
+        ++column;
+      }
     }
   }
 }

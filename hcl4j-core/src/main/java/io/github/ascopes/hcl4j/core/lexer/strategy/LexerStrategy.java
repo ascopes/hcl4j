@@ -1,8 +1,10 @@
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.io.IOException;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * Base interface for an active lexer mode.
@@ -10,6 +12,7 @@ import java.io.IOException;
  * @author Ashley Scopes
  * @since 0.0.1
  */
+@API(since = "0.0.1", status = Status.INTERNAL)
 public interface LexerStrategy {
 
   /**

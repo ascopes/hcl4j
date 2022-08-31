@@ -1,6 +1,11 @@
 package io.github.ascopes.hcl4j.core.tokens;
 
 import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.tokens.impl.EofToken;
+import io.github.ascopes.hcl4j.core.tokens.impl.ErrorToken;
+import io.github.ascopes.hcl4j.core.tokens.impl.SimpleToken;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * Abstract representation of a token emitted by a lexer mode.
@@ -8,7 +13,8 @@ import io.github.ascopes.hcl4j.core.inputs.Location;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface Token permits ErrorToken, SimpleToken {
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+public sealed interface Token permits EofToken, ErrorToken, SimpleToken {
 
   /**
    * Get the token type.

@@ -1,8 +1,8 @@
 package io.github.ascopes.hcl4j.lexer.test;
 
 import io.github.ascopes.hcl4j.core.inputs.CharInputStream;
-import io.github.ascopes.hcl4j.core.lexer.DefaultLexerStrategy;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
+import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -12,9 +12,12 @@ import org.junit.jupiter.api.Test;
 class TerraformTest {
 
   @Test
-  void testReadTerraform() throws IOException {
+  void testReadTerraformOnce() throws IOException {
     var source = """
+        # Terraform config block
         terraform {
+          // Required terraform providers
+          // go here.
           required_providers {
             aws = {
               source  = "hashicorp/aws"
@@ -26,14 +29,16 @@ class TerraformTest {
         }
 
         provider "aws" {
-          region  = "us-west-2"
+          /* We operate in eu-west-1 on AWS
+             because Ireland is cool */
+          region  = "eu-west-1"
         }
 
         resource "aws_instance" "app_server" {
           ami           = "ami-08d70e59c07c61a3a"
-          instance_type = "t2.micro"
+          instance_type = "t3a.micro"
         }
-        
+                
         resource "aws_s3_bucket" "b" {
           bucket = "s3-website-test.hashicorp.com"
           acl    = "public-read"
@@ -42,7 +47,7 @@ class TerraformTest {
           website {
             index_document = "index.html"
             error_document = "error.html"
-        
+                
             routing_rules = <<EOF
         [{
             "Condition": {
@@ -57,18 +62,15 @@ class TerraformTest {
         }
         """.stripIndent().getBytes(StandardCharsets.UTF_8);
 
-    try (var stream = new CharInputStream("example.tf", new ByteArrayInputStream(source))) {
-      var lexer = new Lexer(stream, DefaultLexerStrategy::new);
+    try (var lex = Lexer.forHclConfigFile(
+        new CharInputStream("example.tf", new ByteArrayInputStream(source))
+    )) {
+      Token next;
 
-      while (true) {
-        var next = lexer.nextToken();
-
+      do {
+        next = lex.nextToken();
         System.out.println(next);
-
-        if (next.type() == TokenType.END_OF_FILE) {
-          break;
-        }
-      }
+      } while (next.type() != TokenType.END_OF_FILE);
     }
   }
 }

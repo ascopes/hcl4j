@@ -1,10 +1,11 @@
 package io.github.ascopes.hcl4j.core.inputs;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * A character stream for reading an HCL source file.
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
  * @author Ashley Scopes
  * @since 0.0.1
  */
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 public interface CharSource extends AutoCloseable {
 
   /**

@@ -1,10 +1,14 @@
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.utils;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
+import io.github.ascopes.hcl4j.core.lexer.strategy.LexerStrategy;
+import java.io.IOException;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * Distributed lexer state holder.
@@ -17,7 +21,8 @@ import java.util.NoSuchElementException;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public final class LexerContext {
+@API(since = "0.0.1", status = Status.INTERNAL)
+public final class LexerContext implements AutoCloseable {
 
   private final CharSource charSource;
   private final Deque<LexerStrategy> strategyStack;
@@ -33,6 +38,16 @@ public final class LexerContext {
   }
 
   /**
+   * Close the character source.
+   *
+   * @throws IOException if an {@link IOException} occurs during closure.
+   */
+  @Override
+  public void close() throws IOException {
+    charSource.close();
+  }
+
+  /**
    * Get the character source for the lexer.
    *
    * @return the character source.
@@ -43,32 +58,41 @@ public final class LexerContext {
   }
 
   /**
-   * Push a new mode onto the lexer mode stack.
+   * Get the number of strategies on the stack.
    *
-   * @param mode the lexer mode to use.
+   * @return the number of strategies on the stack.
    */
-  public void pushMode(LexerStrategy mode) {
+  public int stackDepth() {
+    return strategyStack.size();
+  }
+
+  /**
+   * Push a new strategy onto the lexer strategy stack.
+   *
+   * @param mode the lexer strategy to push.
+   */
+  public void pushStrategy(LexerStrategy mode) {
     strategyStack.push(mode);
   }
 
   /**
-   * Pop a mode from the lexer mode stack.
+   * Pop a strategy from the lexer strategy stack.
    *
    * @throws NoSuchElementException if the stack is empty.
    */
-  public void popMode() throws NoSuchElementException {
+  public void popStrategy() throws NoSuchElementException {
     if (strategyStack.pop() == null) {
       throw expectAtLeastOne();
     }
   }
 
   /**
-   * Retrieve the active lexer mode.
+   * Retrieve the active lexer strategy.
    *
    * @throws NoSuchElementException if the stack is empty.
    */
   @CheckReturnValue
-  public LexerStrategy activeMode() throws NoSuchElementException {
+  public LexerStrategy activeStrategy() throws NoSuchElementException {
     var active = strategyStack.peek();
 
     if (active == null) {

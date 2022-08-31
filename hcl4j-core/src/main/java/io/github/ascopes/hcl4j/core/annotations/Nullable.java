@@ -4,6 +4,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * Annotation that marks the annotated element as having a potentially null value.
@@ -11,6 +13,7 @@ import java.lang.annotation.Target;
  * @author Ashley Scopes
  * @since 0.0.1
  */
+@API(since = "0.0.1", status = Status.INTERNAL)
 @Retention(RetentionPolicy.RUNTIME)
 @Target({
     ElementType.ANNOTATION_TYPE,
@@ -23,4 +26,5 @@ import java.lang.annotation.Target;
     ElementType.TYPE_USE,
 })
 public @interface Nullable {
+
 }

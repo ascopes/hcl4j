@@ -1,8 +1,10 @@
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.utils;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * Wrapper around a string builder that handles common mistakes with int return values.
@@ -12,6 +14,7 @@ import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
  * @author Ashley Scopes
  * @since 0.0.1
  */
+@API(since = "0.0.1", status = Status.INTERNAL)
 @SuppressWarnings("UnusedReturnValue")
 public final class RawTokenBuilder {
 

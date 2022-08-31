@@ -1,18 +1,19 @@
 package io.github.ascopes.hcl4j.core.tokens;
 
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 /**
  * Errors that the lexer can emit.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 public enum LexerError {
   UNRECOGNISED_CHAR("unrecognised character"),
-  UNKNOWN_OPERATOR("unknown operator"),
-  UNEXPECTED_EOF_INLINE_COMMENT("unexpected end of file while parsing inline comment"),
-  UNEXPECTED_EOF_HEREDOC_IDENTIFIER("unexpected end of file while parsing heredoc identifier"),
-  EXPECTED_HEREDOC_IDENTIFIER("expected a heredoc identifier"),
-  EXPECTED_NEW_LINE("expected a new line");
+  MALFORMED_ESCAPE_SEQUENCE("malformed escape sequence"),
+  UNKNOWN_OPERATOR("unknown operator");
 
   private final String value;
 

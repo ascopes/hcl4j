@@ -1,33 +1,39 @@
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
+import io.github.ascopes.hcl4j.core.lexer.utils.LexerContext;
+import io.github.ascopes.hcl4j.core.lexer.utils.RawTokenBuilder;
 import io.github.ascopes.hcl4j.core.tokens.LexerError;
-import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
+import io.github.ascopes.hcl4j.core.tokens.impl.SimpleToken;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
 
 /**
  * Default lexer mode used to parse HCL expressions outside templates.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
+ * <p>The bulk of expression handling is dealt with in this class, minus some additional
+ * elements like <code>~}</code> that would be handled only in specific contexts.
+ *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@SuppressWarnings({"resource", "SwitchStatementWithTooFewBranches"})
-public class DefaultLexerStrategy implements LexerStrategy {
+@API(since = "0.0.1", status = Status.INTERNAL)
+@SuppressWarnings("SwitchStatementWithTooFewBranches")
+public final class ConfigLexerStrategy extends CommonLexerStrategy {
 
-  private final LexerContext context;
   private final Queue<Token> lookAheadQueue;
 
-  public DefaultLexerStrategy(LexerContext context) {
-    this.context = context;
+  public ConfigLexerStrategy(LexerContext context) {
+    super(context);
     lookAheadQueue = new LinkedList<>();
   }
 
@@ -40,6 +46,14 @@ public class DefaultLexerStrategy implements LexerStrategy {
 
     var nextChar = context.charSource().peek(0);
 
+    if (isWhitespace(nextChar)) {
+      return consumeWhitespace();
+    }
+
+    if (isNewLineStart(nextChar)) {
+      return consumeNewLine();
+    }
+
     if (isIdStart(nextChar)) {
       return consumeIdentifier();
     }
@@ -50,8 +64,6 @@ public class DefaultLexerStrategy implements LexerStrategy {
 
     return switch (nextChar) {
       case EOF -> consumeEndOfFile();
-      case ' ', '\t' -> consumeWhitespace();
-      case '\r', '\n' -> consumeNewLine();
       case '+' -> consumePlus();
       case '-' -> consumeMinus();
       case '*' -> consumeAsterisk();
@@ -68,7 +80,6 @@ public class DefaultLexerStrategy implements LexerStrategy {
       case ':' -> consumeColon();
       case ',' -> consumeComma();
       case '"' -> consumeQuote();
-      case '~' -> consumeTilde();
       case '{' -> consumeLeftBrace();
       case '}' -> consumeRightBrace();
       case '(' -> consumeLeftParenthesis();
@@ -78,73 +89,6 @@ public class DefaultLexerStrategy implements LexerStrategy {
       case '#' -> consumeHash();
       default -> consumeUnrecognisedCharacter();
     };
-  }
-
-  @CheckReturnValue
-  private Token newToken(TokenType type, int length) throws IOException {
-    var location = context.charSource().location();
-    var raw = context.charSource().readString(length);
-    assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new SimpleToken(type, raw, location);
-  }
-
-  @CheckReturnValue
-  private Token newError(LexerError error, int length) throws IOException {
-    var location = context.charSource().location();
-    var raw = context.charSource().readString(length);
-    assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new ErrorToken(error, raw, location);
-  }
-
-  @CheckReturnValue
-  private Token consumeWhitespace() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder()
-        .append(context.charSource().read());
-
-    while (true) {
-      var nextChar = context.charSource().peek(0);
-
-      if (nextChar != ' ' && nextChar != '\t') {
-        break;
-      }
-
-      buff.append(nextChar);
-      context.charSource().advance(1);
-    }
-
-    return new SimpleToken(TokenType.WHITESPACE, buff.raw(), location);
-  }
-
-  @CheckReturnValue
-  private Token consumeNewLine() throws IOException {
-    return switch (context.charSource().peek(0)) {
-      case '\r' -> switch (context.charSource().peek(1)) {
-        case '\n' -> newToken(TokenType.NEW_LINE, 2);
-        default -> newError(LexerError.UNRECOGNISED_CHAR, 1);
-      };
-      case '\n' -> newToken(TokenType.NEW_LINE, 1);
-      default -> newError(LexerError.UNRECOGNISED_CHAR, 1);
-    };
-  }
-
-  @CheckReturnValue
-  private Token consumeIdentifier() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder();
-    buff.append(context.charSource().read());
-
-    while (true) {
-      var next = context.charSource().peek(0);
-      if (isIdContinue(next) || next == '-') {
-        buff.append(next);
-        context.charSource().advance(1);
-      } else {
-        break;
-      }
-    }
-
-    return new SimpleToken(TokenType.IDENTIFIER, buff.raw(), location);
   }
 
   @CheckReturnValue
@@ -164,7 +108,7 @@ public class DefaultLexerStrategy implements LexerStrategy {
       tryConsumeExponentPart(buff);
     }
 
-    return new SimpleToken(TokenType.IDENTIFIER, buff.raw(), location);
+    return new SimpleToken(TokenType.NUMBER, buff.raw(), location);
   }
 
   private void tryConsumeIntegerPart(RawTokenBuilder buff) throws IOException {
@@ -214,11 +158,6 @@ public class DefaultLexerStrategy implements LexerStrategy {
       buff.append(context.charSource().read());
       tryConsumeIntegerPart(buff);
     }
-  }
-
-  @CheckReturnValue
-  private Token consumeEndOfFile() throws IOException {
-    return newToken(TokenType.END_OF_FILE, 0);
   }
 
   @CheckReturnValue
@@ -324,13 +263,9 @@ public class DefaultLexerStrategy implements LexerStrategy {
 
   @CheckReturnValue
   private Token consumeQuote() throws IOException {
-    // TODO: push quoted template mode.
-    return newToken(TokenType.QUOTE, 1);
-  }
-
-  @CheckReturnValue
-  private Token consumeTilde() throws IOException {
-    return newToken(TokenType.TILDE, 1);
+    var token = newToken(TokenType.QUOTE, 1);
+    context.pushStrategy(new QuotedTemplateLexerStrategy(context));
+    return token;
   }
 
   @CheckReturnValue
@@ -338,14 +273,14 @@ public class DefaultLexerStrategy implements LexerStrategy {
     // Push this mode. This can be overridden by a different block of logic for anything
     // subclassing or delegating to this lexer mode (e.g. template lexer modes). We push
     // this mode to enable popping it again afterwards when the block closes.
-    context.pushMode(this);
+    context.pushStrategy(this);
     return newToken(TokenType.LEFT_BRACE, 1);
   }
 
   @CheckReturnValue
   private Token consumeRightBrace() throws IOException {
     // Drop out of the current block, whatever that is.
-    context.popMode();
+    context.popStrategy();
     return newToken(TokenType.RIGHT_BRACE, 1);
   }
 
@@ -371,140 +306,28 @@ public class DefaultLexerStrategy implements LexerStrategy {
 
   @CheckReturnValue
   private Token consumeHash() throws IOException {
-    return consumeInlineComment();
+    return consumeLineComment();
   }
 
   @CheckReturnValue
   private Token consumeLineComment() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder();
+    context.pushStrategy(new LineCommentLexerStrategy(context));
 
-    if (context.charSource().startsWith("//")) {
-      buff.append(context.charSource().readString(2));
-    } else {
-      buff.append(context.charSource().read());
-    }
-
-    while (true) {
-      if (context.charSource().startsWith("\r\n")) {
-        buff.append(context.charSource().readString(2));
-        break;
-      }
-
-      var next = context.charSource().read();
-
-      if (next == EOF) {
-        break;
-      }
-
-      if (next == '\n') {
-        buff.append(next);
-        break;
-      }
-
-      buff.append(next);
-    }
-
-    return new SimpleToken(TokenType.LINE_COMMENT, buff.raw(), location);
+    // We know we either have # or //.
+    return context.charSource().peek(0) == '#'
+        ? newToken(TokenType.LINE_COMMENT_HASH_START, 1)
+        : newToken(TokenType.LINE_COMMENT_SLASH_START, 2);
   }
 
   @CheckReturnValue
   private Token consumeInlineComment() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder();
-    buff.append(context.charSource().readString(2));
-
-    while (true) {
-      if (context.charSource().startsWith("*/")) {
-        buff.append(context.charSource().readString(2));
-        break;
-      }
-
-      var next = context.charSource().read();
-
-      if (next == EOF) {
-        // Provide an error on the next token.
-        var error = newError(LexerError.UNEXPECTED_EOF_INLINE_COMMENT, 0);
-        lookAheadQueue.add(error);
-        break;
-      }
-
-      buff.append(next);
-    }
-
-    return new SimpleToken(TokenType.INLINE_COMMENT, buff.raw(), location);
+    context.pushStrategy(new InlineCommentLexerStrategy(context));
+    return newToken(TokenType.INLINE_COMMENT_START, 2);
   }
 
   @CheckReturnValue
   private Token consumeHeredocAnchor() throws IOException {
-    // We expect the following syntax for a heredoc to be valid:
-    //
-    // '<<' '-'? IDENTIFIER NEWLINE
-    //
-    // Spaces are not ignored here. Any deviation from this is a syntax error.
-    //
-    // We could have a custom lexer mode just to parse this header, but we can work around
-    // this with a few conditional checks just as easily here, so let's avoid that for now.
-
-    var anchor = context.charSource().startsWith("<<-")
-        ? newToken(TokenType.HEREDOC_ANCHOR, 3)
-        : newToken(TokenType.HEREDOC_ANCHOR, 2);
-
-    if (context.charSource().peek(0) == '-') {
-      // Next token must be an indent marker.
-      lookAheadQueue.add(newToken(TokenType.HEREDOC_INDENT_MARKER, 1));
-    }
-
-    var idStart = context.charSource().peek(0);
-
-    if (idStart == EOF) {
-      var error = newError(LexerError.UNEXPECTED_EOF_HEREDOC_IDENTIFIER, 0);
-      lookAheadQueue.add(error);
-
-      return anchor;
-
-    } else if (!isIdStart(idStart)) {
-      var error = newError(LexerError.EXPECTED_HEREDOC_IDENTIFIER, 1);
-      lookAheadQueue.add(error);
-
-      return anchor;
-    }
-
-    var id = consumeIdentifier();
-    lookAheadQueue.add(id);
-
-    var newLine = consumeNewLine();
-
-    if (newLine instanceof ErrorToken) {
-      var error = new ErrorToken(
-          LexerError.EXPECTED_NEW_LINE,
-          newLine.raw(),
-          newLine.location()
-      );
-
-      lookAheadQueue.add(error);
-    } else {
-      lookAheadQueue.add(newLine);
-    }
-
-    // TODO: push lexer mode.
-    return anchor;
-  }
-
-  @CheckReturnValue
-  private Token consumeUnrecognisedCharacter() throws IOException {
-    return newError(LexerError.UNRECOGNISED_CHAR, 1);
-  }
-
-  private static boolean isIdStart(int codePoint) {
-    return Character.isUnicodeIdentifierStart(codePoint);
-  }
-
-  private static boolean isIdContinue(int codePoint) {
-    return Character.isUnicodeIdentifierPart(codePoint);
-  }
-
-  private static boolean isDigit(int codePoint) {
-    return '0' <= codePoint && codePoint <= '9';
+    context.pushStrategy(new HeredocHeaderLexerStrategy(context));
+    return newToken(TokenType.HEREDOC_ANCHOR, 2);
   }
 }
