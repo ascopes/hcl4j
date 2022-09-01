@@ -102,6 +102,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
       case '[' -> consumeLeftSquareBracket();
       case ']' -> consumeRightSquareBracket();
       case '#' -> consumeHash();
+      case '\'' -> newError(TokenErrorMessage.USE_DOUBLE_QUOTES, 1);
       default -> consumeUnrecognisedCharacter();
     };
   }
