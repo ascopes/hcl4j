@@ -29,6 +29,7 @@ import org.apiguardian.api.API.Status;
 public enum TokenErrorMessage {
   UNRECOGNISED_CHAR("unrecognised character"),
   MALFORMED_ESCAPE_SEQUENCE("malformed escape sequence"),
+  INVALID_UNICODE_CODE_POINT("invalid unicode code point"),
   UNKNOWN_OPERATOR("unknown operator");
 
   private final String value;
