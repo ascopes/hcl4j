@@ -54,11 +54,7 @@ public final class RawTokenBuilder {
       throw new IllegalStateException("Unexpected EOF");
     }
 
-    if (codePoint < 0) {
-      throw new IllegalArgumentException("Unexpected codepoint " + codePoint);
-    }
-
-    builder.append((char) codePoint);
+    builder.appendCodePoint(codePoint);
 
     return this;
   }
