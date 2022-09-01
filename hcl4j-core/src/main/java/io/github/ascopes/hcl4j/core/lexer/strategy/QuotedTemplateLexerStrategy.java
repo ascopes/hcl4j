@@ -74,10 +74,10 @@ import org.apiguardian.api.API.Status;
  *           character.</li>
  *        <li>The literal string {@code &bsol;t} will translate to a literal tab character.</li>
  *        <li>The literal string {@code &bsol;uXXXX} where {@code X} is a hexadecimal digit will
- *           translate to a literal character from the UTF-8 basic multilingual plane (BMP) at the
+ *           translate to a literal character from the basic multilingual plane (BMP) at the
  *           numeric codepoint.</li>
  *        <li>The literal string {@code &bsol;UXXXXXXXX} where {@code X} is a hexadecimal digit will
- *           translate to a literal character from the UTF-8 supplementary plane at the
+ *           translate to a literal character from the supplementary plane at the
  *           numeric codepoint.</li>
  *        <li>A left-interpolation marker that is preceded by a dollar "<code>$$&#123;</code>"
  *           will be treated as an escape for a plain-text "<code>$&#123;</code>".</li>
