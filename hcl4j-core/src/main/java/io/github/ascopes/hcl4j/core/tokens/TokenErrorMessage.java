@@ -30,7 +30,8 @@ public enum TokenErrorMessage {
   UNRECOGNISED_CHAR("unrecognised character"),
   MALFORMED_ESCAPE_SEQUENCE("malformed escape sequence"),
   INVALID_UNICODE_CODE_POINT("invalid unicode code point"),
-  UNKNOWN_OPERATOR("unknown operator");
+  UNKNOWN_OPERATOR("unknown operator"),
+  USE_DOUBLE_QUOTES("unrecognised character, use a double quote instead");
 
   private final String value;
 
