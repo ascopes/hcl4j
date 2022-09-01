@@ -220,7 +220,9 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       }
       case 'u', 'U' -> consumeUtf8Escape(buff);
 
-      // Anything else is not allowed.
+      // Anything else is not allowed. EOFs are included in this as it implies
+      // we have a dangling backslash.
+      EOF -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 1));
       default -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 2));
     }
   }
