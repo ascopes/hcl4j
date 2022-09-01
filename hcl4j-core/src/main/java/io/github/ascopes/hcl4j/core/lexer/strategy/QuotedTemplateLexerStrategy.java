@@ -92,6 +92,9 @@ import org.apiguardian.api.API.Status;
 @API(since = "0.0.1", status = Status.INTERNAL)
 public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
 
+  private static final int BMP_DIGITS = 4;
+  private static final int SUPP_DIGITS = 8;
+
   private final Queue<Token> errors;
 
   /**
@@ -215,65 +218,50 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
         buff.append('"');
         context.charSource().advance(2);
       }
-      case 'u' -> consumeBasicMultilingualPlaneEscape(buff);
-      case 'U' -> consumeSupplementaryEscape(buff);
+      case 'u', 'U' -> consumeUtf8Escape(buff);
+
+      // Anything else is not allowed.
       default -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 2));
     }
   }
 
-  private void consumeBasicMultilingualPlaneEscape(RawTokenBuilder buff) throws IOException {
+  private void consumeUtf8Escape(RawTokenBuilder buff) throws IOException {
     var location = context.charSource().location();
+    var start = context.charSource().readString(2);
     var digits = new RawTokenBuilder();
+    var length = start.equals("\\u") ? BMP_DIGITS : SUPP_DIGITS;
+    var i = 0;
 
-    for (var i = 2; i < 6; ++i) {
+    for (; i < length; ++i) {
       var nextChar = context.charSource().peek(i);
 
       if (nextChar == EOF || !isHexadecimal(nextChar)) {
         errors.add(new ErrorToken(
             TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE,
-            "\\u" + digits.raw(),
+            start + digits.raw(),
             location
         ));
-        return;
+
+        // Syntax error, but handle this best-effort for now.
+        break;
       }
 
       digits.append(nextChar);
     }
 
     // Skip over the escape
-    context.charSource().advance(6);
+    context.charSource().advance(length);
 
-    var bmp = Integer.parseInt(digits.raw().toString(), 16);
-
-    buff.append(bmp);
-  }
-
-  private void consumeSupplementaryEscape(RawTokenBuilder buff) throws IOException {
-    var location = context.charSource().location();
-    var digits = new RawTokenBuilder();
-
-    for (var i = 2; i < 10; ++i) {
-      var nextChar = context.charSource().peek(i);
-
-      if (nextChar == EOF || !isHexadecimal(nextChar)) {
-        errors.add(new ErrorToken(
-            TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE,
-            "\\U" + digits.raw(),
-            location
-        ));
-        return;
-      }
-
-      digits.append(nextChar);
+    try {
+      buff.append(Integer.parseInt(digits.raw().toString(), 16));
+    } catch (IllegalArgumentException ex) {
+      // We cannot handle the codepoint. Emit an error at the end of the
+      // string and skip this escape sequence for now.
+      errors.add(new ErrorToken(
+          TokenErrorMessage.INVALID_UNICODE_CODE_POINT,
+          start + digits.raw(),
+          location
+      ));
     }
-
-    // Skip over the escape
-    context.charSource().advance(10);
-
-    var higher = Integer.parseInt(digits.raw().subSequence(0, 4).toString(), 16);
-    var lower = Integer.parseInt(digits.raw().subSequence(4, 8).toString(), 16);
-
-    buff.append(higher)
-        .append(lower);
   }
 }
