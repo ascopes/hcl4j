@@ -251,8 +251,9 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       digits.append(nextChar);
     }
 
-    // Skip over the escape
-    context.charSource().advance(length);
+    // Skip over whatever we managed to parse from
+    // the escape.
+    context.charSource().advance(i);
 
     try {
       buff.append(Integer.parseInt(digits.raw().toString(), 16));
