@@ -19,6 +19,7 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.inputs.Location;
 import io.github.ascopes.hcl4j.core.lexer.LexerContext;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
@@ -222,7 +223,7 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
 
       // Anything else is not allowed. EOFs are included in this as it implies
       // we have a dangling backslash.
-      EOF -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 1));
+      case EOF -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 1));
       default -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 2));
     }
   }
@@ -238,11 +239,7 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       var nextChar = context.charSource().peek(i);
 
       if (nextChar == EOF || !isHexadecimal(nextChar)) {
-        errors.add(new ErrorToken(
-            TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE,
-            start + digits.raw(),
-            location
-        ));
+        escapeError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, start, digits, location);
 
         // Syntax error, but handle this best-effort for now.
         break;
@@ -256,15 +253,20 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     context.charSource().advance(i);
 
     try {
-      buff.append(Integer.parseInt(digits.raw().toString(), 16));
+      buff.appendHexCodePoint(digits.raw());
     } catch (IllegalArgumentException ex) {
       // We cannot handle the codepoint. Emit an error at the end of the
       // string and skip this escape sequence for now.
-      errors.add(new ErrorToken(
-          TokenErrorMessage.INVALID_UNICODE_CODE_POINT,
-          start + digits.raw(),
-          location
-      ));
+      escapeError(TokenErrorMessage.INVALID_UNICODE_CODE_POINT, start, digits, location);
     }
+  }
+
+  private void escapeError(
+      TokenErrorMessage error,
+      CharSequence start,
+      RawTokenBuilder digits,
+      Location location
+  ) {
+    errors.add(new ErrorToken(error, String.join("", start, digits.raw()), location));
   }
 }

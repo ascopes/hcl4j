@@ -32,7 +32,7 @@ import org.apiguardian.api.API.Status;
  */
 @API(since = "0.0.1", status = Status.INTERNAL)
 @SuppressWarnings("UnusedReturnValue")
-public final class RawTokenBuilder {
+public final class RawTokenBuilder  {
 
   private final StringBuilder builder;
 
@@ -67,6 +67,21 @@ public final class RawTokenBuilder {
    */
   public RawTokenBuilder append(CharSequence string) {
     builder.append(string);
+    return this;
+  }
+
+  /**
+   * Convert a string hexadecimal codepoint (no prefix) to UTF-8 code points and append them to the
+   * buffer.
+   *
+   * @param hex the hexadecimal string to parse, e.g. {@code "1a2b3c"}.
+   * @return this object.
+   * @throws NumberFormatException if the given string is not a valid hexadecimal integer.
+   * @throws IllegalArgumentException if the given string is not a valid unicode codepoint.
+   */
+  public RawTokenBuilder appendHexCodePoint(CharSequence hex) {
+    var codePoint = Integer.parseInt(hex.toString(), 16);
+    builder.append(Character.toChars(codePoint));
     return this;
   }
 
