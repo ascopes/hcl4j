@@ -18,6 +18,8 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
@@ -28,8 +30,6 @@ import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
 /**
  * Default lexer mode used to parse HCL expressions outside templates.
@@ -42,7 +42,7 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+@Api(Visibility.EXPERIMENTAL)
 @SuppressWarnings("SwitchStatementWithTooFewBranches")
 public final class ConfigLexerStrategy extends CommonLexerStrategy {
 
@@ -113,22 +113,28 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     var start = context.charSource().location();
     var buff = new RawContentBuffer();
 
+    // Distinguish between an integer and a real as this enables better handling of numeric data
+    // types that may decay if stored in an inaccurate format.
+    var real = false;
+
     tryConsumeIntegerPart(buff);
 
     if (context.charSource().peek(0) == '.') {
       tryConsumeFractionPart(buff);
+      real = true;
     }
 
     var expPeek = context.charSource().peek(0);
 
     if (expPeek == 'e' || expPeek == 'E') {
       tryConsumeExponentPart(buff);
+      real = true;
     }
 
     var end = context.charSource().location();
     var range = new Range(start, end);
-
-    return new SimpleToken(TokenType.NUMBER, buff.content(), range);
+    var type = real ? TokenType.REAL : TokenType.INTEGER;
+    return new SimpleToken(type, buff.content(), range);
   }
 
   private void tryConsumeIntegerPart(RawContentBuffer buff) throws IOException {

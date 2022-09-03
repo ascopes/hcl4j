@@ -17,8 +17,4 @@
 /**
  * Components for reading input streams into memory.
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 package io.github.ascopes.hcl4j.core.inputs;
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;

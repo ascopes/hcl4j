@@ -16,9 +16,9 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
 /**
  * Standard representation of token that represents part of an HCL file.
@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+@Api(Visibility.EXPERIMENTAL)
 public record SimpleToken(
     TokenType type,
     CharSequence raw,

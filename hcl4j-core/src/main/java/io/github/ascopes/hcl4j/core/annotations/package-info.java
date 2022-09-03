@@ -22,8 +22,4 @@
  *
  * <p>They may be moved, renamed, or removed at any time without prior deprecation notice.
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
 package io.github.ascopes.hcl4j.core.annotations;
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;

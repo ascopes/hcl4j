@@ -16,14 +16,14 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
 /**
  * An {@link CharSource} that wraps a given {@link InputStream} internally, buffering it and
@@ -35,7 +35,7 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+@Api(Visibility.EXPERIMENTAL)
 public final class CharInputStream implements CharSource {
 
   private static final int BUFFER_SIZE = 1_024;

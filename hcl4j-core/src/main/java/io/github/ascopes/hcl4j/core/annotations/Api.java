@@ -16,9 +16,9 @@
 
 package io.github.ascopes.hcl4j.core.annotations;
 
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -30,10 +30,27 @@ import java.lang.annotation.Target;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.INTERNAL)
 @Documented
+@Inherited
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-public @interface CheckReturnValue {
+@Target({ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.METHOD})
+public @interface Api {
 
+  /**
+   * The API visibility of this element.
+   *
+   * @return the API visibility.
+   */
+  Visibility value();
+
+  /**
+   * Valid API visibilities.
+   *
+   * @author Ashley Scopes
+   * @since 0.0.1
+   */
+  enum Visibility {
+    EXPERIMENTAL,
+    INTERNAL
+  }
 }

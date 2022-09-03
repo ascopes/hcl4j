@@ -14,29 +14,37 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.parser;
 
 import io.github.ascopes.hcl4j.core.annotations.Api;
 import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.CharSource;
+import io.github.ascopes.hcl4j.core.lexer.ConfigLexerStrategy;
+import io.github.ascopes.hcl4j.core.nodes.BodyItem;
+import java.io.IOException;
+import java.util.List;
 
 /**
- * Token that represents that the end of the file has been reached.
+ * Parser for HCL files.
  *
- * @param range the location of the end-of-file marker.
  * @author Ashley Scopes
  * @since 0.0.1
  */
 @Api(Visibility.EXPERIMENTAL)
-public record EofToken(Range range) implements Token {
+public final class ConfigFileParser extends CommonParser<List<? extends BodyItem>> {
 
-  @Override
-  public TokenType type() {
-    return TokenType.END_OF_FILE;
+  /**
+   * Initialize the parser.
+   *
+   * @param charSource the character source to use.
+   */
+  public ConfigFileParser(CharSource charSource) {
+    super(charSource);
+    context.pushStrategy(new ConfigLexerStrategy(context));
   }
 
   @Override
-  public CharSequence raw() {
-    return "\0";
+  public List<? extends BodyItem> root() throws IOException {
+    throw new UnsupportedOperationException();
   }
 }

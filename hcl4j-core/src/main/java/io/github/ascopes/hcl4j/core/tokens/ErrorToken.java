@@ -16,9 +16,9 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
 /**
  * Implementation of token that represents an error.
@@ -29,7 +29,7 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+@Api(Visibility.EXPERIMENTAL)
 public record ErrorToken(
     TokenErrorMessage errorMessage,
     CharSequence raw,

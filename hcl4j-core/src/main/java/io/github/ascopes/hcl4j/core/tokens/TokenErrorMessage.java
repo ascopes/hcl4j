@@ -16,8 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 
 /**
  * Errors that the lexer can emit.
@@ -25,7 +25,7 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+@Api(Visibility.EXPERIMENTAL)
 public enum TokenErrorMessage {
   UNRECOGNISED_CHAR("unrecognised character"),
   MALFORMED_ESCAPE_SEQUENCE("malformed escape sequence"),

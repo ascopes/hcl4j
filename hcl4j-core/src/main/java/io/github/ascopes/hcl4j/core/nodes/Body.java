@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
+package io.github.ascopes.hcl4j.core.nodes;
+
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
+import io.github.ascopes.hcl4j.core.inputs.Range;
+import java.util.List;
+
 /**
- * Tokens that can be emitted by {@link io.github.ascopes.hcl4j.core.lexer.LexerContext} objects.
+ * Node that holds a body.
+ *
+ * @param range     the range of the node.
+ * @param bodyItems the items in the body.
+ * @author Ashley Scopes
+ * @since 0.0.1
  */
-package io.github.ascopes.hcl4j.core.tokens;
+@Api(Visibility.EXPERIMENTAL)
+public record Body(Range range, List<? extends BodyItem> bodyItems) implements Node {
+}

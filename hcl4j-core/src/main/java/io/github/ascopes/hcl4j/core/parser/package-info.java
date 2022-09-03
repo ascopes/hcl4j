@@ -15,6 +15,7 @@
  */
 
 /**
- * Tokens that can be emitted by {@link io.github.ascopes.hcl4j.core.lexer.LexerContext} objects.
+ * Parser definitions.
  */
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.parser;
+

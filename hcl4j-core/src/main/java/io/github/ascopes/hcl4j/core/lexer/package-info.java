@@ -17,8 +17,4 @@
 /**
  * Components for tokenization of source files.
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 package io.github.ascopes.hcl4j.core.lexer;
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;

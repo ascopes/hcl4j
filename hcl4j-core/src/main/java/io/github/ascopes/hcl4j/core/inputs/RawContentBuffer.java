@@ -18,9 +18,9 @@ package io.github.ascopes.hcl4j.core.inputs;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
 /**
  * Wrapper around a string builder that handles common mistakes with int return values.
@@ -30,7 +30,7 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
+@Api(Visibility.INTERNAL)
 @SuppressWarnings("UnusedReturnValue")
 public final class RawContentBuffer {
 

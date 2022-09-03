@@ -15,7 +15,6 @@
 
   <properties>
     <!-- Dependency versions -->
-    <apiguardian.version>1.1.2</apiguardian.version>
     <assertj-core.version>3.23.1</assertj-core.version>
     <junit.version>5.9.0</junit.version>
 
@@ -39,12 +38,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.apiguardian</groupId>
-        <artifactId>apiguardian-api</artifactId>
-        <version>${apiguardian.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.assertj</groupId>
         <artifactId>assertj-core</artifactId>
@@ -141,6 +134,9 @@
           <version>${maven-compiler-plugin.version}</version>
 
           <configuration>
+            <compilerArgs>
+              <compilerArg>--module-version=${project.version}</compilerArg>
+            </compilerArgs>
             <release>17</release>
           </configuration>
         </plugin>
@@ -208,5 +204,23 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>tiny</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <debuglevel>none</debuglevel>
+              <parameters>false</parameters>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
 </project>

@@ -18,6 +18,8 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Location;
 import io.github.ascopes.hcl4j.core.inputs.Range;
@@ -30,8 +32,6 @@ import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
 /**
  * LexerContext strategy to handle quoted templates.
@@ -91,7 +91,7 @@ import org.apiguardian.api.API.Status;
  *
  * @author Ashley Scopes
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+@Api(Visibility.EXPERIMENTAL)
 public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
 
   private static final int BMP_DIGITS = 4;

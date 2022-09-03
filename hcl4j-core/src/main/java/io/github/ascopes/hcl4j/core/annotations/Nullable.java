@@ -16,12 +16,13 @@
 
 package io.github.ascopes.hcl4j.core.annotations;
 
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
+import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
 
 /**
  * Annotation that marks the annotated element as having a potentially null value.
@@ -29,8 +30,10 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
-@Retention(RetentionPolicy.RUNTIME)
+@Api(Visibility.INTERNAL)
+@Documented
+@Inherited
+@Retention(RetentionPolicy.SOURCE)
 @Target({
     ElementType.ANNOTATION_TYPE,
     ElementType.FIELD,

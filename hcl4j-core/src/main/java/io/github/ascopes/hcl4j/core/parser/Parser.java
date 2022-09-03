@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.parser;
 
 import io.github.ascopes.hcl4j.core.annotations.Api;
 import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import java.io.IOException;
 
 /**
- * Token that represents that the end of the file has been reached.
+ * Interface for an HCL parser of some description.
  *
- * @param range the location of the end-of-file marker.
+ * @param <T> the root node type that the parser will emit.
  * @author Ashley Scopes
  * @since 0.0.1
  */
 @Api(Visibility.EXPERIMENTAL)
-public record EofToken(Range range) implements Token {
+public interface Parser<T> {
 
-  @Override
-  public TokenType type() {
-    return TokenType.END_OF_FILE;
-  }
-
-  @Override
-  public CharSequence raw() {
-    return "\0";
-  }
+  /**
+   * Parse the root node of the document.
+   *
+   * @return the root node of the document.
+   * @throws IOException if an {@link IOException} occurs reading the config file.
+   */
+  T root() throws IOException;
 }

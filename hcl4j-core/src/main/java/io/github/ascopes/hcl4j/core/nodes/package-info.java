@@ -15,6 +15,6 @@
  */
 
 /**
- * Tokens that can be emitted by {@link io.github.ascopes.hcl4j.core.lexer.LexerContext} objects.
+ * Abstract syntax tree nodes.
  */
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.nodes;

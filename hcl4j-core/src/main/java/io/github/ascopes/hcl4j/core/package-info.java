@@ -17,8 +17,4 @@
 /**
  * HCL4J Core Components - core components for reading and parsing HCL files.
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 package io.github.ascopes.hcl4j.core;
-
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;

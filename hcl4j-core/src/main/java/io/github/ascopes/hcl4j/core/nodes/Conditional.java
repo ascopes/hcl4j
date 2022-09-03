@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.nodes;
 
 import io.github.ascopes.hcl4j.core.annotations.Api;
 import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 
 /**
- * Token that represents that the end of the file has been reached.
+ * A conditional ternary operator.
  *
- * @param range the location of the end-of-file marker.
+ * @param range the range of the node.
+ * @param condition the conditional expression.
+ * @param ifTrue the first clause of the condition.
+ * @param ifFalse the second clause of the condition.
  * @author Ashley Scopes
  * @since 0.0.1
  */
 @Api(Visibility.EXPERIMENTAL)
-public record EofToken(Range range) implements Token {
-
-  @Override
-  public TokenType type() {
-    return TokenType.END_OF_FILE;
-  }
-
-  @Override
-  public CharSequence raw() {
-    return "\0";
-  }
-}
+public record Conditional(
+    Range range,
+    Expression condition,
+    Expression ifTrue,
+    Expression ifFalse
+) implements Expression {}

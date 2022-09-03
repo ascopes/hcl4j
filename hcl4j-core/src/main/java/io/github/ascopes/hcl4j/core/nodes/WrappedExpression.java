@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
+package io.github.ascopes.hcl4j.core.nodes;
+
+import io.github.ascopes.hcl4j.core.annotations.Api;
+import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
+import io.github.ascopes.hcl4j.core.inputs.Range;
+
 /**
- * Tokens that can be emitted by {@link io.github.ascopes.hcl4j.core.lexer.LexerContext} objects.
+ * An {@link Expression} that is wrapped in parentheses.
+ *
+ * @param range the range of the node.
+ * @param expression the wrapped expression.
+ * @author Ashley Scopes
+ * @since 0.0.1
  */
-package io.github.ascopes.hcl4j.core.tokens;
+@Api(Visibility.EXPERIMENTAL)
+public record WrappedExpression(Range range, Expression expression) implements ExprTerm {
+}
