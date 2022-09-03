@@ -23,6 +23,7 @@ import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.lexer.LexerContext;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
+import io.github.ascopes.hcl4j.core.tokens.impl.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.impl.SimpleToken;
 import java.io.IOException;
 import org.apiguardian.api.API;
@@ -147,8 +148,8 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
   @CheckReturnValue
   private Token consumeSomeText() throws IOException {
     var location = context.charSource().location();
-    var buff = new RawTokenBuilder()
-        .append(context.charSource().read());
+    var raw = new RawTokenBuilder();
+    var content = new RawTokenBuilder();
 
     loop:
     while (true) {
@@ -162,8 +163,8 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
           }
 
           if (context.charSource().startsWith("$${")) {
-            buff.append("${");
-            context.charSource().advance(3);
+            raw.append(context.charSource().readString(3));
+            content.append("${");
             continue;
           }
         }
@@ -173,8 +174,8 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
           }
 
           if (context.charSource().startsWith("%%{")) {
-            buff.append("%{");
-            context.charSource().advance(3);
+            raw.append(context.charSource().readString(3));
+            content.append("%{");
             continue;
           }
         }
@@ -184,9 +185,12 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
         break;
       }
 
-      buff.append(context.charSource().read());
+      var next = context.charSource().read();
+
+      content.append(next);
+      raw.append(next);
     }
 
-    return new SimpleToken(TokenType.RAW_TEXT, buff.raw(), location);
+    return new RawTextToken(raw.raw(), content.raw(), location);
   }
 }

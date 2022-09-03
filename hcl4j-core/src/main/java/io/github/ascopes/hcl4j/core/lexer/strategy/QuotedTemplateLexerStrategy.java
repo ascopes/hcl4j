@@ -25,7 +25,7 @@ import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import io.github.ascopes.hcl4j.core.tokens.impl.ErrorToken;
-import io.github.ascopes.hcl4j.core.tokens.impl.SimpleToken;
+import io.github.ascopes.hcl4j.core.tokens.impl.RawTextToken;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -151,8 +151,8 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
 
   private Token consumeSomeText() throws IOException {
     var location = context.charSource().location();
-    var buff = new RawTokenBuilder()
-        .append(context.charSource().read());
+    var raw = new RawTokenBuilder();
+    var content = new RawTokenBuilder();
 
     loop:
     while (true) {
@@ -161,7 +161,7 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
           break loop;
         }
 
-        case '\\' -> consumeEscape(buff);
+        case '\\' -> consumeEscape(raw, content);
 
         case '$' -> {
           if (context.charSource().startsWith("${")) {
@@ -169,68 +169,80 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
           }
 
           if (context.charSource().startsWith("$${")) {
-            buff.append("${");
-            context.charSource().advance(3);
+            raw.append(context.charSource().readString(3));
+            content.append("${");
             continue;
           }
 
-          buff.append(context.charSource().read());
+          content.append(context.charSource().read());
         }
+
         case '%' -> {
           if (context.charSource().startsWith("%{")) {
             break loop;
           }
 
           if (context.charSource().startsWith("%%{")) {
-            buff.append("%{");
-            context.charSource().advance(3);
+            raw.append(context.charSource().readString(3));
+            content.append("%{");
             continue;
           }
 
-          buff.append(context.charSource().read());
+          content.append(context.charSource().read());
         }
 
-        default -> buff.append(context.charSource().read());
+        default -> {
+          var next = context.charSource().read();
+          raw.append(next);
+          content.append(next);
+        }
       }
     }
 
-    return new SimpleToken(TokenType.RAW_TEXT, buff.raw(), location);
+    return new RawTextToken(raw.raw(), content.raw(), location);
   }
 
-  private void consumeEscape(RawTokenBuilder buff) throws IOException {
+  private void consumeEscape(RawTokenBuilder raw, RawTokenBuilder content) throws IOException {
     switch (context.charSource().peek(1)) {
       case 'n' -> {
-        buff.append('\n');
-        context.charSource().advance(2);
+        raw.append(context.charSource().readString(2));
+        content.append('\n');
       }
       case 'r' -> {
-        buff.append('\r');
-        context.charSource().advance(2);
+        raw.append(context.charSource().readString(2));
+        content.append('\r');
       }
       case 't' -> {
-        buff.append('\t');
-        context.charSource().advance(2);
+        raw.append(context.charSource().readString(2));
+        content.append('\t');
       }
       case '\\' -> {
-        buff.append('\\');
-        context.charSource().advance(2);
+        raw.append(context.charSource().readString(2));
+        content.append('\\');
       }
       case '"' -> {
-        buff.append('"');
-        context.charSource().advance(2);
+        raw.append(context.charSource().readString(2));
+        content.append('"');
       }
-      case 'u', 'U' -> consumeUtf8Escape(buff);
+      case 'u', 'U' -> consumeUtf8Escape(raw, content);
 
       // Anything else is not allowed. EOFs are included in this as it implies
       // we have a dangling backslash.
-      case EOF -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 1));
-      default -> errors.add(newError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, 2));
+      default -> {
+        // Don't append to the content buffer as it is invalid content.
+        var location = context.charSource().location();
+        var next = context.charSource().readString(2);
+        raw.append(next);
+        emitError(new ErrorToken(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, next, location));
+      }
     }
   }
 
-  private void consumeUtf8Escape(RawTokenBuilder buff) throws IOException {
+  private void consumeUtf8Escape(RawTokenBuilder raw, RawTokenBuilder content) throws IOException {
     var location = context.charSource().location();
     var start = context.charSource().readString(2);
+    raw.append(start);
+
     var digits = new RawTokenBuilder();
     var length = start.equals("\\u") ? BMP_DIGITS : SUPP_DIGITS;
     var i = 0;
@@ -238,8 +250,10 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     for (; i < length; ++i) {
       var nextChar = context.charSource().peek(i);
 
+      raw.append(nextChar);
+
       if (nextChar == EOF || !isHexadecimal(nextChar)) {
-        escapeError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, start, digits, location);
+        emitEscapeError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, start, digits, location);
 
         // Syntax error, but handle this best-effort for now.
         break;
@@ -253,20 +267,25 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     context.charSource().advance(i);
 
     try {
-      buff.appendHexCodePoint(digits.raw());
+      content.appendHexCodePoint(digits.raw());
     } catch (IllegalArgumentException ex) {
       // We cannot handle the codepoint. Emit an error at the end of the
       // string and skip this escape sequence for now.
-      escapeError(TokenErrorMessage.INVALID_UNICODE_CODE_POINT, start, digits, location);
+      emitEscapeError(TokenErrorMessage.INVALID_UNICODE_CODE_POINT, start, digits, location);
     }
   }
 
-  private void escapeError(
-      TokenErrorMessage error,
+  private void emitEscapeError(
+      TokenErrorMessage errorMessage,
       CharSequence start,
       RawTokenBuilder digits,
       Location location
   ) {
-    errors.add(new ErrorToken(error, String.join("", start, digits.raw()), location));
+    var err = new ErrorToken(errorMessage, String.join("", start, digits.raw()), location);
+    emitError(err);
+  }
+
+  private void emitError(ErrorToken error) {
+    errors.add(error);
   }
 }
