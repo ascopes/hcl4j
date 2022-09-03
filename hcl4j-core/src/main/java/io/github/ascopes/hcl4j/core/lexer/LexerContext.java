@@ -18,18 +18,20 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
+import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.io.IOException;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * Distributed lexer state holder.
+ * Distributed lexer state holder and concrete implementation to provide to a parser.
  *
- * <p>This is passed between lexer modes to represent the global lexer state. Lexer modes can
- * be pushed and popped to change the source of the next token.
+ * <p>This is passed between lexer modes to represent the global lexer state. LexerContext modes
+ * can be pushed and popped to change the source of the next token.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
@@ -37,7 +39,7 @@ import org.apiguardian.api.API.Status;
  * @since 0.0.1
  */
 @API(since = "0.0.1", status = Status.EXPERIMENTAL)
-public final class LexerContext implements AutoCloseable {
+public final class LexerContext {
 
   private final CharSource charSource;
   private final Deque<LexerStrategy> strategyStack;
@@ -45,21 +47,17 @@ public final class LexerContext implements AutoCloseable {
   /**
    * Initialize the lexer context.
    *
-   * @param charSource the character source to use.
+   * @param charSource      the character source to use.
+   * @param initialStrategy the constructor for the initial strategy to use for lexical analysis.
    */
-  public LexerContext(CharSource charSource) {
+  @SuppressWarnings("ThisEscapedInObjectConstruction")
+  public LexerContext(
+      CharSource charSource,
+      Function<LexerContext, LexerStrategy> initialStrategy
+  ) {
     this.charSource = charSource;
     strategyStack = new LinkedList<>();
-  }
-
-  /**
-   * Close the character source.
-   *
-   * @throws IOException if an {@link IOException} occurs during closure.
-   */
-  @Override
-  public void close() throws IOException {
-    charSource.close();
+    strategyStack.push(initialStrategy.apply(this));
   }
 
   /**
@@ -73,16 +71,9 @@ public final class LexerContext implements AutoCloseable {
   }
 
   /**
-   * Get the number of strategies on the stack.
-   *
-   * @return the number of strategies on the stack.
-   */
-  public int stackDepth() {
-    return strategyStack.size();
-  }
-
-  /**
    * Push a new strategy onto the lexer strategy stack.
+   *
+   * <p>You should not usually need to call this directly outside of lexer strategy code.
    *
    * @param mode the lexer strategy to push.
    */
@@ -102,19 +93,19 @@ public final class LexerContext implements AutoCloseable {
   }
 
   /**
-   * Retrieve the active lexer strategy.
+   * Retrieve the next token.
    *
    * @throws NoSuchElementException if the stack is empty.
    */
   @CheckReturnValue
-  public LexerStrategy activeStrategy() throws NoSuchElementException {
-    var active = strategyStack.peek();
+  public Token nextToken() throws IOException {
+    var strategy = strategyStack.peek();
 
-    if (active == null) {
+    if (strategy == null) {
       throw expectAtLeastOne();
     }
 
-    return active;
+    return strategy.nextToken();
   }
 
   private NoSuchElementException expectAtLeastOne() {

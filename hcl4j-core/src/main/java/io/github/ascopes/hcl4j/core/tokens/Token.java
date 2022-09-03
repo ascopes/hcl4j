@@ -17,10 +17,6 @@
 package io.github.ascopes.hcl4j.core.tokens;
 
 import io.github.ascopes.hcl4j.core.inputs.Location;
-import io.github.ascopes.hcl4j.core.tokens.impl.EofToken;
-import io.github.ascopes.hcl4j.core.tokens.impl.ErrorToken;
-import io.github.ascopes.hcl4j.core.tokens.impl.RawTextToken;
-import io.github.ascopes.hcl4j.core.tokens.impl.SimpleToken;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 

@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer.strategy;
+package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Location;
-import io.github.ascopes.hcl4j.core.lexer.LexerContext;
+import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
+import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import io.github.ascopes.hcl4j.core.tokens.impl.ErrorToken;
-import io.github.ascopes.hcl4j.core.tokens.impl.RawTextToken;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -33,7 +32,7 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * Lexer strategy to handle quoted templates.
+ * LexerContext strategy to handle quoted templates.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
@@ -90,7 +89,7 @@ import org.apiguardian.api.API.Status;
  *
  * @author Ashley Scopes
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
 
   private static final int BMP_DIGITS = 4;

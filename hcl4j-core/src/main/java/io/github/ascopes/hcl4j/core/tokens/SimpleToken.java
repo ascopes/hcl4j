@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
+package io.github.ascopes.hcl4j.core.tokens;
+
+import io.github.ascopes.hcl4j.core.inputs.Location;
+import org.apiguardian.api.API;
+import org.apiguardian.api.API.Status;
+
 /**
- * Various internal strategies for converting an input stream into a stream of tokens.
+ * Standard representation of token that represents part of an HCL file.
  *
+ * @param type     the token type.
+ * @param raw      the token content.
+ * @param location the location in the file.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
-package io.github.ascopes.hcl4j.core.lexer.strategy;
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+public record SimpleToken(
+    TokenType type,
+    CharSequence raw,
+    Location location
+) implements Token {
 
-import org.apiguardian.api.API;
-import org.apiguardian.api.API.Status;
+}

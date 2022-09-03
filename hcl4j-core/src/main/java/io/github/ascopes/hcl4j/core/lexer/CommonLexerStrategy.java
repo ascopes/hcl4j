@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer.strategy;
+package io.github.ascopes.hcl4j.core.lexer;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.lexer.LexerContext;
-import io.github.ascopes.hcl4j.core.lexer.LexerStrategy;
+import io.github.ascopes.hcl4j.core.tokens.EofToken;
+import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
+import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import io.github.ascopes.hcl4j.core.tokens.impl.EofToken;
-import io.github.ascopes.hcl4j.core.tokens.impl.ErrorToken;
-import io.github.ascopes.hcl4j.core.tokens.impl.SimpleToken;
 import java.io.IOException;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
@@ -32,12 +30,12 @@ import org.apiguardian.api.API.Status;
 /**
  * Abstract implementation of a lexer strategy with some common behaviours pre-implemented.
  *
- * <p>Lexer strategies should usually derive from this class for simplicity.
+ * <p>LexerContext strategies should usually derive from this class for simplicity.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 public abstract class CommonLexerStrategy implements LexerStrategy {
 
   protected final LexerContext context;

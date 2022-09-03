@@ -15,8 +15,7 @@
  */
 
 /**
- * Interfaces for tokens that can be emitted by {@link io.github.ascopes.hcl4j.core.lexer.Lexer}
- * objects.
+ * Tokens that can be emitted by {@link io.github.ascopes.hcl4j.core.lexer.LexerContext} objects.
  */
 @API(since = "0.0.1", status = Status.EXPERIMENTAL)
 package io.github.ascopes.hcl4j.core.tokens;

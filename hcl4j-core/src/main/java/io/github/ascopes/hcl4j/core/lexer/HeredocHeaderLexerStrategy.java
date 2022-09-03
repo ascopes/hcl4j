@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer.strategy;
+package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
-import io.github.ascopes.hcl4j.core.lexer.LexerContext;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
@@ -28,7 +27,8 @@ import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * Lexer strategy for tokenizing a heredoc header before initializing the actual heredoc parser.
+ * LexerContext strategy for tokenizing a heredoc header before initializing the actual heredoc
+ * parser.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
@@ -65,7 +65,7 @@ import org.apiguardian.api.API.Status;
  *
  * @author Ashley Scopes
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 public final class HeredocHeaderLexerStrategy extends CommonLexerStrategy {
 
   @Nullable

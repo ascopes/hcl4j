@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer.strategy;
+package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
@@ -30,9 +30,9 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
 @SuppressWarnings("UnusedReturnValue")
-public final class RawTokenBuilder  {
+public final class RawTokenBuilder {
 
   private final StringBuilder builder;
 
@@ -76,7 +76,7 @@ public final class RawTokenBuilder  {
    *
    * @param hex the hexadecimal string to parse, e.g. {@code "1a2b3c"}.
    * @return this object.
-   * @throws NumberFormatException if the given string is not a valid hexadecimal integer.
+   * @throws NumberFormatException    if the given string is not a valid hexadecimal integer.
    * @throws IllegalArgumentException if the given string is not a valid unicode codepoint.
    */
   public RawTokenBuilder appendHexCodePoint(CharSequence hex) {

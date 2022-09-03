@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens.impl;
+package io.github.ascopes.hcl4j.core.tokens;
 
 import io.github.ascopes.hcl4j.core.inputs.Location;
-import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * Standard representation of token that represents part of an HCL file.
+ * Implementation of token that represents an error.
  *
- * @param type     the token type.
- * @param raw      the token content.
- * @param location the location in the file.
+ * @param errorMessage the error message.
+ * @param raw          the raw content that triggered the error.
+ * @param location     the location in the file that the error occurred at.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.INTERNAL)
-public record SimpleToken(
-    TokenType type,
+@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+public record ErrorToken(
+    TokenErrorMessage errorMessage,
     CharSequence raw,
     Location location
 ) implements Token {
 
+  @Override
+  public TokenType type() {
+    // Always "error".
+    return TokenType.WTF;
+  }
 }
