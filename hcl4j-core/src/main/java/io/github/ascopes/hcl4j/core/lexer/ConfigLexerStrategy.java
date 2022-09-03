@@ -19,6 +19,8 @@ package io.github.ascopes.hcl4j.core.lexer;
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
@@ -108,8 +110,8 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
 
   @CheckReturnValue
   private Token consumeNumber() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder();
+    var start = context.charSource().location();
+    var buff = new RawContentBuffer();
 
     tryConsumeIntegerPart(buff);
 
@@ -123,10 +125,13 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
       tryConsumeExponentPart(buff);
     }
 
-    return new SimpleToken(TokenType.NUMBER, buff.raw(), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
+    return new SimpleToken(TokenType.NUMBER, buff.content(), range);
   }
 
-  private void tryConsumeIntegerPart(RawTokenBuilder buff) throws IOException {
+  private void tryConsumeIntegerPart(RawContentBuffer buff) throws IOException {
     // We always consume as many digits as possible here.
     buff.append(context.charSource().read());
 
@@ -141,7 +146,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     }
   }
 
-  private void tryConsumeFractionPart(RawTokenBuilder buff) throws IOException {
+  private void tryConsumeFractionPart(RawContentBuffer buff) throws IOException {
     // We purposely don't consume the dot if we don't have a digit after it. That enables
     // us to have expressions like 123.name. Might be invalid later, but it gives better error
     // messages.
@@ -156,7 +161,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     tryConsumeIntegerPart(buff);
   }
 
-  private void tryConsumeExponentPart(RawTokenBuilder buff) throws IOException {
+  private void tryConsumeExponentPart(RawContentBuffer buff) throws IOException {
     // We purposely don't consume the E if we don't have a + and digit or - and digit after it.
     // This enables us to treat other garbage as separate tokens to give better error messages.
 

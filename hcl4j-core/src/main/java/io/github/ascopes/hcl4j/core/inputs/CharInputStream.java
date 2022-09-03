@@ -46,6 +46,10 @@ public final class CharInputStream implements CharSource {
 
   private final String name;
   private final BufferedReader reader;
+
+  @Nullable
+  private Location cachedLocation;
+
   private long position;
   private long line;
   private long column;
@@ -61,6 +65,7 @@ public final class CharInputStream implements CharSource {
     var inputReader = new InputStreamReader(inputStream, CHARSET);
     reader = new BufferedReader(inputReader, BUFFER_SIZE);
 
+    cachedLocation = null;
     position = INITIAL_POSITION;
     line = INITIAL_LINE;
     column = INITIAL_COLUMN;
@@ -89,7 +94,11 @@ public final class CharInputStream implements CharSource {
   @CheckReturnValue
   @Override
   public Location location() {
-    return new Location(name, position, line, column);
+    // Cache the location after making it so that the next token can share the same object
+    // reference. It is a small optimisation on the memory footprint.
+    return cachedLocation == null
+        ? (cachedLocation = new Location(position, line, column))
+        : cachedLocation;
   }
 
   @CheckReturnValue
@@ -172,16 +181,20 @@ public final class CharInputStream implements CharSource {
     switch (codePoint) {
       case EOF -> {
         // Do nothing.
+        return;
       }
       case '\n' -> {
-        ++position;
         ++line;
         column = INITIAL_COLUMN;
       }
       default -> {
-        ++position;
         ++column;
       }
     }
+
+    ++position;
+
+    // Invalidate any cached location, the position is different now.
+    cachedLocation = null;
   }
 }

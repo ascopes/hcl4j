@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -47,17 +46,11 @@ public final class LexerContext {
   /**
    * Initialize the lexer context.
    *
-   * @param charSource      the character source to use.
-   * @param initialStrategy the constructor for the initial strategy to use for lexical analysis.
+   * @param charSource the character source to use.
    */
-  @SuppressWarnings("ThisEscapedInObjectConstruction")
-  public LexerContext(
-      CharSource charSource,
-      Function<LexerContext, LexerStrategy> initialStrategy
-  ) {
+  public LexerContext(CharSource charSource) {
     this.charSource = charSource;
     strategyStack = new LinkedList<>();
-    strategyStack.push(initialStrategy.apply(this));
   }
 
   /**
@@ -72,8 +65,6 @@ public final class LexerContext {
 
   /**
    * Push a new strategy onto the lexer strategy stack.
-   *
-   * <p>You should not usually need to call this directly outside of lexer strategy code.
    *
    * @param mode the lexer strategy to push.
    */

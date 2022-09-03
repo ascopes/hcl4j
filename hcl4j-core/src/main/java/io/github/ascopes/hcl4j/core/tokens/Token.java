@@ -16,7 +16,7 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.inputs.Range;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -44,9 +44,9 @@ public sealed interface Token permits EofToken, ErrorToken, RawTextToken, Simple
   CharSequence raw();
 
   /**
-   * Get the location of the start of the token in the file it was read from.
+   * Get the range of the given token.
    *
-   * @return the location of the token.
+   * @return the location range of the token.
    */
-  Location location();
+  Range range();
 }

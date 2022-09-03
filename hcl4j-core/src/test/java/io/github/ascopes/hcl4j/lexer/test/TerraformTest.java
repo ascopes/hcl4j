@@ -80,7 +80,8 @@ class TerraformTest {
         """.stripIndent().getBytes(StandardCharsets.UTF_8);
 
     try (var in = new CharInputStream("example.tf", new ByteArrayInputStream(source))) {
-      var lex = new LexerContext(in, ConfigLexerStrategy::new);
+      var lex = new LexerContext(in);
+      lex.pushStrategy(new ConfigLexerStrategy(lex));
 
       Token next;
 

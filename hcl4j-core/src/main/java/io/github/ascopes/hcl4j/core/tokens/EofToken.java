@@ -16,19 +16,19 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.inputs.Range;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
  * Token that represents that the end of the file has been reached.
  *
- * @param location the location of the end-of-file marker.
+ * @param range the location of the end-of-file marker.
  * @author Ashley Scopes
  * @since 0.0.1
  */
 @API(since = "0.0.1", status = Status.EXPERIMENTAL)
-public record EofToken(Location location) implements Token {
+public record EofToken(Range range) implements Token {
 
   @Override
   public TokenType type() {

@@ -16,7 +16,7 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.inputs.Range;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
@@ -25,7 +25,7 @@ import org.apiguardian.api.API.Status;
  *
  * @param errorMessage the error message.
  * @param raw          the raw content that triggered the error.
- * @param location     the location in the file that the error occurred at.
+ * @param range        the location in the file that the error occurred at.
  * @author Ashley Scopes
  * @since 0.0.1
  */
@@ -33,7 +33,7 @@ import org.apiguardian.api.API.Status;
 public record ErrorToken(
     TokenErrorMessage errorMessage,
     CharSequence raw,
-    Location location
+    Range range
 ) implements Token {
 
   @Override

@@ -17,6 +17,8 @@
 package io.github.ascopes.hcl4j.core.lexer;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.EofToken;
 import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
@@ -59,10 +61,13 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token newToken(TokenType type, int length) throws IOException {
-    var location = context.charSource().location();
+    var start = context.charSource().location();
     var raw = context.charSource().readString(length);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
     assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new SimpleToken(type, raw, location);
+    return new SimpleToken(type, raw, range);
   }
 
   /**
@@ -75,10 +80,13 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token newError(TokenErrorMessage error, int length) throws IOException {
-    var location = context.charSource().location();
+    var start = context.charSource().location();
     var raw = context.charSource().readString(length);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
     assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new ErrorToken(error, raw, location);
+    return new ErrorToken(error, raw, range);
   }
 
   /**
@@ -88,7 +96,10 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token consumeEndOfFile() {
-    return new EofToken(context.charSource().location());
+    var start = context.charSource().location();
+    // EOFs are zero-width.
+    var range = new Range(start, start);
+    return new EofToken(range);
   }
 
   /**
@@ -110,8 +121,8 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token consumeIdentifier() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder()
+    var start = context.charSource().location();
+    var buff = new RawContentBuffer()
         .append(context.charSource().read());
 
     while (true) {
@@ -124,7 +135,10 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
       }
     }
 
-    return new SimpleToken(TokenType.IDENTIFIER, buff.raw(), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
+    return new SimpleToken(TokenType.IDENTIFIER, buff.content(), range);
   }
 
   /**
@@ -135,8 +149,8 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token consumeWhitespace() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder()
+    var start = context.charSource().location();
+    var buff = new RawContentBuffer()
         .append(context.charSource().read());
 
     while (true) {
@@ -150,7 +164,10 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
       context.charSource().advance(1);
     }
 
-    return new SimpleToken(TokenType.WHITESPACE, buff.raw(), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
+    return new SimpleToken(TokenType.WHITESPACE, buff.content(), range);
   }
 
   /**

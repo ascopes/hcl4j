@@ -20,6 +20,8 @@ import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
+import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
@@ -145,9 +147,9 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
 
   @CheckReturnValue
   private Token consumeSomeText() throws IOException {
-    var location = context.charSource().location();
-    var raw = new RawTokenBuilder();
-    var content = new RawTokenBuilder();
+    var start = context.charSource().location();
+    var raw = new RawContentBuffer();
+    var content = new RawContentBuffer();
 
     loop:
     while (true) {
@@ -189,6 +191,9 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
       raw.append(next);
     }
 
-    return new RawTextToken(raw.raw(), content.raw(), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
+    return new RawTextToken(raw.content(), content.content(), range);
   }
 }

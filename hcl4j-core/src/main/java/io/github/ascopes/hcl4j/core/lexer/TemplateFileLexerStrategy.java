@@ -19,6 +19,8 @@ package io.github.ascopes.hcl4j.core.lexer;
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
@@ -80,8 +82,8 @@ public final class TemplateFileLexerStrategy extends CommonLexerStrategy {
   }
 
   private Token consumeSomeText() throws IOException {
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder()
+    var start = context.charSource().location();
+    var buff = new RawContentBuffer()
         .append(context.charSource().read());
 
     loop:
@@ -122,6 +124,9 @@ public final class TemplateFileLexerStrategy extends CommonLexerStrategy {
       }
     }
 
-    return new SimpleToken(TokenType.RAW_TEXT, buff.raw(), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
+    return new SimpleToken(TokenType.RAW_TEXT, buff.content(), range);
   }
 }

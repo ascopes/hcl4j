@@ -16,16 +16,16 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.inputs.Range;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
  * Standard representation of token that represents part of an HCL file.
  *
- * @param type     the token type.
- * @param raw      the token content.
- * @param location the location in the file.
+ * @param type  the token type.
+ * @param raw   the token content.
+ * @param range the location of the token in the file.
  * @author Ashley Scopes
  * @since 0.0.1
  */
@@ -33,7 +33,7 @@ import org.apiguardian.api.API.Status;
 public record SimpleToken(
     TokenType type,
     CharSequence raw,
-    Location location
+    Range range
 ) implements Token {
 
 }

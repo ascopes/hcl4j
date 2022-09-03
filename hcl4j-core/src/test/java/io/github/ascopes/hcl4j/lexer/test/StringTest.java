@@ -36,7 +36,8 @@ class StringTest {
     try (
         var in = new CharInputStream("example.hcl", new ByteArrayInputStream(source.getBytes()))
     ) {
-      var lex = new LexerContext(in, ConfigLexerStrategy::new);
+      var lex = new LexerContext(in);
+      lex.pushStrategy(new ConfigLexerStrategy(lex));
 
       Token next;
 

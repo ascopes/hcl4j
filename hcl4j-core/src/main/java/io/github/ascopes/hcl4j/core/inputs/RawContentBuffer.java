@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.inputs;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
@@ -30,16 +30,16 @@ import org.apiguardian.api.API.Status;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@API(since = "0.0.1", status = Status.EXPERIMENTAL)
+@API(since = "0.0.1", status = Status.INTERNAL)
 @SuppressWarnings("UnusedReturnValue")
-public final class RawTokenBuilder {
+public final class RawContentBuffer {
 
   private final StringBuilder builder;
 
   /**
-   * Initialize the builder.
+   * Initialize the buffer.
    */
-  public RawTokenBuilder() {
+  public RawContentBuffer() {
     builder = new StringBuilder();
   }
 
@@ -49,7 +49,7 @@ public final class RawTokenBuilder {
    * @param codePoint the code point to append.
    * @return this object.
    */
-  public RawTokenBuilder append(int codePoint) {
+  public RawContentBuffer append(int codePoint) {
     if (codePoint == EOF) {
       throw new IllegalStateException("Unexpected EOF");
     }
@@ -65,7 +65,7 @@ public final class RawTokenBuilder {
    * @param string the string to append.
    * @return this object.
    */
-  public RawTokenBuilder append(CharSequence string) {
+  public RawContentBuffer append(CharSequence string) {
     builder.append(string);
     return this;
   }
@@ -79,7 +79,7 @@ public final class RawTokenBuilder {
    * @throws NumberFormatException    if the given string is not a valid hexadecimal integer.
    * @throws IllegalArgumentException if the given string is not a valid unicode codepoint.
    */
-  public RawTokenBuilder appendHexCodePoint(CharSequence hex) {
+  public RawContentBuffer appendHexCodePoint(CharSequence hex) {
     var codePoint = Integer.parseInt(hex.toString(), 16);
     builder.append(Character.toChars(codePoint));
     return this;
@@ -91,7 +91,7 @@ public final class RawTokenBuilder {
    * @return the raw content as a string.
    */
   @CheckReturnValue
-  public CharSequence raw() {
+  public CharSequence content() {
     return builder.toString();
   }
 
@@ -99,7 +99,7 @@ public final class RawTokenBuilder {
    * Convert the builder content to a string and return it.
    *
    * @return the raw content as a string.
-   * @deprecated use {@link #raw()} instead of this method.
+   * @deprecated use {@link #content()} instead of this method.
    */
   @CheckReturnValue
   @Deprecated

@@ -20,6 +20,8 @@ import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -149,9 +151,9 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
   }
 
   private Token consumeSomeText() throws IOException {
-    var location = context.charSource().location();
-    var raw = new RawTokenBuilder();
-    var content = new RawTokenBuilder();
+    var start = context.charSource().location();
+    var raw = new RawContentBuffer();
+    var content = new RawContentBuffer();
 
     loop:
     while (true) {
@@ -198,10 +200,12 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       }
     }
 
-    return new RawTextToken(raw.raw(), content.raw(), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+    return new RawTextToken(raw.content(), content.content(), range);
   }
 
-  private void consumeEscape(RawTokenBuilder raw, RawTokenBuilder content) throws IOException {
+  private void consumeEscape(RawContentBuffer raw, RawContentBuffer content) throws IOException {
     switch (context.charSource().peek(1)) {
       case 'n' -> {
         raw.append(context.charSource().readString(2));
@@ -229,21 +233,25 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       // we have a dangling backslash.
       default -> {
         // Don't append to the content buffer as it is invalid content.
-        var location = context.charSource().location();
+        var start = context.charSource().location();
         var next = context.charSource().readString(2);
         raw.append(next);
-        emitError(new ErrorToken(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, next, location));
+        var end = context.charSource().location();
+        var range = new Range(start, end);
+
+        emitError(new ErrorToken(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, next, range));
       }
     }
   }
 
-  private void consumeUtf8Escape(RawTokenBuilder raw, RawTokenBuilder content) throws IOException {
-    var location = context.charSource().location();
-    var start = context.charSource().readString(2);
-    raw.append(start);
+  private void consumeUtf8Escape(RawContentBuffer raw, RawContentBuffer content)
+      throws IOException {
+    var start = context.charSource().location();
+    var startSequence = context.charSource().readString(2);
+    raw.append(startSequence);
 
-    var digits = new RawTokenBuilder();
-    var length = start.equals("\\u") ? BMP_DIGITS : SUPP_DIGITS;
+    var digits = new RawContentBuffer();
+    var length = startSequence.equals("\\u") ? BMP_DIGITS : SUPP_DIGITS;
     var i = 0;
 
     for (; i < length; ++i) {
@@ -252,7 +260,7 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       raw.append(nextChar);
 
       if (nextChar == EOF || !isHexadecimal(nextChar)) {
-        emitEscapeError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, start, digits, location);
+        emitEscapeError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, startSequence, digits, start);
 
         // Syntax error, but handle this best-effort for now.
         break;
@@ -266,21 +274,24 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     context.charSource().advance(i);
 
     try {
-      content.appendHexCodePoint(digits.raw());
+      content.appendHexCodePoint(digits.content());
     } catch (IllegalArgumentException ex) {
       // We cannot handle the codepoint. Emit an error at the end of the
       // string and skip this escape sequence for now.
-      emitEscapeError(TokenErrorMessage.INVALID_UNICODE_CODE_POINT, start, digits, location);
+      emitEscapeError(TokenErrorMessage.INVALID_UNICODE_CODE_POINT, startSequence, digits, start);
     }
   }
 
   private void emitEscapeError(
       TokenErrorMessage errorMessage,
-      CharSequence start,
-      RawTokenBuilder digits,
-      Location location
+      CharSequence startSequence,
+      RawContentBuffer digits,
+      Location start
   ) {
-    var err = new ErrorToken(errorMessage, String.join("", start, digits.raw()), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
+    var err = new ErrorToken(errorMessage, String.join("", startSequence, digits.content()), range);
     emitError(err);
   }
 

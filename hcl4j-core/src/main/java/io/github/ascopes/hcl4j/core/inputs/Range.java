@@ -13,31 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.github.ascopes.hcl4j.core.inputs;
 
-package io.github.ascopes.hcl4j.core.tokens;
-
-import io.github.ascopes.hcl4j.core.inputs.Range;
 import org.apiguardian.api.API;
 import org.apiguardian.api.API.Status;
 
 /**
- * Token that holds the contents of raw text literals.
+ * Definition of a range between two locations.
  *
- * @param raw     the raw content without escape sequences converted.
- * @param content the content with escape sequences converted.
- * @param range   the location of the token in the input stream.
+ * @param start the start location.
+ * @param end   the end location, (exclusive).
  * @author Ashley Scopes
  * @since 0.0.1
  */
 @API(since = "0.0.1", status = Status.EXPERIMENTAL)
-public record RawTextToken(
-    CharSequence raw,
-    CharSequence content,
-    Range range
-) implements Token {
+public record Range(Location start, Location end) {
 
-  @Override
-  public TokenType type() {
-    return TokenType.RAW_TEXT;
+  /**
+   * Get the number of lines the range spans across.
+   *
+   * <p>This will always be at least 1.
+   *
+   * @return the number of lines the range occurs in.
+   */
+  public long lines() {
+    return 1 + (end.line() - start.line());
+  }
+
+  /**
+   * Get the number of characters the range spans across.
+   *
+   * @return the number of characters the range spans across.
+   */
+  public long chars() {
+    return end.position() - start.position();
   }
 }

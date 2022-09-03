@@ -18,6 +18,8 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
@@ -74,8 +76,8 @@ public final class InlineCommentLexerStrategy extends CommonLexerStrategy {
       return consumeEndOfFile();
     }
 
-    var location = context.charSource().location();
-    var buff = new RawTokenBuilder()
+    var start = context.charSource().location();
+    var buff = new RawContentBuffer()
         .append(context.charSource().read());
 
     while (true) {
@@ -89,6 +91,9 @@ public final class InlineCommentLexerStrategy extends CommonLexerStrategy {
       context.charSource().advance(1);
     }
 
-    return new SimpleToken(TokenType.COMMENT_CONTENT, buff.raw(), location);
+    var end = context.charSource().location();
+    var range = new Range(start, end);
+
+    return new SimpleToken(TokenType.COMMENT_CONTENT, buff.content(), range);
   }
 }
