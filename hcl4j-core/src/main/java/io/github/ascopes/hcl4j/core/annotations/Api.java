@@ -24,8 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to apply to methods to mark their return value as being something that should not be
- * discarded immediately.
+ * Annotation to mark API visibility of a method, class, or annotation.
  *
  * @author Ashley Scopes
  * @since 0.0.1
