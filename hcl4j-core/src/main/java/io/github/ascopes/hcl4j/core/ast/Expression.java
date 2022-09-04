@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
-
-import io.github.ascopes.hcl4j.core.inputs.Range;
-import java.util.List;
+package io.github.ascopes.hcl4j.core.ast;
 
 /**
- * Node that holds a body.
+ * Valid types of expression.
  *
- * @param range     the range of the node.
- * @param bodyItems the items in the body.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record Body(Range range, List<? extends BodyItem> bodyItems) implements Node {
-}
+public sealed interface Expression
+    extends Node
+    permits ExprTerm, Operation, Conditional {}

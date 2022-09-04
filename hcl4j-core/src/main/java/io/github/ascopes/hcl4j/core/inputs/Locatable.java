@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
-
-import io.github.ascopes.hcl4j.core.inputs.Range;
+package io.github.ascopes.hcl4j.core.inputs;
 
 /**
- * An identifier literal.
+ * Interface for an element that has a location and range.
  *
- * @param range the range of the node.
- * @param value the identifier value.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record Identifier(
-    Range range,
-    CharSequence value
-) implements Node, BodyItem.BlockIdentifier {
+public interface Locatable {
+
+  /**
+   * Get the start location.
+   *
+   * @return the start location.
+   */
+  Location start();
+
+
+  /**
+   * Get the end location.
+   *
+   * @return the end location.
+   */
+  Location end();
 }

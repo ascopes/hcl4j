@@ -17,7 +17,6 @@
 package io.github.ascopes.hcl4j.core.lexer;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.inputs.Range;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.EofToken;
 import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
@@ -61,10 +60,9 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
     var start = context.charSource().location();
     var raw = context.charSource().readString(length);
     var end = context.charSource().location();
-    var range = new Range(start, end);
 
     assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new SimpleToken(type, raw, range);
+    return new SimpleToken(type, raw, start, end);
   }
 
   /**
@@ -80,10 +78,9 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
     var start = context.charSource().location();
     var raw = context.charSource().readString(length);
     var end = context.charSource().location();
-    var range = new Range(start, end);
 
     assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new ErrorToken(error, raw, range);
+    return new ErrorToken(error, raw, start, end);
   }
 
   /**
@@ -93,10 +90,7 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token consumeEndOfFile() {
-    var start = context.charSource().location();
-    // EOFs are zero-width.
-    var range = new Range(start, start);
-    return new EofToken(range);
+    return new EofToken(context.charSource().location());
   }
 
   /**
@@ -133,9 +127,8 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
     }
 
     var end = context.charSource().location();
-    var range = new Range(start, end);
 
-    return new SimpleToken(TokenType.IDENTIFIER, buff.content(), range);
+    return new SimpleToken(TokenType.IDENTIFIER, buff.content(), start, end);
   }
 
   /**
@@ -162,9 +155,8 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
     }
 
     var end = context.charSource().location();
-    var range = new Range(start, end);
 
-    return new SimpleToken(TokenType.WHITESPACE, buff.content(), range);
+    return new SimpleToken(TokenType.WHITESPACE, buff.content(), start, end);
   }
 
   /**

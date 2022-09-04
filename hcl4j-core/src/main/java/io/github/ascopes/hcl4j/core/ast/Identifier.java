@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.tokens.Token;
 
 /**
- * A conditional ternary operator.
+ * An identifier literal.
  *
- * @param range the range of the node.
- * @param condition the conditional expression.
- * @param ifTrue the first clause of the condition.
- * @param ifFalse the second clause of the condition.
+ * @param token the identifier token.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record Conditional(
-    Range range,
-    Expression condition,
-    Expression ifTrue,
-    Expression ifFalse
-) implements Expression {}
+public record Identifier(Token token) implements Node, BodyItem.BlockIdentifier {
+
+  @Override
+  public CharSequence value() {
+    return token.content();
+  }
+
+  @Override
+  public Location start() {
+    return token.start();
+  }
+
+  @Override
+  public Location end() {
+    return token.start();
+  }
+}

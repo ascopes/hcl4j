@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
-import java.util.List;
+import io.github.ascopes.hcl4j.core.inputs.Locatable;
 
 /**
- * A template.
+ * Base interface for all types of node.
  *
- * @param range the range of the node.
- * @param items the components making up the template.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record Template(Range range, List<? extends TemplateItem> items) implements Node {
+public interface Node extends Locatable {
 }

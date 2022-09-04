@@ -16,21 +16,23 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Location;
 
 /**
  * Standard representation of token that represents part of an HCL file.
  *
  * @param type  the token type.
  * @param raw   the token content.
- * @param range the location of the token in the file.
+ * @param start the start location.
+ * @param end   the end location.
  * @author Ashley Scopes
  * @since 0.0.1
  */
 public record SimpleToken(
-    TokenType type,
-    CharSequence raw,
-    Range range
+    @Override TokenType type,
+    @Override CharSequence raw,
+    @Override Location start,
+    @Override Location end
 ) implements Token {
 
 }

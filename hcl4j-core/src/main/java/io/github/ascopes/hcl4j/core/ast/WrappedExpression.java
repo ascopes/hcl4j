@@ -14,22 +14,33 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.tokens.Token;
 
 /**
- * Valid types of expression terms.
+ * An {@link Expression} that is wrapped in parentheses.
  *
+ * @param leftParen  the leftToken parenthesis.
+ * @param expression the wrapped expression.
+ * @param rightParen the rightToken parenthesis.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface ExprTerm extends Expression permits
-    CollectionValue,
-    ExprTermOperation,
-    ForExpr,
-    FunctionCall,
-    LiteralValue,
-    WrappedExpression,
-    Operation,
-    TemplateExpr,
-    VariableExpr {}
+public record WrappedExpression(
+    Token leftParen,
+    Expression expression,
+    Token rightParen
+) implements ExprTerm {
+
+  @Override
+  public Location start() {
+    return leftParen.start();
+  }
+
+  @Override
+  public Location end() {
+    return rightParen.end();
+  }
+}

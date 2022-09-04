@@ -20,7 +20,6 @@ import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Location;
-import io.github.ascopes.hcl4j.core.inputs.Range;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
@@ -60,7 +59,7 @@ import java.util.Queue;
  *      {@link TokenType#LEFT_DIRECTIVE} token, and a new {@link ConfigLexerStrategy}
  *      will be pushed onto the lexer strategy stack.</li>
  *   <li>Anything else will be collected into a buffer until one of the above cases occurs.
- *      The text will then be emitted as {@link TokenType#RAW_TEXT} as long as at least one
+ *      The valueToken will then be emitted as {@link TokenType#RAW_TEXT} as long as at least one
  *      character occurred before the next token of a differing type appeared.
  *      This is with two additional caveats:
  *      <ul>
@@ -79,10 +78,10 @@ import java.util.Queue;
  *        <li>The literal string {@code &bsol;UXXXXXXXX} where {@code X} is a hexadecimal digit will
  *           translate to a literal character from the supplementary plane at the
  *           numeric codepoint.</li>
- *        <li>A left-interpolation marker that is preceded by a dollar "<code>$$&#123;</code>"
- *           will be treated as an escape for a plain-text "<code>$&#123;</code>".</li>
- *        <li>A left-directive marker that is preceded by a percent "<code>%%&#123;</code>"
- *           will be treated as an escape for a plain-text "<code>%&#123;</code>".</li>
+ *        <li>A leftToken-interpolation marker that is preceded by a dollar "<code>$$&#123;</code>"
+ *           will be treated as an escape for a plain-valueToken "<code>$&#123;</code>".</li>
+ *        <li>A leftToken-directive marker that is preceded by a percent "<code>%%&#123;</code>"
+ *           will be treated as an escape for a plain-valueToken "<code>%&#123;</code>".</li>
  *      </ul>
  *   </li>
  * </ul>
@@ -198,8 +197,7 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     }
 
     var end = context.charSource().location();
-    var range = new Range(start, end);
-    return new RawTextToken(raw.content(), content.content(), range);
+    return new RawTextToken(raw.content(), content.content(), start, end);
   }
 
   private void consumeEscape(RawContentBuffer raw, RawContentBuffer content) throws IOException {
@@ -234,9 +232,8 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
         var next = context.charSource().readString(2);
         raw.append(next);
         var end = context.charSource().location();
-        var range = new Range(start, end);
 
-        emitError(new ErrorToken(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, next, range));
+        emitError(new ErrorToken(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, next, start, end));
       }
     }
   }
@@ -286,9 +283,13 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       Location start
   ) {
     var end = context.charSource().location();
-    var range = new Range(start, end);
 
-    var err = new ErrorToken(errorMessage, String.join("", startSequence, digits.content()), range);
+    var err = new ErrorToken(
+        errorMessage,
+        String.join("", startSequence, digits.content()),
+        start,
+        end
+    );
     emitError(err);
   }
 

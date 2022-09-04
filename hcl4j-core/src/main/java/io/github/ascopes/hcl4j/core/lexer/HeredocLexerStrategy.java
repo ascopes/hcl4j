@@ -20,7 +20,6 @@ import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
-import io.github.ascopes.hcl4j.core.inputs.Range;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -59,14 +58,14 @@ import java.io.IOException;
  *      {@link TokenType#LEFT_DIRECTIVE} token, and a new {@link ConfigLexerStrategy}
  *      will be pushed onto the lexer strategy stack.</li>
  *   <li>Anything else will be collected into a buffer until one of the above cases occurs.
- *      The text will then be emitted as {@link TokenType#RAW_TEXT} as long as at least one
+ *      The valueToken will then be emitted as {@link TokenType#RAW_TEXT} as long as at least one
  *      character occurred before the next token of a differing type appeared.
  *      This is with two additional caveats:
  *      <ul>
- *        <li>A left-interpolation marker that is preceded by a dollar "<code>$$&#123;</code>"
- *           will be treated as an escape for a plain-text "<code>$&#123;</code>".</li>
- *        <li>A left-directive marker that is preceded by a percent "<code>%%&#123;</code>"
- *           will be treated as an escape for a plain-text "<code>%&#123;</code>".</li>
+ *        <li>A leftToken-interpolation marker that is preceded by a dollar "<code>$$&#123;</code>"
+ *           will be treated as an escape for a plain-valueToken "<code>$&#123;</code>".</li>
+ *        <li>A leftToken-directive marker that is preceded by a percent "<code>%%&#123;</code>"
+ *           will be treated as an escape for a plain-valueToken "<code>%&#123;</code>".</li>
  *      </ul>
  *   </li>
  * </ul>
@@ -189,8 +188,7 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
     }
 
     var end = context.charSource().location();
-    var range = new Range(start, end);
 
-    return new RawTextToken(raw.content(), content.content(), range);
+    return new RawTextToken(raw.content(), content.content(), start, end);
   }
 }

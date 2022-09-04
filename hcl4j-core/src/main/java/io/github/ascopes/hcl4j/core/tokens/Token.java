@@ -16,7 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Locatable;
+import io.github.ascopes.hcl4j.core.inputs.Location;
 
 /**
  * Abstract representation of a token emitted by a lexer mode.
@@ -24,7 +25,9 @@ import io.github.ascopes.hcl4j.core.inputs.Range;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface Token permits EofToken, ErrorToken, RawTextToken, SimpleToken {
+public sealed interface Token
+    extends Locatable
+    permits EofToken, ErrorToken, RawTextToken, SimpleToken {
 
   /**
    * Get the token type.
@@ -34,6 +37,18 @@ public sealed interface Token permits EofToken, ErrorToken, RawTextToken, Simple
   TokenType type();
 
   /**
+   * The processed content of the token, if applicable.
+   *
+   * <p>Most cases of this method will return the raw content, but this is useful for handling
+   * special cases like string contents where escape codes may have been processed.
+   *
+   * @return the content.
+   */
+  default CharSequence content() {
+    return raw();
+  }
+
+  /**
    * Get the raw content of the token.
    *
    * @return the raw content.
@@ -41,9 +56,16 @@ public sealed interface Token permits EofToken, ErrorToken, RawTextToken, Simple
   CharSequence raw();
 
   /**
-   * Get the range of the given token.
+   * Get the location start.
    *
-   * @return the location range of the token.
+   * @return the location start of the token.
    */
-  Range range();
+  Location start();
+
+  /**
+   * Get the location end.
+   *
+   * @return the location end of the token.
+   */
+  Location end();
 }

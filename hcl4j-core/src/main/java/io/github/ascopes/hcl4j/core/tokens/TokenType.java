@@ -74,7 +74,7 @@ public enum TokenType {
   INTEGER("integer"),
   REAL("real"),
 
-  RAW_TEXT("text");
+  RAW_TEXT("valueToken");
 
   private final String displayName;
 

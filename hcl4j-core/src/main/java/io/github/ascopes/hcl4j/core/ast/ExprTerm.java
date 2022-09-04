@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
+
 
 /**
- * Valid types of expression.
+ * Valid types of expression terms.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface Expression
-    extends Node
-    permits ExprTerm, Operation, Conditional {}
+public sealed interface ExprTerm extends Expression permits
+    CollectionValue,
+    ExprTermOperation,
+    ForExpr,
+    FunctionCall,
+    LiteralValue,
+    WrappedExpression,
+    Operation,
+    TemplateExpr,
+    VariableExpr {}

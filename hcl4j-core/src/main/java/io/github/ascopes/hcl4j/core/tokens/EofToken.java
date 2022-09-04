@@ -16,20 +16,26 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Location;
 
 /**
  * Token that represents that the end of the file has been reached.
  *
- * @param range the location of the end-of-file marker.
+ * @param start the start location.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record EofToken(Range range) implements Token {
+public record EofToken(@Override Location start) implements Token {
 
   @Override
   public TokenType type() {
     return TokenType.END_OF_FILE;
+  }
+
+  @Override
+  public Location end() {
+    // EOFs are zero-width.
+    return start;
   }
 
   @Override

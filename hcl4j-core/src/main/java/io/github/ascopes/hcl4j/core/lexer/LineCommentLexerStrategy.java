@@ -19,7 +19,6 @@ package io.github.ascopes.hcl4j.core.lexer;
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.inputs.Range;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -86,8 +85,7 @@ public final class LineCommentLexerStrategy extends CommonLexerStrategy {
     }
 
     var end = context.charSource().location();
-    var range = new Range(start, end);
 
-    return new SimpleToken(TokenType.COMMENT_CONTENT, buff.content(), range);
+    return new SimpleToken(TokenType.COMMENT_CONTENT, buff.content(), start, end);
   }
 }

@@ -14,29 +14,37 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.ast;
 
 import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.tokens.Token;
 
 /**
- * Token that holds the contents of raw valueToken literals.
+ * A conditional ternary operator.
  *
- * @param raw     the raw content without escape sequences converted.
- * @param content the content with escape sequences converted.
- * @param start   the start location.
- * @param end     the end location.
+ * @param condition     the conditional expression.
+ * @param questionToken the question-mark token.
+ * @param ifTrue        the first clause of the condition.
+ * @param colonToken    the colon token.
+ * @param ifFalse       the second clause of the condition.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record RawTextToken(
-    @Override CharSequence raw,
-    @Override CharSequence content,
-    @Override Location start,
-    @Override Location end
-) implements Token {
+public record Conditional(
+    Expression condition,
+    Token questionToken,
+    Expression ifTrue,
+    Token colonToken,
+    Expression ifFalse
+) implements Expression {
 
   @Override
-  public TokenType type() {
-    return TokenType.RAW_TEXT;
+  public Location start() {
+    return condition.start();
+  }
+
+  @Override
+  public Location end() {
+    return ifFalse.end();
   }
 }

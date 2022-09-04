@@ -14,23 +14,28 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
-import java.util.List;
+import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.tokens.Token;
 
 /**
- * A function call.
+ * Additional identifiers that follow the first identifier in a {@code for} expression.
  *
- * @param range the range of the node.
- * @param identifier the function name.
- * @param arguments the function parameters.
+ * @param commaToken the commaToken token.
+ * @param identifier the identifier.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record FunctionCall(
-    Range range,
-    Identifier identifier,
-    List<? extends Expression> arguments
-) implements ExprTerm {
+public record AdditionalForIdentifier(Token commaToken, Identifier identifier) implements Node {
+
+  @Override
+  public Location start() {
+    return commaToken.start();
+  }
+
+  @Override
+  public Location end() {
+    return identifier.end();
+  }
 }

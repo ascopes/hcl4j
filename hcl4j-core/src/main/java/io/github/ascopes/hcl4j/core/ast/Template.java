@@ -14,35 +14,23 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.inputs;
+package io.github.ascopes.hcl4j.core.ast;
+
+import io.github.ascopes.hcl4j.core.inputs.Location;
+import java.util.List;
 
 /**
- * Definition of a range between two locations.
+ * A template.
  *
+ * @param items the components making up the template.
  * @param start the start location.
- * @param end   the end location, (exclusive).
+ * @param end   the end location.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record Range(Location start, Location end) {
-
-  /**
-   * Get the number of lines the range spans across.
-   *
-   * <p>This will always be at least 1.
-   *
-   * @return the number of lines the range occurs in.
-   */
-  public long lines() {
-    return 1 + (end.line() - start.line());
-  }
-
-  /**
-   * Get the number of characters the range spans across.
-   *
-   * @return the number of characters the range spans across.
-   */
-  public long chars() {
-    return end.position() - start.position();
-  }
+public record Template(
+    List<? extends TemplateItem> items,
+    @Override Location start,
+    @Override Location end
+) implements Node {
 }

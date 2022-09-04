@@ -17,4 +17,4 @@
 /**
  * Abstract syntax tree nodes.
  */
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;

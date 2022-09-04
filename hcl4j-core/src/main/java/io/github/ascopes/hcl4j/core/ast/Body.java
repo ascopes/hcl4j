@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Location;
+import java.util.List;
 
 /**
- * An {@link Expression} that is wrapped in parentheses.
+ * Node that holds a body.
  *
- * @param range the range of the node.
- * @param expression the wrapped expression.
+ * @param bodyItems the items in the body.
+ * @param start     the start location.
+ * @param end       the end location.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record WrappedExpression(Range range, Expression expression) implements ExprTerm {
+public record Body(
+    List<? extends BodyItem> bodyItems,
+    @Override Location start,
+    @Override Location end
+) implements Node {
 }

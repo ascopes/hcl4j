@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Location;
 
 /**
- * Base interface for all types of node.
+ * A variable reference.
  *
+ * @param identifier the identifier of the variable.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface Node {
+public record VariableExpr(Identifier identifier) implements ExprTerm {
 
-  /**
-   * Get the range of the file that the node covers.
-   *
-   * @return the file range.
-   */
-  Range range();
+  @Override
+  public Location start() {
+    return identifier.start();
+  }
+
+  @Override
+  public Location end() {
+    return identifier.end();
+  }
 }

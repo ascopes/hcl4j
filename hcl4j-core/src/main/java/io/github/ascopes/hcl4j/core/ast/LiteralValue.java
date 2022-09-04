@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.nodes;
+package io.github.ascopes.hcl4j.core.ast;
 
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -31,30 +32,50 @@ import java.math.BigInteger;
 public sealed interface LiteralValue<T> extends ExprTerm {
 
   /**
+   * Get the original token.
+   *
+   * @return the original token.
+   */
+  Token token();
+
+  /**
    * Get the literal value.
    *
    * @return the literal value.
    */
   T value();
 
+  @Override
+  default Location start() {
+    return token().start();
+  }
+
+  @Override
+  default Location end() {
+    return token().end();
+  }
+
   /**
    * A boolean literal.
    *
-   * @param range the range of the node.
+   * @param token the original token.
    * @param value the value.
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record BooleanLit(Range range, Boolean value) implements LiteralValue<Boolean> {}
+  record BooleanLit(
+      @Override Token token,
+      @Override Boolean value
+  ) implements LiteralValue<Boolean> {}
 
   /**
    * A null literal.
    *
-   * @param range the range of the node.
+   * @param token the original token.
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record NullLit(Range range) implements LiteralValue<@Nullable Void> {
+  record NullLit(@Override Token token) implements LiteralValue<@Nullable Void> {
 
     /**
      * Get the null value.
@@ -71,7 +92,7 @@ public sealed interface LiteralValue<T> extends ExprTerm {
   /**
    * Valid types of numeric literal.
    *
-   * @param <T> the number type.
+   * @param <N> the number type.
    * @author Ashley Scopes
    * @since 0.0.1
    */
@@ -80,20 +101,26 @@ public sealed interface LiteralValue<T> extends ExprTerm {
   /**
    * An integer value literal.
    *
-   * @param range the range of the node.
+   * @param token the original token.
    * @param value the integer value.
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record IntLit(Range range, BigInteger value) implements NumericLit<BigInteger> {}
+  record IntLit(
+      @Override Token token,
+      @Override BigInteger value
+  ) implements NumericLit<BigInteger> {}
 
   /**
    * A real value literal.
    *
-   * @param range the range of the node.
+   * @param token the original token.
    * @param value the real value.
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record RealLit(Range range, BigDecimal value) implements NumericLit<BigDecimal> {}
+  record RealLit(
+      @Override Token token,
+      @Override BigDecimal value
+  ) implements NumericLit<BigDecimal> {}
 }

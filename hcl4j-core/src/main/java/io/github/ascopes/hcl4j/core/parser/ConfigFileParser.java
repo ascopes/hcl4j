@@ -16,9 +16,9 @@
 
 package io.github.ascopes.hcl4j.core.parser;
 
+import io.github.ascopes.hcl4j.core.ast.BodyItem;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.lexer.ConfigLexerStrategy;
-import io.github.ascopes.hcl4j.core.nodes.BodyItem;
 import java.io.IOException;
 import java.util.List;
 

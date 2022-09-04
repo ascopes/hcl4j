@@ -16,21 +16,23 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.inputs.Range;
+import io.github.ascopes.hcl4j.core.inputs.Location;
 
 /**
  * Implementation of token that represents an error.
  *
  * @param errorMessage the error message.
  * @param raw          the raw content that triggered the error.
- * @param range        the location in the file that the error occurred at.
+ * @param start        the start location.
+ * @param end          the end location.
  * @author Ashley Scopes
  * @since 0.0.1
  */
 public record ErrorToken(
     TokenErrorMessage errorMessage,
-    CharSequence raw,
-    Range range
+    @Override CharSequence raw,
+    @Override Location start,
+    @Override Location end
 ) implements Token {
 
   @Override
