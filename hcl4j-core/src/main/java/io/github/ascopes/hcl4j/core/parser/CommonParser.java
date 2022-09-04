@@ -17,7 +17,7 @@
 package io.github.ascopes.hcl4j.core.parser;
 
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
-import io.github.ascopes.hcl4j.core.lexer.LexerContext;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
 
 /**
  * Base functionality for all parsers to use.
@@ -28,7 +28,7 @@ import io.github.ascopes.hcl4j.core.lexer.LexerContext;
  */
 public abstract class CommonParser<T> implements Parser<T> {
 
-  protected final LexerContext context;
+  protected final Lexer context;
 
   /**
    * Initialize the parser.
@@ -36,6 +36,6 @@ public abstract class CommonParser<T> implements Parser<T> {
    * @param charSource the character source to use.
    */
   protected CommonParser(CharSource charSource) {
-    context = new LexerContext(charSource);
+    context = new Lexer(charSource);
   }
 }

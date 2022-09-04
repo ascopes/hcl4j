@@ -17,8 +17,8 @@
 package io.github.ascopes.hcl4j.lexer.test;
 
 import io.github.ascopes.hcl4j.core.inputs.CharInputStream;
-import io.github.ascopes.hcl4j.core.lexer.ConfigLexerStrategy;
-import io.github.ascopes.hcl4j.core.lexer.LexerContext;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
+import io.github.ascopes.hcl4j.core.lexer.strategy.ConfigLexerStrategy;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.ByteArrayInputStream;
@@ -36,7 +36,7 @@ class StringTest {
     try (
         var in = new CharInputStream("example.hcl", new ByteArrayInputStream(source.getBytes()))
     ) {
-      var lex = new LexerContext(in);
+      var lex = new Lexer(in);
       lex.pushStrategy(new ConfigLexerStrategy(lex));
 
       Token next;

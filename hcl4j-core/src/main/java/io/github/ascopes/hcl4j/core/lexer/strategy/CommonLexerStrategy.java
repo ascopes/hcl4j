@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
+import io.github.ascopes.hcl4j.core.lexer.LexerStrategy;
 import io.github.ascopes.hcl4j.core.tokens.EofToken;
 import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
@@ -29,22 +31,92 @@ import java.io.IOException;
 /**
  * Abstract implementation of a lexer strategy with some common behaviours pre-implemented.
  *
- * <p>LexerContext strategies should usually derive from this class for simplicity.
+ * <p>Lexer strategies should usually derive from this class for simplicity.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
 public abstract class CommonLexerStrategy implements LexerStrategy {
 
-  protected final LexerContext context;
+  protected final Lexer context;
 
   /**
    * Initialize this strategy.
    *
    * @param context the lexer context to use.
    */
-  protected CommonLexerStrategy(LexerContext context) {
+  protected CommonLexerStrategy(Lexer context) {
     this.context = context;
+  }
+
+  /**
+   * Determine if the code point is an HCL ID_START character.
+   *
+   * @param codePoint the code point to check.
+   * @return {@code true} if it is an ID_START character, or {@code false} otherwise.
+   */
+  @CheckReturnValue
+  protected static boolean isIdStart(int codePoint) {
+    return Character.isUnicodeIdentifierStart(codePoint);
+  }
+
+  /**
+   * Determine if the code point is an HCL ID_CONTINUE character.
+   *
+   * @param codePoint the code point to check.
+   * @return {@code true} if it is an ID_CONTINUE character, or {@code false} otherwise.
+   */
+  @CheckReturnValue
+  protected static boolean isIdContinue(int codePoint) {
+    return Character.isUnicodeIdentifierPart(codePoint) || codePoint == '-';
+  }
+
+  /**
+   * Determine if the code point is an ASCII digit.
+   *
+   * @param codePoint the code point to check.
+   * @return {@code true} if it is an ASCII digit, or {@code false} otherwise.
+   */
+  @CheckReturnValue
+  protected static boolean isDigit(int codePoint) {
+    return '0' <= codePoint && codePoint <= '9';
+  }
+
+  /**
+   * Determine if the code point is an ASCII digit or hexadecimal character.
+   *
+   * @param codePoint the code point to check.
+   * @return {@code true} if it is an ASCII digit or hexadecimal character, or {@code false}
+   *     otherwise.
+   */
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+  @CheckReturnValue
+  protected static boolean isHexadecimal(int codePoint) {
+    return '0' <= codePoint && codePoint <= '9'
+        || 'A' <= codePoint && codePoint <= 'F'
+        || 'a' <= codePoint && codePoint <= 'f';
+  }
+
+  /**
+   * Determine if the code point is whitespace.
+   *
+   * @param codePoint the code point to check.
+   * @return {@code true} if it is whitespace or {@code false} otherwise.
+   */
+  @CheckReturnValue
+  protected static boolean isWhitespace(int codePoint) {
+    return ' ' == codePoint || '\t' == codePoint;
+  }
+
+  /**
+   * Determine if the code point is a potential newline start.
+   *
+   * @param codePoint the code point to check.
+   * @return {@code true} if it is whitespace or {@code false} otherwise.
+   */
+  @CheckReturnValue
+  protected static boolean isNewLineStart(int codePoint) {
+    return '\r' == codePoint || '\n' == codePoint;
   }
 
   /**
@@ -175,75 +247,5 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
       case '\n' -> newToken(TokenType.NEW_LINE, 1);
       default -> newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
     };
-  }
-
-  /**
-   * Determine if the code point is an HCL ID_START character.
-   *
-   * @param codePoint the code point to check.
-   * @return {@code true} if it is an ID_START character, or {@code false} otherwise.
-   */
-  @CheckReturnValue
-  protected static boolean isIdStart(int codePoint) {
-    return Character.isUnicodeIdentifierStart(codePoint);
-  }
-
-  /**
-   * Determine if the code point is an HCL ID_CONTINUE character.
-   *
-   * @param codePoint the code point to check.
-   * @return {@code true} if it is an ID_CONTINUE character, or {@code false} otherwise.
-   */
-  @CheckReturnValue
-  protected static boolean isIdContinue(int codePoint) {
-    return Character.isUnicodeIdentifierPart(codePoint) || codePoint == '-';
-  }
-
-  /**
-   * Determine if the code point is an ASCII digit.
-   *
-   * @param codePoint the code point to check.
-   * @return {@code true} if it is an ASCII digit, or {@code false} otherwise.
-   */
-  @CheckReturnValue
-  protected static boolean isDigit(int codePoint) {
-    return '0' <= codePoint && codePoint <= '9';
-  }
-
-  /**
-   * Determine if the code point is an ASCII digit or hexadecimal character.
-   *
-   * @param codePoint the code point to check.
-   * @return {@code true} if it is an ASCII digit or hexadecimal character, or {@code false}
-   *     otherwise.
-   */
-  @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-  @CheckReturnValue
-  protected static boolean isHexadecimal(int codePoint) {
-    return '0' <= codePoint && codePoint <= '9'
-        || 'A' <= codePoint && codePoint <= 'F'
-        || 'a' <= codePoint && codePoint <= 'f';
-  }
-
-  /**
-   * Determine if the code point is whitespace.
-   *
-   * @param codePoint the code point to check.
-   * @return {@code true} if it is whitespace or {@code false} otherwise.
-   */
-  @CheckReturnValue
-  protected static boolean isWhitespace(int codePoint) {
-    return ' ' == codePoint || '\t' == codePoint;
-  }
-
-  /**
-   * Determine if the code point is a potential newline start.
-   *
-   * @param codePoint the code point to check.
-   * @return {@code true} if it is whitespace or {@code false} otherwise.
-   */
-  @CheckReturnValue
-  protected static boolean isNewLineStart(int codePoint) {
-    return '\r' == codePoint || '\n' == codePoint;
   }
 }

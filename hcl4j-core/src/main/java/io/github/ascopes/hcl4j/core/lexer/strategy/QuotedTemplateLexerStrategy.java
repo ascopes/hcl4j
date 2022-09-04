@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Location;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -31,7 +32,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * LexerContext strategy to handle quoted templates.
+ * Lexer strategy to handle quoted templates.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
@@ -100,7 +101,7 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
    *
    * @param context the context to use.
    */
-  public QuotedTemplateLexerStrategy(LexerContext context) {
+  public QuotedTemplateLexerStrategy(Lexer context) {
     super(context);
 
     // We can emit encoding errors for bad escape sequences. Do this using a stack to

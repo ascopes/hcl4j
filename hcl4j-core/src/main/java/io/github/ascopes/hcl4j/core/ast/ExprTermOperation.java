@@ -38,6 +38,14 @@ public sealed interface ExprTermOperation extends ExprTerm {
   sealed interface SplatTerm extends Node {}
 
   /**
+   * Base interface for "splat" operations.
+   *
+   * @author Ashley Scopes
+   * @since 0.0.1
+   */
+  sealed interface Splat extends ExprTermOperation {}
+
+  /**
    * An index operator term.
    *
    * @param leftToken  the left square bracket token.
@@ -110,14 +118,6 @@ public sealed interface ExprTermOperation extends ExprTerm {
       return identifier.end();
     }
   }
-
-  /**
-   * Base interface for "splat" operations.
-   *
-   * @author Ashley Scopes
-   * @since 0.0.1
-   */
-  sealed interface Splat extends ExprTermOperation {}
 
   /**
    * A legacy "attr" splat operation.

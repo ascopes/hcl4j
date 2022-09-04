@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
@@ -40,7 +41,7 @@ public final class TemplateExpressionLexerStrategy extends CommonLexerStrategy {
    *
    * @param context the context to use.
    */
-  public TemplateExpressionLexerStrategy(LexerContext context) {
+  public TemplateExpressionLexerStrategy(Lexer context) {
     super(context);
     configLexerStrategy = new ConfigLexerStrategy(context);
   }

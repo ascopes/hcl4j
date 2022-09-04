@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
@@ -44,7 +45,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
 
   private final Queue<Token> lookAheadQueue;
 
-  public ConfigLexerStrategy(LexerContext context) {
+  public ConfigLexerStrategy(Lexer context) {
     super(context);
     lookAheadQueue = new LinkedList<>();
   }

@@ -30,6 +30,18 @@ import java.util.List;
 public sealed interface BodyItem extends Node {
 
   /**
+   * Sealed interface for valid additional identifiers in a block. This does not apply to the very
+   * first identifier, which must always be a {@link Identifier}.
+   *
+   * @author Ashley Scopes
+   * @since 0.0.1
+   */
+  sealed interface BlockIdentifier extends Node permits Identifier, StringLit {
+
+    CharSequence value();
+  }
+
+  /**
    * A block body item.
    *
    * @param identifier            the first identifier.
@@ -83,17 +95,5 @@ public sealed interface BodyItem extends Node {
     public Location end() {
       return identifier.end();
     }
-  }
-
-  /**
-   * Sealed interface for valid additional identifiers in a block. This does not apply to the very
-   * first identifier, which must always be a {@link Identifier}.
-   *
-   * @author Ashley Scopes
-   * @since 0.0.1
-   */
-  sealed interface BlockIdentifier extends Node permits Identifier, StringLit {
-
-    CharSequence value();
   }
 }

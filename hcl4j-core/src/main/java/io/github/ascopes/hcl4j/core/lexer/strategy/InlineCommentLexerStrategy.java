@@ -14,55 +14,59 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
 
 /**
- * LexerContext strategy for parsing a line comment.
+ * Lexer strategy for parsing an inline comment.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
  * <p>This expects the opening delimiter to have already been consumed by the lexer strategy that
  * called this one.
  *
- * <p>This implementation will consume characters until a new line is encountered, or the
- * end-of-file marker is reached. The content will be emitted within a
- * {@link TokenType#COMMENT_CONTENT} token if at least one character has been consumed.
+ * <p>This implementation handles three states:
  *
- * <p>The {@link TokenType#END_OF_FILE} or {@link TokenType#NEW_LINE} will be emitted before the
- * lexer strategy is popped.
+ * <ul>
+ *   <li>Next character is the end-of-file marker - the lexer strategy is popped and a
+ *      {@link TokenType#END_OF_FILE}</li>
+ *   <li>The next two characters are "{@code *}" and "{@code /}" - the lexer will emit a
+ *      {@link TokenType#INLINE_COMMENT_END} token and pop the current strategy.
+ *   <li>Any other characters are consumed until one of the above cases occurs, and will be
+ *      emitted in a {@link TokenType#COMMENT_CONTENT} token as long as at least one character
+ *      has been read.</li>
+ * </ul>
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public final class LineCommentLexerStrategy extends CommonLexerStrategy {
+public final class InlineCommentLexerStrategy extends CommonLexerStrategy {
 
   /**
    * Initialize this strategy.
    *
-   * @param context the context to use.
+   * @param context the lexer context to use.
    */
-  public LineCommentLexerStrategy(LexerContext context) {
+  public InlineCommentLexerStrategy(Lexer context) {
     super(context);
   }
 
-  @CheckReturnValue
   @Override
   public Token nextToken() throws IOException {
-    var nextChar = context.charSource().peek(0);
-
-    if (isNewLineStart(nextChar)) {
+    if (context.charSource().startsWith("*/")) {
       context.popStrategy();
-      return consumeNewLine();
+      return newToken(TokenType.INLINE_COMMENT_END, 2);
     }
+
+    var nextChar = context.charSource().peek(0);
 
     if (nextChar == EOF) {
       context.popStrategy();
@@ -76,7 +80,7 @@ public final class LineCommentLexerStrategy extends CommonLexerStrategy {
     while (true) {
       nextChar = context.charSource().peek(0);
 
-      if (isNewLineStart(nextChar) || nextChar == EOF) {
+      if (context.charSource().startsWith("*/") || nextChar == EOF) {
         break;
       }
 

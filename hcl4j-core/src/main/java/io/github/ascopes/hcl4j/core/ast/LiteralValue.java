@@ -56,6 +56,15 @@ public sealed interface LiteralValue<T> extends ExprTerm {
   }
 
   /**
+   * Valid types of numeric literal.
+   *
+   * @param <N> the number type.
+   * @author Ashley Scopes
+   * @since 0.0.1
+   */
+  sealed interface NumericLit<N extends Number> extends LiteralValue<N> {}
+
+  /**
    * A boolean literal.
    *
    * @param token the original token.
@@ -88,15 +97,6 @@ public sealed interface LiteralValue<T> extends ExprTerm {
       return null;
     }
   }
-
-  /**
-   * Valid types of numeric literal.
-   *
-   * @param <N> the number type.
-   * @author Ashley Scopes
-   * @since 0.0.1
-   */
-  sealed interface NumericLit<N extends Number> extends LiteralValue<N> {}
 
   /**
    * An integer value literal.

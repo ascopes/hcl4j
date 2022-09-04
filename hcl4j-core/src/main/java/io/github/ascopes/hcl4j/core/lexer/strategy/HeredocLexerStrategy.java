@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
 
 /**
- * LexerContext strategy for tokenizing content within a heredoc directive until the heredoc is
+ * Lexer strategy for tokenizing content within a heredoc directive until the heredoc is
  * terminated.
  *
  * <p>This class is <strong>not</strong> thread-safe.
@@ -83,7 +84,7 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
    * @param context    the context to use.
    * @param identifier the closing identifier to use.
    */
-  public HeredocLexerStrategy(LexerContext context, CharSequence identifier) {
+  public HeredocLexerStrategy(Lexer context, CharSequence identifier) {
     super(context);
     this.identifier = identifier;
   }

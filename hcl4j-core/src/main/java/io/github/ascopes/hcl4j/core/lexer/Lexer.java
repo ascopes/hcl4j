@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
 /**
  * Distributed lexer state holder and concrete implementation to provide to a parser.
  *
- * <p>This is passed between lexer modes to represent the global lexer state. LexerContext modes
+ * <p>This is passed between lexer modes to represent the global lexer state. Lexer modes
  * can be pushed and popped to change the source of the next token.
  *
  * <p>This class is <strong>not</strong> thread-safe.
@@ -35,7 +35,7 @@ import java.util.NoSuchElementException;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public final class LexerContext {
+public final class Lexer {
 
   private final CharSource charSource;
   private final Deque<LexerStrategy> strategyStack;
@@ -45,7 +45,7 @@ public final class LexerContext {
    *
    * @param charSource the character source to use.
    */
-  public LexerContext(CharSource charSource) {
+  public Lexer(CharSource charSource) {
     this.charSource = charSource;
     strategyStack = new LinkedList<>();
   }
@@ -97,6 +97,6 @@ public final class LexerContext {
   }
 
   private NoSuchElementException expectAtLeastOne() {
-    return new NoSuchElementException("LexerContext mode stack is empty");
+    return new NoSuchElementException("Lexer mode stack is empty");
   }
 }

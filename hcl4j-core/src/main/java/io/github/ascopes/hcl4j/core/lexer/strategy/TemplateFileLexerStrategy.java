@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
+package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
 
 /**
- * LexerContext strategy for consuming files that are purely template literals.
+ * Lexer strategy for consuming files that are purely template literals.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
@@ -45,7 +46,7 @@ public final class TemplateFileLexerStrategy extends CommonLexerStrategy {
    *
    * @param context the lexer context to use.
    */
-  public TemplateFileLexerStrategy(LexerContext context) {
+  public TemplateFileLexerStrategy(Lexer context) {
     super(context);
   }
 

@@ -30,6 +30,14 @@ import java.util.List;
 public sealed interface CollectionValue extends ExprTerm {
 
   /**
+   * Base interface for valid types of object key identifier.
+   *
+   * @author Ashley Scopes
+   * @since 0.0.1
+   */
+  sealed interface DictKey extends Node {}
+
+  /**
    * A tuple value literal.
    *
    * @param leftToken  the opening square bracket token.
@@ -134,14 +142,6 @@ public sealed interface CollectionValue extends ExprTerm {
       return null;
     }
   }
-
-  /**
-   * Base interface for valid types of object key identifier.
-   *
-   * @author Ashley Scopes
-   * @since 0.0.1
-   */
-  sealed interface DictKey extends Node {}
 
   /**
    * A raw identifier used in an object key.
