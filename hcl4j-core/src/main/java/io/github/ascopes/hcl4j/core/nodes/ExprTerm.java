@@ -17,16 +17,12 @@
 package io.github.ascopes.hcl4j.core.nodes;
 
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
-
 /**
  * Valid types of expression terms.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface ExprTerm extends Expression permits
     CollectionValue,
     ExprTermOperation,

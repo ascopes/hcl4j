@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.parser;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.lexer.LexerContext;
 
@@ -28,7 +26,6 @@ import io.github.ascopes.hcl4j.core.lexer.LexerContext;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public abstract class CommonParser<T> implements Parser<T> {
 
   protected final LexerContext context;

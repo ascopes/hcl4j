@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +26,6 @@ import java.util.Optional;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface ForExpr extends ExprTerm {
 
   /**
@@ -40,7 +37,6 @@ public sealed interface ForExpr extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record ForIntro(
       Range range,
       List<? extends Identifier> identifiers,
@@ -55,7 +51,6 @@ public sealed interface ForExpr extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record ForCond(
       Range range,
       Expression ifExpression
@@ -71,7 +66,6 @@ public sealed interface ForExpr extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record ForTupleExpr(
       Range range,
       ForIntro intro,
@@ -91,7 +85,6 @@ public sealed interface ForExpr extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record ForObjectExpr(
       Range range,
       ForIntro intro,

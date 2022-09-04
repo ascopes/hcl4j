@@ -18,8 +18,6 @@ package io.github.ascopes.hcl4j.core.inputs;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 
 /**
@@ -30,7 +28,6 @@ import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.INTERNAL)
 @SuppressWarnings("UnusedReturnValue")
 public final class RawContentBuffer {
 

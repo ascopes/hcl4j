@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import java.util.List;
 
@@ -27,7 +25,6 @@ import java.util.List;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface BodyItem extends Node {
 
   /**
@@ -40,7 +37,6 @@ public sealed interface BodyItem extends Node {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record Block(
       Range range,
       Identifier firstIdentifier,
@@ -57,7 +53,6 @@ public sealed interface BodyItem extends Node {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record Attribute(Range range, Identifier identifier, Expression expression)
       implements BodyItem {}
 
@@ -68,7 +63,6 @@ public sealed interface BodyItem extends Node {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   sealed interface BlockIdentifier extends Node permits Identifier, TemplateExpr.StringLit {
 
     CharSequence value();

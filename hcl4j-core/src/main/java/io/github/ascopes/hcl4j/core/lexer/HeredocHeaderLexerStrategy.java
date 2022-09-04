@@ -18,8 +18,6 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -65,7 +63,6 @@ import java.io.IOException;
  *
  * @author Ashley Scopes
  */
-@Api(Visibility.EXPERIMENTAL)
 public final class HeredocHeaderLexerStrategy extends CommonLexerStrategy {
 
   @Nullable

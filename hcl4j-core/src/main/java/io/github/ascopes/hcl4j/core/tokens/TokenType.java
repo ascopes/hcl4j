@@ -16,16 +16,12 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
-
 /**
  * Enum of acceptable types of token that a lexer mode can emit.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public enum TokenType {
   END_OF_FILE("end of file"),
   WTF("error"),

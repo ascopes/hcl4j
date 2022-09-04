@@ -18,8 +18,6 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Location;
 import io.github.ascopes.hcl4j.core.inputs.Range;
@@ -91,7 +89,6 @@ import java.util.Queue;
  *
  * @author Ashley Scopes
  */
-@Api(Visibility.EXPERIMENTAL)
 public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
 
   private static final int BMP_DIGITS = 4;

@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.parser;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.lexer.ConfigLexerStrategy;
 import io.github.ascopes.hcl4j.core.nodes.BodyItem;
@@ -30,7 +28,6 @@ import java.util.List;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public final class ConfigFileParser extends CommonParser<List<? extends BodyItem>> {
 
   /**

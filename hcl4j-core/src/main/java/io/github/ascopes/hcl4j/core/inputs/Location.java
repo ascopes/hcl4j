@@ -16,9 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
-
 /**
  * Representation of a location within an HCL file.
  *
@@ -28,7 +25,6 @@ import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public record Location(
     long position,
     long line,

@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import java.io.BufferedReader;
@@ -35,7 +33,6 @@ import java.io.InputStreamReader;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public final class CharInputStream implements CharSource {
 
   private static final int BUFFER_SIZE = 1_024;

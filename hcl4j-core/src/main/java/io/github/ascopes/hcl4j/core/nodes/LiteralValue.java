@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import java.math.BigDecimal;
@@ -30,7 +28,6 @@ import java.math.BigInteger;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface LiteralValue<T> extends ExprTerm {
 
   /**
@@ -48,7 +45,6 @@ public sealed interface LiteralValue<T> extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record BooleanLit(Range range, Boolean value) implements LiteralValue<Boolean> {}
 
   /**
@@ -58,7 +54,6 @@ public sealed interface LiteralValue<T> extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record NullLit(Range range) implements LiteralValue<@Nullable Void> {
 
     /**
@@ -80,7 +75,6 @@ public sealed interface LiteralValue<T> extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   sealed interface NumericLit<N extends Number> extends LiteralValue<N> {}
 
   /**
@@ -91,7 +85,6 @@ public sealed interface LiteralValue<T> extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record IntLit(Range range, BigInteger value) implements NumericLit<BigInteger> {}
 
   /**
@@ -102,6 +95,5 @@ public sealed interface LiteralValue<T> extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record RealLit(Range range, BigDecimal value) implements NumericLit<BigDecimal> {}
 }

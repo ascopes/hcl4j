@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import java.util.List;
 
@@ -27,7 +25,6 @@ import java.util.List;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface ExprTermOperation extends ExprTerm {
 
   /**
@@ -37,7 +34,6 @@ public sealed interface ExprTermOperation extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   sealed interface SplatTerm {}
 
   /**
@@ -49,7 +45,6 @@ public sealed interface ExprTermOperation extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record Index(
       Range range,
       ExprTerm exprTerm,
@@ -65,7 +60,6 @@ public sealed interface ExprTermOperation extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record GetAttr(
       Range range,
       ExprTerm exprTerm,
@@ -81,7 +75,6 @@ public sealed interface ExprTermOperation extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record Splat(
       Range range,
       ExprTerm exprTerm,

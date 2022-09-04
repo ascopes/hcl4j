@@ -16,9 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
-
 /**
  * Definition of a range between two locations.
  *
@@ -27,7 +24,6 @@ import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public record Range(Location start, Location end) {
 
   /**

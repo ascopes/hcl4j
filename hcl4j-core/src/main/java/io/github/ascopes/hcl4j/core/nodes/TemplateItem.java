@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +26,6 @@ import java.util.Optional;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface TemplateItem {
 
   /**
@@ -39,7 +36,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateLiteral(Range range, CharSequence text) implements TemplateItem {}
 
   /**
@@ -52,7 +48,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateInterpolation(
       Range range,
       boolean stripLeft,
@@ -70,7 +65,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateIf(
       Range range,
       TemplateIfPart ifPart,
@@ -89,7 +83,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateIfPart(
       Range range,
       boolean stripLeft,
@@ -108,7 +101,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateElsePart(
       Range range,
       boolean stripLeft,
@@ -125,7 +117,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateEndIfPart(
       Range range,
       boolean stripLeft,
@@ -142,7 +133,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateFor(
       Range range,
       TemplateForPart forPart,
@@ -161,7 +151,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateForPart(
       Range range,
       boolean stripLeft,
@@ -179,7 +168,6 @@ public sealed interface TemplateItem {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TemplateEndForPart(
       Range range,
       boolean stripLeft,

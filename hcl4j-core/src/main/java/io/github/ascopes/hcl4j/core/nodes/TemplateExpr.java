@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 
 /**
@@ -26,7 +24,6 @@ import io.github.ascopes.hcl4j.core.inputs.Range;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface TemplateExpr extends ExprTerm {
 
   /**
@@ -37,7 +34,6 @@ public sealed interface TemplateExpr extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record QuotedTemplate(Range range, Template template) implements TemplateExpr {}
 
   /**
@@ -49,7 +45,6 @@ public sealed interface TemplateExpr extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record HeredocTemplate(Range range, Template template, boolean indent) implements TemplateExpr {}
 
   /**
@@ -61,7 +56,6 @@ public sealed interface TemplateExpr extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record StringLit(
       Range range,
       CharSequence value

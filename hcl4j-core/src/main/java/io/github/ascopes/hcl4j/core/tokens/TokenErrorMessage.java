@@ -16,16 +16,12 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
-
 /**
  * Errors that the lexer can emit.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public enum TokenErrorMessage {
   UNRECOGNISED_CHAR("unrecognised character"),
   MALFORMED_ESCAPE_SEQUENCE("malformed escape sequence"),

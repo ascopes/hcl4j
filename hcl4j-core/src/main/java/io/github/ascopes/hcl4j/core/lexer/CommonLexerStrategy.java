@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.lexer;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
@@ -37,7 +35,6 @@ import java.io.IOException;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public abstract class CommonLexerStrategy implements LexerStrategy {
 
   protected final LexerContext context;

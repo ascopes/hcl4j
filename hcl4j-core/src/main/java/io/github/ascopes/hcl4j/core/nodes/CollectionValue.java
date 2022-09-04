@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 import java.util.List;
 
@@ -27,7 +25,6 @@ import java.util.List;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface CollectionValue extends ExprTerm {
 
   /**
@@ -38,7 +35,6 @@ public sealed interface CollectionValue extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record TupleValue(
       Range range,
       List<? extends Expression> elements
@@ -52,7 +48,6 @@ public sealed interface CollectionValue extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record ObjectValue(
       Range range,
       List<ObjectElem> elements
@@ -69,7 +64,6 @@ public sealed interface CollectionValue extends ExprTerm {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record ObjectElem(
       Range range,
       Identifier key,

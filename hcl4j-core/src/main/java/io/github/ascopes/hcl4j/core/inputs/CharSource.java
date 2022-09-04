@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -29,7 +27,6 @@ import java.nio.charset.StandardCharsets;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public interface CharSource extends AutoCloseable {
 
   /**

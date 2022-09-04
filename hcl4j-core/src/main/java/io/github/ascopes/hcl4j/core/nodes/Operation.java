@@ -16,8 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.nodes;
 
-import io.github.ascopes.hcl4j.core.annotations.Api;
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import io.github.ascopes.hcl4j.core.inputs.Range;
 
 /**
@@ -26,7 +24,6 @@ import io.github.ascopes.hcl4j.core.inputs.Range;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.EXPERIMENTAL)
 public sealed interface Operation extends ExprTerm, Expression {
 
   /**
@@ -38,7 +35,6 @@ public sealed interface Operation extends ExprTerm, Expression {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record UnaryOp(Range range, UnaryOperator operator, ExprTerm value) implements Operation {}
 
   /**
@@ -47,7 +43,6 @@ public sealed interface Operation extends ExprTerm, Expression {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   enum UnaryOperator {
     MINUS,
     NOT,
@@ -63,7 +58,6 @@ public sealed interface Operation extends ExprTerm, Expression {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   record BinaryOp(
       Range range,
       ExprTerm leftValue,
@@ -77,7 +71,6 @@ public sealed interface Operation extends ExprTerm, Expression {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  @Api(Visibility.EXPERIMENTAL)
   enum BinaryOperator {
     EQUAL,
     NOT_EQUAL,

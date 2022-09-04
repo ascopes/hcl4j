@@ -16,7 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.annotations;
 
-import io.github.ascopes.hcl4j.core.annotations.Api.Visibility;
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -30,7 +29,6 @@ import java.lang.annotation.Target;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-@Api(Visibility.INTERNAL)
 @Documented
 @Inherited
 @Retention(RetentionPolicy.SOURCE)
