@@ -16,11 +16,11 @@
 
 package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.inputs.Location;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Valid types of element within a template.
@@ -91,7 +91,7 @@ public sealed interface TemplateItem extends Node {
    */
   record TemplateIf(
       TemplateIfPart ifPart,
-      Optional<TemplateElsePart> elsePart,
+      @Nullable TemplateElsePart elsePart,
       TemplateEndIfPart endIfPart
   ) implements TemplateItem {
 
