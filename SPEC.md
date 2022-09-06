@@ -208,8 +208,8 @@ It is worth noting that:
 - `\\t` translates to an ASCII horizontal tab `\t`.
 - `\\"' translates to a double quote literal `"`.
 - `\\\\` translates to a backslash `\`.
-- `\uXXXX` translates to a basic multilingual plane character code.
-- `\UXXXXXXXX` translates to a supplimentary plane character code.
+- `\\uXXXX` translates to a basic multilingual plane hexadecimal character code.
+- `\\UXXXXXXXX` translates to a supplimentary plane hexadecimal character code
 
 Any `newline` token is an error and will result in the string being
 popped.
