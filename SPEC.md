@@ -174,8 +174,11 @@ confusion, the current mode is popped.
 ### Heredoc mode
 
 The heredoc mode will read until the end of the file or the first occurance
-of the `cached heredoc identifier` followed by a `newline`. This information
-is passed from the **heredoc header mode**.
+of the `identifier` followed by a `newline`. This information is passed from 
+the **heredoc header mode**.
+
+As in other production groups, newlines are either `\n` or
+`\r\n`.
 
 When the identifier followed by a newline is read, the current
 mode should be popped.
