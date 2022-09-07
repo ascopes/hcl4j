@@ -5,7 +5,26 @@ This language specification is based upon
 
 The specification in this file is mostly defined using
 [EBNF](https://en.m.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form)
-notation.
+notation. Some elements cannot be defined clearly using EBNF: these will be
+defined in the prose. Any conflict between the prose and the
+EBNF definition should be resolved by giving the prose precedence.
+
+```
+ a = ...   definition of production a
+  a , b    production a followed by b
+  a | b    production a or production b
+  a - b    production a, except anything also matching b
+    ;      termination
+   "a"     the literal string "a"
+   'a'     the literal string 'a'
+  '\r'     literal ASCII carriage return
+  '\n'     literal ASCII line feed
+  '\\'     literal backslash
+ ( ... )   a nested expression
+  [ x ]    production x, 0 or 1 times
+  { y }    production y, 1 or more times
+(* xxx *)  a comment
+```
 
 ## Lexical Analysis
 
@@ -20,23 +39,23 @@ on the stack.
 
 Config file mode defines the following grammar for tokens.
 
-**Whitespace**:
+#### Whitespace
 
 ```
 whitespace = { "\t" | " " } ;
 newline    = { "\n" | "\r\n" } ;
 ```
 
-**Identifiers**:
+#### Identifiers
 
-In this rule, `id start` refers to a Unicode `start` symbol.
-`continue` refers to a Unicode `ID_Continue` symbol.
+In this rule, `ID_Start` refers to a Unicode `ID_Start` symbol.
+`ID_Continue` refers to a Unicode `ID_Continue` symbol.
 
 ```
-identifier = start , [ { continue | '-'  } ] ;
+identifier = ID_Start , [ { ID_Continue | '-'  } ] ;
 ```
 
-**Literals**:
+#### Literals
 
 ```
 digit = "0" | "1" | "2" | "3" | "4"
@@ -51,7 +70,7 @@ exponent = ( "E" | "e" ) , [ "+" | "-" ] , { digit } ;
 real literal = { digit } , [ fraction ] , [ exponent ] ;
 ```
 
-**Arithmetic operators**:
+#### Arithmetic operators
 
 ```
 plus   = "+" ;
@@ -61,7 +80,7 @@ divide = "/" ;
 modulo = "%" ;
 ```
 
-**Logic operators**:
+#### Logic operators
 
 ```
 and = "&&" ;
@@ -69,7 +88,7 @@ or  = "||" ;
 not = "!" ;
 ```
 
-**Comparative operators**:
+#### Comparative operators
 
 ```
 equal            = "==" ;
@@ -80,7 +99,7 @@ greater          = ">" ;
 greater or equal = ">=" ;
 ```
 
-**Mode changing symbols**:
+#### Mode changing symbols
 
 ```
 heredoc anchor = "<<" ;  (* pushes the heredoc header mode  *)
@@ -92,7 +111,7 @@ double slash   = "//" ;  (* pushes the line comment mode    *)
 slash star     = "/*" ;  (* pushes the inline comment mode  *)
 ```
 
-**Misc symbols**:
+#### Misc symbols
 
 ```
 assign               = "=" ;
@@ -118,15 +137,30 @@ is not a valid token.
 right brace with strip = "~}" ;
 ```
 
+### Template file mode 
+
+The template file mode will read characters until the end of the file.
+
+```
+interpolation start with strip = "${~" ;         (* push the template mode *)
+interpolation start            = "${" ;          (* push the template mode *)
+directive start with strip     = "%{~" ;         (* push the template mode *)
+directive start                = "%{" ;          (* push the template mode *)
+text = { "$${" | "%%{" | any other character } ;
+```
+
+It is worth noting that `$${` will result in a literal `${` within the text.
+Likewise, `%%{` will result in a literal `%{`.
+
 ### Heredoc header mode
 
 Heredoc header mode consumes the opening header to a heredoc. Any other
 sequences are considered invalid.
 
 ```
-heredoc trim marker = "-" ;
-heredoc identifier = identifier ;  (* the identifier is cached *)
-heredoc newline = newline ;        (* heredoc mode or pop mode - see below *)
+trim marker = "-" ;
+identifier  = ID_Start , [ { ID_Continue | "-" } ] ;
+newline     = "\n" | "\r\n" ;
 ```
 
 When a newline is encountered, the header is considered to have ended.
@@ -136,21 +170,6 @@ If an identifier has been cached, then the current mode is replaced with the
 If there is no cached identifier, then this will be 
 considered a syntax error by the parser and to prevent further
 confusion, the current mode is popped.
-
-### Template file mode 
-
-The template file mode will read characters until the end of the file.
-
-```
-interpolation start with strip = "${~" ;         (* push the template mode *)
-interpolation start = "${" ;                     (* push the template mode *)
-directive start with strip = "%{~" ;             (* push the template mode *)
-directive start = "%{" ;                         (* push the template mode *)
-text = { "$${" | "%%{" | any other character } ;
-```
-
-It is worth noting that `$${` will result in a literal `${` within the text.
-Likewise, `%%{` will result in a literal `%{`.
 
 ### Heredoc mode
 
@@ -162,10 +181,10 @@ When the identifier followed by a newline is read, the current
 mode should be popped.
 
 ```
-interpolation start with strip = "${~" ;         (* push the template mode *)
-interpolation start = "${" ;                     (* push the template mode *)
-directive start with strip = "%{~" ;             (* push the template mode *)
-directive start = "%{" ;                         (* push the template mode *)
+interpolation start with strip = "${~" ;          (* push the template mode *)
+interpolation start            = "${" ;           (* push the template mode *)
+directive start with strip     = "%{~" ;          (* push the template mode *)
+directive start                = "%{" ;           (* push the template mode *)
 text = { "$${" | "%%{" | any other character } ;
 ```
 
@@ -175,10 +194,11 @@ Likewise, `%%{` will result in a literal `%{`.
 ### Quoted template mode
 
 ```
-interpolation start with strip = "${~" ;            (* push the template mode *)
-interpolation start = "${" ;                        (* push the template mode *)
-directive start with strip = "%{~" ;                (* push the template mode *)
-directive start = "%{" ;                            (* push the template mode *)
+interpolation start with strip = "${~" ;             (* push the template mode *)
+interpolation start            = "${" ;              (* push the template mode *)
+directive start with strip     = "%{~" ;             (* push the template mode *)
+directive start                = "%{" ;              (* push the template mode *)
+newline                        = "\n" | "\r\n" ;
 text = { escape | any other character - newline } ;
 
 escape = "$${"
