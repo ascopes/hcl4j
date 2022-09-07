@@ -226,7 +226,7 @@ It is worth noting that:
 - `\\r` translates to an ASCII carriage return `\r`.
 - `\\n` translates to an ASCII line feed `\n`.
 - `\\t` translates to an ASCII horizontal tab `\t`.
-- `\\"' translates to a double quote literal `"`.
+- `\\"` translates to a double quote literal `"`.
 - `\\\\` translates to a backslash `\`.
 - `\\uXXXX` translates to a basic multilingual plane hexadecimal character code.
 - `\\UXXXXXXXX` translates to a supplimentary plane hexadecimal character code
