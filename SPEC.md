@@ -194,6 +194,7 @@ Likewise, `%%{` will result in a literal `%{`.
 ### Quoted template mode
 
 ```
+quote                          = '"' ;               (* pop the current mode *)
 interpolation start with strip = "${~" ;             (* push the template mode *)
 interpolation start            = "${" ;              (* push the template mode *)
 directive start with strip     = "%{~" ;             (* push the template mode *)
