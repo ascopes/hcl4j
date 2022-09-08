@@ -26,6 +26,15 @@ EBNF definition should be resolved by giving the prose precedence.
 (* xxx *)  a comment
 ```
 
+## Encoding
+
+HCL config files are expected to be UTF-8 encoded. These can be started with or
+without a UTF-8 byte-order mark.
+
+The UTF-8 byte-order mark comprises of three bytes:
+
+    0xEF 0xBB 0xBF
+
 ## Lexical Analysis
 
 Lexical analysis occurs using several lexer modes that are pushed and popped
@@ -62,12 +71,10 @@ digit = "0" | "1" | "2" | "3" | "4"
       | "5" | "6" | "7" | "8" | "9" ;
 
 numeric literal = real literal | integer literal ;
-
 integer literal = { digit } ;
-
-fraction = "." , { digit } ;
-exponent = ( "E" | "e" ) , [ "+" | "-" ] , { digit } ;
-real literal = { digit } , [ fraction ] , [ exponent ] ;
+fraction        = "." , { digit } ;
+exponent        = ( "E" | "e" ) , [ "+" | "-" ] , { digit } ;
+real literal    = { digit } , [ fraction ] , [ exponent ] ;
 ```
 
 #### Arithmetic operators
@@ -146,6 +153,7 @@ interpolation start with strip = "${~" ;         (* push the template mode *)
 interpolation start            = "${" ;          (* push the template mode *)
 directive start with strip     = "%{~" ;         (* push the template mode *)
 directive start                = "%{" ;          (* push the template mode *)
+
 text = { "$${" | "%%{" | any other character } ;
 ```
 
@@ -188,6 +196,7 @@ interpolation start with strip = "${~" ;          (* push the template mode *)
 interpolation start            = "${" ;           (* push the template mode *)
 directive start with strip     = "%{~" ;          (* push the template mode *)
 directive start                = "%{" ;           (* push the template mode *)
+
 text = { "$${" | "%%{" | any other character } ;
 ```
 
@@ -202,8 +211,10 @@ interpolation start with strip = "${~" ;             (* push the template mode *
 interpolation start            = "${" ;              (* push the template mode *)
 directive start with strip     = "%{~" ;             (* push the template mode *)
 directive start                = "%{" ;              (* push the template mode *)
-newline                        = "\n" | "\r\n" ;
-text = { escape | any other character - newline } ;
+
+
+newline = "\n" | "\r\n" ;
+text    = { escape | any other character - newline } ;
 
 escape = "$${"
        | "%%{"
@@ -233,7 +244,7 @@ It is worth noting that:
 - `\\"` translates to a double quote literal `"`.
 - `\\\\` translates to a backslash `\`.
 - `\\uXXXX` translates to a basic multilingual plane hexadecimal character code.
-- `\\UXXXXXXXX` translates to a supplimentary plane hexadecimal character code
+- `\\UXXXXXXXX` translates to a supplimentary plane hexadecimal character code.
 
 Any `newline` token is an error and will result in the string being
 popped.
