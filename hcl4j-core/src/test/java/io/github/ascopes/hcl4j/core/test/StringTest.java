@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.lexer.test;
+package io.github.ascopes.hcl4j.core.test;
 
 import io.github.ascopes.hcl4j.core.inputs.CharInputStream;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;

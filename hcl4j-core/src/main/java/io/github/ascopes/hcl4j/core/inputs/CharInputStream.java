@@ -21,12 +21,10 @@ import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 /**
  * An {@link CharSource} that wraps a given {@link InputStream} internally, buffering it and
- * encoding the contents in
- * {@link CharSource#CHARSET the standard character encoding for HCL files}.
+ * handling any leading byte-order mark.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
@@ -34,8 +32,6 @@ import java.io.InputStreamReader;
  * @since 0.0.1
  */
 public final class CharInputStream implements CharSource {
-
-  private static final int BUFFER_SIZE = 1_024;
 
   private static final long INITIAL_POSITION = 0;
   private static final long INITIAL_LINE = 1;
@@ -56,11 +52,11 @@ public final class CharInputStream implements CharSource {
    *
    * @param name        the symbolic name of the file that the {@code inputStream} is for.
    * @param inputStream the unbuffered input stream source to use (will be buffered internally).
+   * @throws IOException if an IO error occurs reading the first 3 bytes.
    */
-  public CharInputStream(@Nullable String name, InputStream inputStream) {
+  public CharInputStream(@Nullable String name, InputStream inputStream) throws IOException {
     this.name = name == null ? UNNAMED_FILE : name;
-    var inputReader = new InputStreamReader(inputStream, CHARSET);
-    reader = new BufferedReader(inputReader, BUFFER_SIZE);
+    reader = new BufferedUtf8BomReader(inputStream);
 
     cachedLocation = null;
     position = INITIAL_POSITION;
