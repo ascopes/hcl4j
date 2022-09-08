@@ -8,3 +8,12 @@ updates:
       - "ascopes"
     labels:
       - "enhancement"
+
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    assignees:
+      - "ascopes"
+    labels:
+      - "enhancement"
