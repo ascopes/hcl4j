@@ -61,10 +61,11 @@ jobs:
         if: always()
         continue-on-error: true
         with:
-          files: "**/target/**/TEST-*.xml"
+          junit_files: "**/target/**/TEST-*.xml"
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
+        continue-on-error: true
 
       - name: Perform Checkstyle Analysis
         if: always()
