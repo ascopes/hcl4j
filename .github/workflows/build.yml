@@ -84,4 +84,4 @@ jobs:
           --no-transfer-progress
           '-Dstyle.color=always'
           '-Dmaven.artifact.threads=50'
-          checkstyle
+          checkstyle:checkstyle
