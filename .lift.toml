@@ -1,0 +1,3 @@
+build = "./mvnw -B -T8C -U -DskipTests=true -Dcheckstyle.skip=true clean package"
+jdkVersion = "17"
+summaryComments = true
