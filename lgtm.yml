@@ -1,0 +1,6 @@
+extraction:
+  java:
+    index:
+      java_version: 17
+      maven:
+        version: 3.8.6
