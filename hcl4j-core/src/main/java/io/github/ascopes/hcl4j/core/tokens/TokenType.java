@@ -16,6 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
+import io.github.ascopes.hcl4j.core.annotations.Nullable;
+
 /**
  * Enum of acceptable types of token that a lexer mode can emit.
  *
@@ -28,61 +30,73 @@ public enum TokenType {
   NEW_LINE("new line"),
   WHITESPACE("whitespace"),
 
-  INLINE_COMMENT_START("/*"),
-  INLINE_COMMENT_END("*/"),
-  LINE_COMMENT_SLASH_START("//"),
-  LINE_COMMENT_HASH_START("#"),
-  COMMENT_CONTENT("comment content"),
+  INLINE_COMMENT_START("start of inline comment", "/*"),
+  INLINE_COMMENT_END("end of inline comment", "*/"),
+  LINE_COMMENT_SLASH_START("start of line comment", "//"),
+  LINE_COMMENT_HASH_START("start of line comment", "#"),
+  COMMENT_CONTENT("comment contents"),
 
-  PLUS("+"),
-  MINUS("-"),
-  STAR("*"),
-  DIVIDE("/"),
-  MODULO("%"),
-  EQUAL("="),
-  NOT_EQUAL("!="),
-  LESS("<"),
-  LESS_EQUAL("<="),
-  GREATER(">"),
-  GREATER_EQUAL(">="),
-  AND("&&"),
-  OR("||"),
-  NOT("!"),
-  LEFT_BRACE("{"),
-  RIGHT_BRACE("}"),
-  RIGHT_BRACE_TRIM("~}"),
-  LEFT_INTERPOLATION("${"),
-  LEFT_INTERPOLATION_TRIM("${~"),
-  LEFT_DIRECTIVE("%{"),
-  LEFT_DIRECTIVE_TRIM("%{~"),
-  QUOTE("\""),
-  HEREDOC_ANCHOR("<<"),
-  HEREDOC_INDENT_MARKER("-"),
-  DOT("."),
-  ELLIPSIS("..."),
-  LEFT_SQUARE("["),
-  RIGHT_SQUARE("]"),
-  ASSIGN("="),
-  FAT_ARROW("=>"),
-  QUESTION_MARK("?"),
-  COLON(":"),
-  LEFT_PAREN("("),
-  RIGHT_PAREN(")"),
-  COMMA(","),
+  PLUS("plus sign", "+"),
+  MINUS("minus sign", "-"),
+  STAR("multiply/splat", "*"),
+  DIVIDE("divide", "/"),
+  MODULO("modulo", "%"),
+  EQUAL("equality operator", "=="),
+  NOT_EQUAL("inequality operator", "!="),
+  LESS("less-than operator", "<"),
+  LESS_EQUAL("less-than-or-equal-to operator", "<="),
+  GREATER("greater-than operator", ">"),
+  GREATER_EQUAL("greater-than-or-equal-to operator", ">="),
+  AND("logical AND operator", "&&"),
+  OR("logical OR operator", "||"),
+  NOT("logical NOT operator", "!"),
+  LEFT_BRACE("start of block", "{"),
+  RIGHT_BRACE("end of block or sequence", "}"),
+  TRIM("trim-sequence marker", "~"),
+  LEFT_INTERPOLATION("start of template interpolation sequence", "${"),
+  LEFT_DIRECTIVE("start of template directive sequence", "%{"),
+  OPENING_QUOTE("opening quotation mark", "\""),
+  CLOSING_QUOTE("closing quotation mark", "\""),
+  HEREDOC_ANCHOR("start of a heredoc template", "<<"),
+  HEREDOC_INDENT_MARKER("heredoc indentation marker", "-"),
+  DOT("dot operator", "."),
+  ELLIPSIS("ellipsis operator", "..."),
+  LEFT_SQUARE("left square bracket", "["),
+  RIGHT_SQUARE("right square bracket", "]"),
+  ASSIGN("assignment operator", "="),
+  FAT_ARROW("mapping operator", "=>"),
+  QUESTION_MARK("ternary operator question-mark", "?"),
+  COLON("colon operator", ":"),
+  LEFT_PAREN("left parenthesis", "("),
+  RIGHT_PAREN("right parenthesis", ")"),
+  COMMA("comma operator", ","),
 
   IDENTIFIER("identifier"),
-  INTEGER("integer"),
-  REAL("real"),
+  INTEGER("integer literal"),
+  REAL("real literal"),
 
-  RAW_TEXT("valueToken");
+  RAW_TEXT("raw text");
 
   private final String displayName;
 
+  @Nullable
+  private final String symbol;
+
   TokenType(String displayName) {
+    this(displayName, null);
+  }
+
+  TokenType(String displayName, @Nullable String symbol) {
     this.displayName = displayName;
+    this.symbol = symbol;
   }
 
   public String displayName() {
     return displayName;
+  }
+
+  @Nullable
+  public String symbol() {
+    return symbol;
   }
 }

@@ -285,7 +285,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
 
   @CheckReturnValue
   private Token consumeQuote() throws IOException {
-    var token = newToken(TokenType.QUOTE, 1);
+    var token = newToken(TokenType.OPENING_QUOTE, 1);
     context.pushStrategy(new QuotedTemplateLexerStrategy(context));
     return token;
   }

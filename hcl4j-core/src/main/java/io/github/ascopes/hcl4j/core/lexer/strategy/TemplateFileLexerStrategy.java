@@ -62,17 +62,13 @@ public final class TemplateFileLexerStrategy extends CommonLexerStrategy {
     if (context.charSource().startsWith("${")) {
       // Next expression is an interpolation.
       context.pushStrategy(new TemplateExpressionLexerStrategy(context));
-      return context.charSource().peek(3) == '~'
-          ? newToken(TokenType.LEFT_INTERPOLATION_TRIM, 3)
-          : newToken(TokenType.LEFT_INTERPOLATION, 2);
+      return newToken(TokenType.LEFT_INTERPOLATION, 2);
     }
 
     if (context.charSource().startsWith("%{")) {
       // Next expression is a directive.
       context.pushStrategy(new TemplateExpressionLexerStrategy(context));
-      return context.charSource().peek(3) == '~'
-          ? newToken(TokenType.LEFT_DIRECTIVE_TRIM, 3)
-          : newToken(TokenType.LEFT_DIRECTIVE, 2);
+      return newToken(TokenType.LEFT_DIRECTIVE, 2);
     }
 
     return consumeSomeText();

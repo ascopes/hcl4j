@@ -46,17 +46,11 @@ import java.io.IOException;
  *      followed by a new line character, then we consider that to be the end of the heredoc.
  *      This lexer strategy will be popped and the identifier up to but not including the new line
  *      will be emitted as an {@link TokenType#IDENTIFIER}.</li>
- *   <li>An interpolation opening with tilde "<code>$&#123;~</code>" will emit a
- *      {@link TokenType#LEFT_INTERPOLATION_TRIM} token, and a new {@link ConfigLexerStrategy}
- *      will be pushed onto the lexer strategy stack.</li>
- *   <li>An interpolation opening without a tilde "<code>$&#123;</code>" will emit a
- *      {@link TokenType#LEFT_INTERPOLATION} token, and a new {@link ConfigLexerStrategy}
- *      will be pushed onto the lexer strategy stack.</li>
+ *   <li>An interpolation opening will "<code>$&#123;</code>" will emit a
+ *      {@link TokenType#LEFT_INTERPOLATION} token, and a new
+ *      {@link TemplateExpressionLexerStrategy} will be pushed onto the lexer strategy stack.</li>
  *   <li>A directive opening with tilde "<code>%&#123;~</code>" will emit a
- *      {@link TokenType#LEFT_DIRECTIVE_TRIM} token, and a new {@link ConfigLexerStrategy}
- *      will be pushed onto the lexer strategy stack.</li>
- *   <li>A directive opening without a tilde "<code>%&#123;</code>" will emit a
- *      {@link TokenType#LEFT_DIRECTIVE} token, and a new {@link ConfigLexerStrategy}
+ *      {@link TokenType#LEFT_DIRECTIVE} token, and a new {@link TemplateExpressionLexerStrategy}
  *      will be pushed onto the lexer strategy stack.</li>
  *   <li>Anything else will be collected into a buffer until one of the above cases occurs.
  *      The valueToken will then be emitted as {@link TokenType#RAW_TEXT} as long as at least one
@@ -107,17 +101,13 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
     if (context.charSource().startsWith("${")) {
       // Next expression is an interpolation.
       context.pushStrategy(new TemplateExpressionLexerStrategy(context));
-      return context.charSource().peek(3) == '~'
-          ? newToken(TokenType.LEFT_INTERPOLATION_TRIM, 3)
-          : newToken(TokenType.LEFT_INTERPOLATION, 2);
+      return newToken(TokenType.LEFT_INTERPOLATION, 2);
     }
 
     if (context.charSource().startsWith("%{")) {
       // Next expression is a directive.
       context.pushStrategy(new TemplateExpressionLexerStrategy(context));
-      return context.charSource().peek(3) == '~'
-          ? newToken(TokenType.LEFT_DIRECTIVE_TRIM, 3)
-          : newToken(TokenType.LEFT_DIRECTIVE, 2);
+      return newToken(TokenType.LEFT_DIRECTIVE, 2);
     }
 
     return consumeSomeText();

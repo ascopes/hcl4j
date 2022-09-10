@@ -17,6 +17,7 @@
 package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
+import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.lexer.LexerStrategy;
@@ -33,12 +34,17 @@ import java.io.IOException;
  *
  * <p>Lexer strategies should usually derive from this class for simplicity.
  *
+ * <p>This class is <strong>not</strong> thread-safe.
+ *
  * @author Ashley Scopes
  * @since 0.0.1
  */
 public abstract class CommonLexerStrategy implements LexerStrategy {
 
   protected final Lexer context;
+
+  @Nullable
+  protected EofToken cachedEofToken;
 
   /**
    * Initialize this strategy.
@@ -47,6 +53,10 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   protected CommonLexerStrategy(Lexer context) {
     this.context = context;
+
+    // We fill this after we hit EOF to prevent allocating lots of duplicate object descriptors
+    // for the end of the file. This is just a minor optimisation.
+    cachedEofToken = null;
   }
 
   /**
@@ -162,7 +172,9 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   @CheckReturnValue
   protected Token consumeEndOfFile() {
-    return new EofToken(context.charSource().location());
+    return cachedEofToken == null
+        ? (cachedEofToken = new EofToken(context.charSource().location()))
+        : cachedEofToken;
   }
 
   /**

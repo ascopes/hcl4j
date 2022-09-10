@@ -19,7 +19,6 @@ package io.github.ascopes.hcl4j.core.ast;
 import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.inputs.Location;
 import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.util.List;
 
 /**
@@ -110,8 +109,10 @@ public sealed interface TemplateItem extends Node {
    * The {@code if} condition in a {@link TemplateIf}.
    *
    * @param leftToken  the opening delimiter token.
+   * @param leftTrimToken the trim marker for the left token, or {@code null} if not provided.
    * @param ifToken    the "if" keyword token.
    * @param expression the opening condition expression.
+   * @param rightTrimToken the trim marker for the right token, or {@code null} if not provided.
    * @param rightToken the closing delimiter token.
    * @param template   the template to evaluate if the condition evaluates to true.
    * @author Ashley Scopes
@@ -119,18 +120,20 @@ public sealed interface TemplateItem extends Node {
    */
   record TemplateIfPart(
       Token leftToken,
+      @Nullable Token leftTrimToken,
       Token ifToken,
       Expression expression,
+      @Nullable Token rightTrimToken,
       Token rightToken,
       Template template
   ) implements Node {
 
     public boolean leftTrimmed() {
-      return leftToken.type() == TokenType.LEFT_DIRECTIVE_TRIM;
+      return leftTrimToken != null;
     }
 
     public boolean rightTrimmed() {
-      return rightToken.type() == TokenType.RIGHT_BRACE_TRIM;
+      return rightTrimToken != null;
     }
 
     @Override
@@ -148,7 +151,9 @@ public sealed interface TemplateItem extends Node {
    * The {@code else} condition in a {@link TemplateIf}.
    *
    * @param leftToken  the opening delimiter token.
+   * @param leftTrimToken the trim marker for the left token, or {@code null} if not provided.
    * @param elseToken  the "else" keyword token.
+   * @param rightTrimToken the trim marker for the right token, or {@code null} if not provided.
    * @param rightToken the closing delimiter token.
    * @param template   the template to evaluate if the condition evaluates to true.
    * @author Ashley Scopes
@@ -156,17 +161,19 @@ public sealed interface TemplateItem extends Node {
    */
   record TemplateElsePart(
       Token leftToken,
+      @Nullable Token leftTrimToken,
       Token elseToken,
+      @Nullable Token rightTrimToken,
       Token rightToken,
       Template template
   ) implements Node {
 
     public boolean leftTrimmed() {
-      return leftToken.type() == TokenType.LEFT_DIRECTIVE_TRIM;
+      return leftTrimToken != null;
     }
 
     public boolean rightTrimmed() {
-      return rightToken.type() == TokenType.RIGHT_BRACE_TRIM;
+      return rightTrimToken != null;
     }
 
     @Override
@@ -184,23 +191,27 @@ public sealed interface TemplateItem extends Node {
    * The {@code endif} part in a {@link TemplateIf}.
    *
    * @param leftToken  the opening delimiter token.
+   * @param leftTrimToken the trim marker for the left token, or {@code null} if not provided.
    * @param endIfToken the "endif" keyword token.
+   * @param rightTrimToken the trim marker for the right token, or {@code null} if not provided.
    * @param rightToken the closing delimiter token.
    * @author Ashley Scopes
    * @since 0.0.1
    */
   record TemplateEndIfPart(
       Token leftToken,
+      @Nullable Token leftTrimToken,
       Token endIfToken,
+      @Nullable Token rightTrimToken,
       Token rightToken
   ) implements Node {
 
     public boolean leftTrimmed() {
-      return leftToken.type() == TokenType.LEFT_DIRECTIVE_TRIM;
+      return leftTrimToken != null;
     }
 
     public boolean rightTrimmed() {
-      return rightToken.type() == TokenType.RIGHT_BRACE_TRIM;
+      return rightTrimToken != null;
     }
 
     @Override
@@ -244,11 +255,13 @@ public sealed interface TemplateItem extends Node {
    * The {@code for} condition in a {@link TemplateFor}.
    *
    * @param leftToken                the opening delimiter.
+   * @param leftTrimToken the trim marker for the left token, or {@code null} if not provided.
    * @param forToken                 the {@code for} keyword.
    * @param identifier               the first identifier.
    * @param additionalForIdentifiers a list of additional identifiers to unwrap.
    * @param inToken                  the {@code in} keyword.
    * @param expression               the expression that evaluates to a tuple.
+   * @param rightTrimToken the trim marker for the right token, or {@code null} if not provided.
    * @param rightToken               the closing delimiter.
    * @param template                 the template to evaluate for each iteration.
    * @author Ashley Scopes
@@ -256,21 +269,23 @@ public sealed interface TemplateItem extends Node {
    */
   record TemplateForPart(
       Token leftToken,
+      @Nullable Token leftTrimToken,
       Token forToken,
       Identifier identifier,
       List<AdditionalForIdentifier> additionalForIdentifiers,
       Token inToken,
       Expression expression,
+      @Nullable Token rightTrimToken,
       Token rightToken,
       Template template
   ) implements Node {
 
     public boolean leftTrimmed() {
-      return leftToken.type() == TokenType.LEFT_DIRECTIVE_TRIM;
+      return leftTrimToken != null;
     }
 
     public boolean rightTrimmed() {
-      return rightToken.type() == TokenType.RIGHT_BRACE_TRIM;
+      return rightTrimToken != null;
     }
 
     @Override
@@ -288,23 +303,27 @@ public sealed interface TemplateItem extends Node {
    * The {@code endfor} clause in a {@link TemplateFor}.
    *
    * @param leftToken   the opening delimiter.
+   * @param leftTrimToken the trim marker for the left token, or {@code null} if not provided.
    * @param endForToken the {@code endfor} keyword.
+   * @param rightTrimToken the trim marker for the right token, or {@code null} if not provided.
    * @param rightToken  the closing delimiter.
    * @author Ashley Scopes
    * @since 0.0.1
    */
   record TemplateEndForPart(
       Token leftToken,
+      @Nullable Token leftTrimToken,
       Token endForToken,
+      @Nullable Token rightTrimToken,
       Token rightToken
   ) implements Node {
 
     public boolean leftTrimmed() {
-      return leftToken.type() == TokenType.LEFT_DIRECTIVE_TRIM;
+      return leftTrimToken != null;
     }
 
     public boolean rightTrimmed() {
-      return rightToken.type() == TokenType.RIGHT_BRACE_TRIM;
+      return rightTrimToken != null;
     }
 
     @Override

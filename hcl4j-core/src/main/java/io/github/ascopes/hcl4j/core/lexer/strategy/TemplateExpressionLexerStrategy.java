@@ -16,10 +16,11 @@
 
 package io.github.ascopes.hcl4j.core.lexer.strategy;
 
+import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
+
 import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
 
@@ -49,20 +50,25 @@ public final class TemplateExpressionLexerStrategy extends CommonLexerStrategy {
   @CheckReturnValue
   @Override
   public Token nextToken() throws IOException {
-    if (context.charSource().peek(0) == '~') {
-      return consumeTilde();
-    } else {
-      return configLexerStrategy.nextToken();
-    }
+    return switch (context.charSource().peek(0)) {
+      case EOF -> {
+        context.popStrategy();
+        yield consumeEndOfFile();
+      }
+      case '~' -> consumeTilde();
+      case '}' -> consumeRightBrace();
+      default -> configLexerStrategy.nextToken();
+    };
   }
 
   @CheckReturnValue
   private Token consumeTilde() throws IOException {
-    if (context.charSource().peek(1) == '}') {
-      context.popStrategy();
-      return newToken(TokenType.RIGHT_BRACE_TRIM, 2);
-    }
+    return newToken(TokenType.TRIM, 1);
+  }
 
-    return newError(TokenErrorMessage.UNKNOWN_OPERATOR, 1);
+  private Token consumeRightBrace() throws IOException {
+    var token = newToken(TokenType.RIGHT_BRACE, 1);
+    context.popStrategy();
+    return token;
   }
 }
