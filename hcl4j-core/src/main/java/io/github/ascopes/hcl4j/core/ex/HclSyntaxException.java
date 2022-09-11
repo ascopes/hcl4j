@@ -19,7 +19,7 @@ package io.github.ascopes.hcl4j.core.ex;
 import io.github.ascopes.hcl4j.core.inputs.Location;
 
 /**
- * Exception thrown when malformed syntax is found in an HCL input file.
+ * Exception thrown when malformed syntax is found in an input file.
  *
  * @author Ashley Scopes
  * @since 0.0.1
@@ -112,12 +112,10 @@ public class HclSyntaxException extends HclProcessingException {
   }
 
   @Override
-  public String getMessage() {
-    return "Syntax error: "
-        + super.getMessage()
-        + " - \""
-        + rawContent.toString().replace("\"", "\\\"")
-        + "\" in "
+  public String toString() {
+    return "Error occurred for "
+        + safeRepr(rawContent)
+        + " in "
         + fileName
         + " at line " + startLocation.line()
         + ", column " + startLocation.column();

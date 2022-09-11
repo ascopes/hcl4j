@@ -42,4 +42,41 @@ public abstract class HclException extends RuntimeException {
   protected HclException(String message, Throwable cause) {
     super(message, cause);
   }
+
+  /**
+   * Produce a quoted representation of some raw input content to use in a message. This content
+   * will be quoted and escaped to keep the message clear. Any characters outside the space
+   * character, and readable ASCII characters will be represented using a UTF-8 escape code. The
+   * horizontal tab, carriage return, line feed, null terminator, backslash, and double quote
+   * characters will be represented using an ANSI-like escape code.
+   *
+   * @param content the content to produce a representation of.
+   * @return the string representation.
+   */
+  protected static String safeRepr(CharSequence content) {
+    var buff = new StringBuilder("\"");
+    var len = content.length();
+
+    for (var i = 0; i < len; ++i) {
+      var next = content.charAt(i);
+
+      switch (next) {
+        case '\0' -> buff.append("\\0");
+        case '\n' -> buff.append("\\n");
+        case '\r' -> buff.append("\\r");
+        case '\t' -> buff.append("\\t");
+        case '\\' -> buff.append("\\\\");
+        case '\"' -> buff.append("\\\"");
+        default -> {
+          if (next >= 0x20 && next < 0x7F || next >= 0x80 && next <= 0xFF) {
+            buff.append(next);
+          } else {
+            buff.append(String.format("\\u%04x", (int) next));
+          }
+        }
+      }
+    }
+
+    return buff.append("\"").toString();
+  }
 }
