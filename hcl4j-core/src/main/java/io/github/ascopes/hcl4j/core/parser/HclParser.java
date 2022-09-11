@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
 package io.github.ascopes.hcl4j.core.parser;
 
+import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
+
+/**
+ * Base interface for an HCL parser implementation.
+ *
+ * @param <T> the root node type.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public interface HclParser<T> {
+
+  /**
+   * Parse the file and return the root node.
+   *
+   * @return the parsed file.
+   * @throws HclProcessingException if an error occurs parsing the input.
+   */
+  T parseFile() throws HclProcessingException;
+}

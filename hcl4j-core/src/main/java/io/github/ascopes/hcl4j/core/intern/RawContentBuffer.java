@@ -16,7 +16,7 @@
 
 package io.github.ascopes.hcl4j.core.intern;
 
-import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
+import static io.github.ascopes.hcl4j.core.inputs.HclCharSource.EOF;
 
 /**
  * Wrapper around a string builder that handles common mistakes with int return values.

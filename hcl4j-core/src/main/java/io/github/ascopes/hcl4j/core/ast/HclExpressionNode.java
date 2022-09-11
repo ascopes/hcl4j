@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.ast;
 
+/**
+ * Valid types of expression.
+ *
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public sealed interface HclExpressionNode
+    extends HclNode
+    permits HclExprTermNode, HclOperationNode, HclConditionalNode {}

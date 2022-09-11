@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+import java.util.List;
+
+/**
+ * A template.
+ *
+ * @param items the components making up the template.
+ * @param start the start location.
+ * @param end   the end location.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclTemplateNode(
+    List<? extends HclTemplateItemNode> items,
+    @Override HclLocation start,
+    @Override HclLocation end
+) implements HclNode {
+}

@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+import java.util.List;
+
+/**
+ * Node that holds a body.
+ *
+ * @param bodyItems the items in the body.
+ * @param start     the start location.
+ * @param end       the end location.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclBodyNode(
+    List<? extends HclBodyItemNode> bodyItems,
+    @Override HclLocation start,
+    @Override HclLocation end
+) implements HclNode {
+}

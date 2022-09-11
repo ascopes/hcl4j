@@ -15,7 +15,6 @@
  */
 
 /**
- * CommonParser definitions.
+ * Various internal strategies for lexical analysis/tokenization.
  */
-package io.github.ascopes.hcl4j.core.parser;
-
+package io.github.ascopes.hcl4j.core.lexer.strategy;

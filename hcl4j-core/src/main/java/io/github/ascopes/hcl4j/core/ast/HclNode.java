@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.inputs.HclLocatable;
+
+/**
+ * Base interface for all types of node.
+ *
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public interface HclNode extends HclLocatable {
+}

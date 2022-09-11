@@ -14,8 +14,28 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.inputs;
 
+/**
+ * Interface for an element that has a location and range.
+ *
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public interface HclLocatable {
+
+  /**
+   * Get the start location.
+   *
+   * @return the start location.
+   */
+  HclLocation start();
+
+
+  /**
+   * Get the end location.
+   *
+   * @return the end location.
+   */
+  HclLocation end();
+}

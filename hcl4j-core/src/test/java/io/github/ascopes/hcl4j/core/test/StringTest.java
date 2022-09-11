@@ -16,11 +16,11 @@
 
 package io.github.ascopes.hcl4j.core.test;
 
-import io.github.ascopes.hcl4j.core.inputs.CharInputStream;
-import io.github.ascopes.hcl4j.core.lexer.Lexer;
-import io.github.ascopes.hcl4j.core.lexer.strategy.ConfigLexerStrategy;
-import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenType;
+import io.github.ascopes.hcl4j.core.inputs.HclCharInputStream;
+import io.github.ascopes.hcl4j.core.lexer.HclDefaultLexer;
+import io.github.ascopes.hcl4j.core.lexer.strategy.HclConfigLexerStrategy;
+import io.github.ascopes.hcl4j.core.tokens.HclToken;
+import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
@@ -34,17 +34,17 @@ class StringTest {
         """.stripIndent();
 
     try (
-        var in = new CharInputStream("example.hcl", new ByteArrayInputStream(source.getBytes()))
+        var in = new HclCharInputStream("example.hcl", new ByteArrayInputStream(source.getBytes()))
     ) {
-      var lex = new Lexer(in);
-      lex.pushStrategy(new ConfigLexerStrategy(lex));
+      var lex = new HclDefaultLexer(in);
+      lex.pushStrategy(new HclConfigLexerStrategy(lex));
 
-      Token next;
+      HclToken next;
 
       do {
         next = lex.nextToken();
         System.out.println(next);
-      } while (next.type() != TokenType.END_OF_FILE);
+      } while (next.type() != HclTokenType.END_OF_FILE);
     }
   }
 }

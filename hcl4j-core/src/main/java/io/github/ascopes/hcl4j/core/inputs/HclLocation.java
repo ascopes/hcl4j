@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.inputs;
 
+/**
+ * Representation of a location within an HCL file.
+ *
+ * @param position the 0-indexed position from the start of the file.
+ * @param line     the 1-based line index.
+ * @param column   the 1-based column index in the current line.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclLocation(
+    long position,
+    long line,
+    long column
+) {
+}

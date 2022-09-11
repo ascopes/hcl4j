@@ -14,8 +14,25 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.tokens;
 
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+
+/**
+ * Standard representation of token that represents part of an HCL file.
+ *
+ * @param type  the token type.
+ * @param raw   the token content.
+ * @param start the start location.
+ * @param end   the end location.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclDefaultToken(
+    @Override HclTokenType type,
+    @Override CharSequence raw,
+    @Override HclLocation start,
+    @Override HclLocation end
+) implements HclToken {
+
+}

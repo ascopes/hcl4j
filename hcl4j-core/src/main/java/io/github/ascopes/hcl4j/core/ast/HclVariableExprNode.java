@@ -14,8 +14,26 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+
+/**
+ * A variable reference.
+ *
+ * @param identifier the identifier of the variable.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclVariableExprNode(HclIdentifierNode identifier) implements HclExprTermNode {
+
+  @Override
+  public HclLocation start() {
+    return identifier.start();
+  }
+
+  @Override
+  public HclLocation end() {
+    return identifier.end();
+  }
+}

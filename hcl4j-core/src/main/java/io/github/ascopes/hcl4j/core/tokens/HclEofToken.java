@@ -14,8 +14,32 @@
  * limitations under the License.
  */
 
-/**
- * CommonParser definitions.
- */
-package io.github.ascopes.hcl4j.core.parser;
+package io.github.ascopes.hcl4j.core.tokens;
 
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+
+/**
+ * Token that represents that the end of the file has been reached.
+ *
+ * @param start the start location.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclEofToken(@Override HclLocation start) implements HclToken {
+
+  @Override
+  public HclTokenType type() {
+    return HclTokenType.END_OF_FILE;
+  }
+
+  @Override
+  public HclLocation end() {
+    // EOFs are zero-width.
+    return start;
+  }
+
+  @Override
+  public CharSequence raw() {
+    return "\0";
+  }
+}
