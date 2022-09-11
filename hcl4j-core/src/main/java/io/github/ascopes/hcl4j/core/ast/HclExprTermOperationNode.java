@@ -97,7 +97,7 @@ public sealed interface HclExprTermOperationNode extends HclExprTermNode {
    */
   record HclGetAttributeNode(
       HclToken dotToken,
-      HclIdentifierNode identifier
+      HclIdentifierLikeNode identifier
   ) implements HclExprTermOperationNode, HclSplatTermNode {
 
     @Override

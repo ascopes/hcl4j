@@ -29,7 +29,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
  */
 public record HclAdditionalForIdentifier(
     HclToken commaToken,
-    HclIdentifierNode identifier
+    HclIdentifierLikeNode identifier
 ) implements HclNode {
 
   @Override

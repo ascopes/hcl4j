@@ -148,7 +148,7 @@ public sealed interface HclCollectionValueNode extends HclExprTermNode {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record HclObjectIdentifierKeyNode(HclIdentifierNode identifier) implements HclObjectKeyNode {
+  record HclObjectIdentifierKeyNode(HclIdentifierLikeNode identifier) implements HclObjectKeyNode {
 
     @Override
     public HclLocation start() {

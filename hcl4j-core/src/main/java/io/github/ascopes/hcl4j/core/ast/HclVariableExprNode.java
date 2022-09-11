@@ -25,7 +25,7 @@ import io.github.ascopes.hcl4j.core.inputs.HclLocation;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record HclVariableExprNode(HclIdentifierNode identifier) implements HclExprTermNode {
+public record HclVariableExprNode(HclIdentifierLikeNode identifier) implements HclExprTermNode {
 
   @Override
   public HclLocation start() {

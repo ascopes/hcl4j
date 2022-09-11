@@ -16,7 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.ast;
 
-import io.github.ascopes.hcl4j.core.ast.HclTemplateExprNode.HclStringLiteralNode;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import java.util.List;
@@ -30,19 +29,6 @@ import java.util.List;
 public sealed interface HclBodyItemNode extends HclNode {
 
   /**
-   * Sealed interface for valid additional identifiers in a block. This does not apply to the very
-   * first identifier, which must always be a {@link HclIdentifierNode}.
-   *
-   * @author Ashley Scopes
-   * @since 0.0.1
-   */
-  sealed interface HclBlockIdentifierNode extends HclNode permits HclIdentifierNode,
-      HclStringLiteralNode {
-
-    CharSequence value();
-  }
-
-  /**
    * A block body item.
    *
    * @param identifier            the first identifier.
@@ -54,8 +40,8 @@ public sealed interface HclBodyItemNode extends HclNode {
    * @since 0.0.1
    */
   record HclBlockNode(
-      HclIdentifierNode identifier,
-      List<? extends HclBlockIdentifierNode> additionalIdentifiers,
+      HclIdentifierLikeNode identifier,
+      List<HclIdentifierLikeNode> additionalIdentifiers,
       HclToken leftToken,
       HclBodyNode body,
       HclToken rightToken
@@ -82,7 +68,7 @@ public sealed interface HclBodyItemNode extends HclNode {
    * @since 0.0.1
    */
   record HclAttributeNode(
-      HclIdentifierNode identifier,
+      HclIdentifierLikeNode identifier,
       HclToken assignToken,
       HclExpressionNode expression
   ) implements HclBodyItemNode {

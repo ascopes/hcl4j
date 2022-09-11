@@ -273,7 +273,7 @@ public sealed interface HclTemplateItemNode extends HclNode {
       HclToken leftToken,
       @Nullable HclToken leftTrimToken,
       HclToken forToken,
-      HclIdentifierNode identifier,
+      HclIdentifierLikeNode identifier,
       List<HclAdditionalForIdentifier> additionalForIdentifiers,
       HclToken inToken,
       HclExpressionNode expression,

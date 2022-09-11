@@ -43,7 +43,7 @@ public sealed interface HclForExprNode extends HclExprTermNode {
    */
   record HclForIntroNode(
       HclToken forToken,
-      HclIdentifierNode identifier,
+      HclIdentifierLikeNode identifier,
       List<HclAdditionalForIdentifier> additionalIdentifiers,
       HclToken inToken,
       HclExpressionNode inExpression,

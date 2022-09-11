@@ -19,11 +19,13 @@ package io.github.ascopes.hcl4j.core.parser;
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.ex.HclUnexpectedTokenException;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
-import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.lexer.HclLexer;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.EnumSet;
+import java.util.LinkedList;
 
 /**
  * A simple wrapper around a lexer that provides useful stream-oriented operations for parsers to
@@ -38,8 +40,7 @@ public final class HclSimpleTokenStream implements HclTokenStream {
 
   private final HclLexer lexer;
 
-  @Nullable
-  private HclToken nextToken;
+  private final LinkedList<HclToken> tokens;
 
   /**
    * Initialize this stream.
@@ -48,31 +49,33 @@ public final class HclSimpleTokenStream implements HclTokenStream {
    */
   public HclSimpleTokenStream(HclLexer lexer) {
     this.lexer = lexer;
-    nextToken = null;
+    tokens = new LinkedList<>();
   }
 
   @Override
   public HclLocation location() {
-    return getOrReadCurrentToken().start();
+    return peek(0).start();
   }
 
   @Override
-  public HclTokenType type() throws HclProcessingException {
-    return getOrReadCurrentToken().type();
+  public HclToken peek(int offset) throws HclProcessingException {
+    while (tokens.size() < offset + 1) {
+      tokens.push(lexer.nextToken());
+    }
+
+    return tokens.get(offset);
   }
 
   @Override
   public HclToken eat(HclTokenType type, HclTokenType... types) throws HclProcessingException {
-    var token = getOrReadCurrentToken();
+    var token = peek(0);
 
-    if (type == token.type()) {
-      nextToken = lexer.nextToken();
+    if (token.type() == type) {
       return token;
     }
 
     for (var anotherType : types) {
-      if (anotherType == token.type()) {
-        nextToken = lexer.nextToken();
+      if (token.type() == anotherType) {
         return token;
       }
     }
@@ -83,11 +86,5 @@ public final class HclSimpleTokenStream implements HclTokenStream {
         lexer.charSource().name(),
         "Unexpected token in input"
     );
-  }
-
-  private HclToken getOrReadCurrentToken() throws HclProcessingException {
-    return nextToken == null
-        ? (nextToken = lexer.nextToken())
-        : nextToken;
   }
 }

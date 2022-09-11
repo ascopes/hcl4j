@@ -32,7 +32,7 @@ import java.util.List;
  * @since 0.0.1
  */
 public record HclFunctionCallNode(
-    HclIdentifierNode identifier,
+    HclIdentifierLikeNode identifier,
     HclToken leftToken,
     List<HclParameterNode> arguments,
     HclToken rightToken

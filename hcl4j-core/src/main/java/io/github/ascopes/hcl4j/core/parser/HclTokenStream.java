@@ -26,7 +26,9 @@ import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.IOException;
 
 /**
- * A stream of tokens.
+ * A stream of tokens that supports arbitrary look-ahead.
+ *
+ * <p>Parsers using this interface will be capable of {@code LL(k)} look-ahead.
  *
  * @author Ashley Scopes
  * @since 0.0.1
@@ -41,18 +43,20 @@ public interface HclTokenStream {
   HclLocation location();
 
   /**
-   * Get the next token type without advancing the stream past the current token.
+   * Peek at the token at the given offset from the current position without advancing the token
+   * stream state.
    *
-   * @return the next
+   * @param offset the offset (greater or equal to 0) to peek at.
+   * @return the token we peeked at.
    * @throws HclProcessingException if an unexpected exception occurs.
    */
-  HclTokenType type() throws HclProcessingException;
+  HclToken peek(int offset) throws HclProcessingException;
 
   /**
    * Attempt to eat the next token, assuming it is one of the given types.
    *
-   * <p>If the token matches one of the types, then it is returned, and the token stream is
-   * advanced. Otherwise, nothing happens and an exception is thrown instead.
+   * <p>If the token matches one of the types, then it is returned and the stream state
+   * is marked as having advanced ready for the next token.
    *
    * @param type  the first token type to expect.
    * @param types any additional token types to expect.
