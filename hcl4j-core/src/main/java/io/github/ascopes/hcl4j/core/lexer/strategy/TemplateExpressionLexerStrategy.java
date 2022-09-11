@@ -18,7 +18,6 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
@@ -47,7 +46,6 @@ public final class TemplateExpressionLexerStrategy extends CommonLexerStrategy {
     configLexerStrategy = new ConfigLexerStrategy(context);
   }
 
-  @CheckReturnValue
   @Override
   public Token nextToken() throws IOException {
     return switch (context.charSource().peek(0)) {
@@ -61,7 +59,6 @@ public final class TemplateExpressionLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeTilde() throws IOException {
     return newToken(TokenType.TRIM, 1);
   }

@@ -15,11 +15,9 @@
  */
 
 /**
- * Internally used annotations to assist in linting and documentation.
+ * Internal utilities that are not exposed as part of the public API anywhere.
  *
- * <p>While these annotations are publicly exposed, they are not considered to be part of the
- * public API, and thus should not be used outside the HCL4J project itself.
- *
- * <p>They may be moved, renamed, or removed at any time without prior deprecation notice.
+ * <p>Anything in this package is not bound by the versioning system for this project and can
+ * change without prior notice.
  */
-package io.github.ascopes.hcl4j.core.annotations;
+package io.github.ascopes.hcl4j.core.intern;

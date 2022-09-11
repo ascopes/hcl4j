@@ -18,8 +18,7 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -50,7 +49,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     lookAheadQueue = new LinkedList<>();
   }
 
-  @CheckReturnValue
   @Override
   public Token nextToken() throws IOException {
     if (!lookAheadQueue.isEmpty()) {
@@ -105,7 +103,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeNumber() throws IOException {
     var start = context.charSource().location();
     var buff = new RawContentBuffer();
@@ -182,27 +179,22 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     }
   }
 
-  @CheckReturnValue
   private Token consumePlus() throws IOException {
     return newToken(TokenType.PLUS, 1);
   }
 
-  @CheckReturnValue
   private Token consumeMinus() throws IOException {
     return newToken(TokenType.MINUS, 1);
   }
 
-  @CheckReturnValue
   private Token consumeAsterisk() throws IOException {
     return newToken(TokenType.STAR, 1);
   }
 
-  @CheckReturnValue
   private Token consumePercent() throws IOException {
     return newToken(TokenType.MODULO, 1);
   }
 
-  @CheckReturnValue
   private Token consumeAmpersand() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '&' -> newToken(TokenType.AND, 2);
@@ -210,7 +202,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeSlash() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '/' -> consumeLineComment();
@@ -219,7 +210,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumePipe() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '|' -> newToken(TokenType.OR, 2);
@@ -227,7 +217,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeBang() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '=' -> newToken(TokenType.NOT_EQUAL, 2);
@@ -235,7 +224,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeEquals() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '=' -> newToken(TokenType.EQUAL, 2);
@@ -244,7 +232,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeLess() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '<' -> consumeHeredocAnchor();
@@ -253,7 +240,6 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeGreater() throws IOException {
     return switch (context.charSource().peek(1)) {
       case '=' -> newToken(TokenType.GREATER_EQUAL, 2);
@@ -261,36 +247,30 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeDot() throws IOException {
     return context.charSource().startsWith("...")
         ? newToken(TokenType.ELLIPSIS, 3)
         : newToken(TokenType.DOT, 1);
   }
 
-  @CheckReturnValue
   private Token consumeQuestionMark() throws IOException {
     return newToken(TokenType.QUESTION_MARK, 1);
   }
 
-  @CheckReturnValue
   private Token consumeColon() throws IOException {
     return newToken(TokenType.COLON, 1);
   }
 
-  @CheckReturnValue
   private Token consumeComma() throws IOException {
     return newToken(TokenType.COMMA, 1);
   }
 
-  @CheckReturnValue
   private Token consumeQuote() throws IOException {
     var token = newToken(TokenType.OPENING_QUOTE, 1);
     context.pushStrategy(new QuotedTemplateLexerStrategy(context));
     return token;
   }
 
-  @CheckReturnValue
   private Token consumeLeftBrace() throws IOException {
     // Push this mode. This can be overridden by a different block of logic for anything
     // subclassing or delegating to this lexer mode (e.g. template lexer modes). We push
@@ -299,39 +279,32 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     return newToken(TokenType.LEFT_BRACE, 1);
   }
 
-  @CheckReturnValue
   private Token consumeRightBrace() throws IOException {
     // Drop out of the current block, whatever that is.
     context.popStrategy();
     return newToken(TokenType.RIGHT_BRACE, 1);
   }
 
-  @CheckReturnValue
   private Token consumeLeftParenthesis() throws IOException {
     return newToken(TokenType.LEFT_PAREN, 1);
   }
 
-  @CheckReturnValue
   private Token consumeRightParenthesis() throws IOException {
     return newToken(TokenType.RIGHT_PAREN, 1);
   }
 
-  @CheckReturnValue
   private Token consumeLeftSquareBracket() throws IOException {
     return newToken(TokenType.LEFT_SQUARE, 1);
   }
 
-  @CheckReturnValue
   private Token consumeRightSquareBracket() throws IOException {
     return newToken(TokenType.RIGHT_SQUARE, 1);
   }
 
-  @CheckReturnValue
   private Token consumeHash() throws IOException {
     return consumeLineComment();
   }
 
-  @CheckReturnValue
   private Token consumeLineComment() throws IOException {
     context.pushStrategy(new LineCommentLexerStrategy(context));
 
@@ -341,13 +314,11 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
         : newToken(TokenType.LINE_COMMENT_SLASH_START, 2);
   }
 
-  @CheckReturnValue
   private Token consumeInlineComment() throws IOException {
     context.pushStrategy(new InlineCommentLexerStrategy(context));
     return newToken(TokenType.INLINE_COMMENT_START, 2);
   }
 
-  @CheckReturnValue
   private Token consumeHeredocAnchor() throws IOException {
     context.pushStrategy(new HeredocHeaderLexerStrategy(context));
     return newToken(TokenType.HEREDOC_ANCHOR, 2);

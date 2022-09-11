@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.inputs;
+package io.github.ascopes.hcl4j.core.intern;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
-
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 
 /**
  * Wrapper around a string builder that handles common mistakes with int return values.
@@ -87,7 +85,6 @@ public final class RawContentBuffer {
    *
    * @return the raw content as a string.
    */
-  @CheckReturnValue
   public CharSequence content() {
     return builder.toString();
   }
@@ -98,7 +95,6 @@ public final class RawContentBuffer {
    * @return the raw content as a string.
    * @deprecated use {@link #content()} instead of this method.
    */
-  @CheckReturnValue
   @Deprecated
   @SuppressWarnings("DeprecatedStillUsed")
   public String toString() {

@@ -18,8 +18,7 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -50,7 +49,6 @@ public final class TemplateFileLexerStrategy extends CommonLexerStrategy {
     super(context);
   }
 
-  @CheckReturnValue
   @Override
   public Token nextToken() throws IOException {
     if (context.charSource().peek(0) == EOF) {

@@ -16,9 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.lexer.strategy;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.annotations.Nullable;
-import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.intern.Nullable;
+import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.lexer.LexerStrategy;
 import io.github.ascopes.hcl4j.core.tokens.EofToken;
@@ -65,7 +64,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @param codePoint the code point to check.
    * @return {@code true} if it is an ID_START character, or {@code false} otherwise.
    */
-  @CheckReturnValue
   protected static boolean isIdStart(int codePoint) {
     return Character.isUnicodeIdentifierStart(codePoint);
   }
@@ -76,7 +74,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @param codePoint the code point to check.
    * @return {@code true} if it is an ID_CONTINUE character, or {@code false} otherwise.
    */
-  @CheckReturnValue
   protected static boolean isIdContinue(int codePoint) {
     return Character.isUnicodeIdentifierPart(codePoint) || codePoint == '-';
   }
@@ -87,7 +84,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @param codePoint the code point to check.
    * @return {@code true} if it is an ASCII digit, or {@code false} otherwise.
    */
-  @CheckReturnValue
   protected static boolean isDigit(int codePoint) {
     return '0' <= codePoint && codePoint <= '9';
   }
@@ -100,7 +96,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    *     otherwise.
    */
   @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-  @CheckReturnValue
   protected static boolean isHexadecimal(int codePoint) {
     return '0' <= codePoint && codePoint <= '9'
         || 'A' <= codePoint && codePoint <= 'F'
@@ -113,7 +108,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @param codePoint the code point to check.
    * @return {@code true} if it is whitespace or {@code false} otherwise.
    */
-  @CheckReturnValue
   protected static boolean isWhitespace(int codePoint) {
     return ' ' == codePoint || '\t' == codePoint;
   }
@@ -124,7 +118,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @param codePoint the code point to check.
    * @return {@code true} if it is whitespace or {@code false} otherwise.
    */
-  @CheckReturnValue
   protected static boolean isNewLineStart(int codePoint) {
     return '\r' == codePoint || '\n' == codePoint;
   }
@@ -137,7 +130,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @return the token.
    * @throws IOException if an {@link IOException} occurred internally.
    */
-  @CheckReturnValue
   protected Token newToken(TokenType type, int length) throws IOException {
     var start = context.charSource().location();
     var raw = context.charSource().readString(length);
@@ -155,7 +147,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @return the error token.
    * @throws IOException if an {@link IOException} occurred internally.
    */
-  @CheckReturnValue
   protected Token newError(TokenErrorMessage error, int length) throws IOException {
     var start = context.charSource().location();
     var raw = context.charSource().readString(length);
@@ -170,7 +161,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    *
    * @return the token.
    */
-  @CheckReturnValue
   protected Token consumeEndOfFile() {
     return cachedEofToken == null
         ? (cachedEofToken = new EofToken(context.charSource().location()))
@@ -183,7 +173,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @return the error.
    * @throws IOException if an {@link IOException} occurs during parsing.
    */
-  @CheckReturnValue
   protected Token consumeUnrecognisedCharacter() throws IOException {
     return newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
   }
@@ -194,7 +183,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @return the token.
    * @throws IOException if an {@link IOException} occurs during parsing.
    */
-  @CheckReturnValue
   protected Token consumeIdentifier() throws IOException {
     var start = context.charSource().location();
     var buff = new RawContentBuffer()
@@ -221,7 +209,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @return the token.
    * @throws IOException if an {@link IOException} occurs during parsing.
    */
-  @CheckReturnValue
   protected Token consumeWhitespace() throws IOException {
     var start = context.charSource().location();
     var buff = new RawContentBuffer()
@@ -250,7 +237,6 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    * @return the token.
    * @throws IOException if an {@link IOException} occurs during parsing.
    */
-  @CheckReturnValue
   protected Token consumeNewLine() throws IOException {
     return switch (context.charSource().peek(0)) {
       case '\r' -> context.charSource().peek(1) == '\n'

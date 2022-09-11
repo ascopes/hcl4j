@@ -14,24 +14,34 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.annotations;
+package io.github.ascopes.hcl4j.core.intern;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to apply to methods to mark their return value as being something that should not be
- * discarded immediately.
+ * Annotation that marks the annotated element as having a potentially null value.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
 @Documented
+@Inherited
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.ANNOTATION_TYPE, ElementType.METHOD})
-public @interface CheckReturnValue {
+@Target({
+    ElementType.ANNOTATION_TYPE,
+    ElementType.FIELD,
+    ElementType.LOCAL_VARIABLE,
+    ElementType.METHOD,
+    ElementType.PARAMETER,
+    ElementType.RECORD_COMPONENT,
+    ElementType.TYPE_PARAMETER,
+    ElementType.TYPE_USE,
+})
+public @interface Nullable {
 
 }

@@ -18,9 +18,8 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.annotations.Nullable;
-import io.github.ascopes.hcl4j.core.inputs.RawContentBuffer;
+import io.github.ascopes.hcl4j.core.intern.Nullable;
+import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
@@ -83,7 +82,6 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
     this.identifier = identifier;
   }
 
-  @CheckReturnValue
   @Override
   public Token nextToken() throws IOException {
     if (isClosingIdentifierAhead()) {
@@ -113,7 +111,6 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
     return consumeSomeText();
   }
 
-  @CheckReturnValue
   @Nullable
   private boolean isClosingIdentifierAhead() throws IOException {
     var i = 0;
@@ -132,7 +129,6 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  @CheckReturnValue
   private Token consumeSomeText() throws IOException {
     var start = context.charSource().location();
     var raw = new RawContentBuffer();

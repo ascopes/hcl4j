@@ -16,8 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.ast;
 
-import io.github.ascopes.hcl4j.core.annotations.Nullable;
 import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.util.List;
 

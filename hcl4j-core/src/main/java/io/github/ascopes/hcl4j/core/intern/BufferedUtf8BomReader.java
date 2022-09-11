@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.inputs;
+package io.github.ascopes.hcl4j.core.intern;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,8 +24,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Wrapper around an {@link InputStream} that will handle a UTF-8 byte-order mark if one is present
- * at the start. This also ensures any reading operations are backed by an in-memory buffer
- * for efficiency.
+ * at the start. This also ensures any reading operations are backed by an in-memory buffer for
+ * efficiency.
  *
  * @author Ashley Scopes
  * @since 0.0.1

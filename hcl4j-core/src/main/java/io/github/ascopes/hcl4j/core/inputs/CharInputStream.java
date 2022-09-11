@@ -16,8 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.annotations.Nullable;
+import io.github.ascopes.hcl4j.core.intern.BufferedUtf8BomReader;
+import io.github.ascopes.hcl4j.core.intern.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,7 +84,6 @@ public final class CharInputStream implements CharSource {
     reader.close();
   }
 
-  @CheckReturnValue
   @Override
   public Location location() {
     // Cache the location after making it so that the next token can share the same object
@@ -94,13 +93,11 @@ public final class CharInputStream implements CharSource {
         : cachedLocation;
   }
 
-  @CheckReturnValue
   @Override
   public String name() {
     return name;
   }
 
-  @CheckReturnValue
   @Override
   @SuppressWarnings("ResultOfMethodCallIgnored")
   public int peek(int offset) throws IOException {
@@ -118,7 +115,6 @@ public final class CharInputStream implements CharSource {
     }
   }
 
-  @CheckReturnValue
   @Override
   public int read() throws IOException {
     var next = reader.read();
@@ -126,7 +122,6 @@ public final class CharInputStream implements CharSource {
     return next;
   }
 
-  @CheckReturnValue
   @Override
   public CharSequence readString(int count) throws IOException {
     if (count < 0) {
@@ -147,7 +142,6 @@ public final class CharInputStream implements CharSource {
     return buff.toString();
   }
 
-  @CheckReturnValue
   @Override
   public boolean startsWith(CharSequence match) throws IOException {
     var len = match.length();

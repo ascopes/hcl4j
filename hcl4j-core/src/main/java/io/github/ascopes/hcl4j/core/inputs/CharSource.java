@@ -16,7 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -65,7 +64,6 @@ public interface CharSource extends AutoCloseable {
    *
    * @return the object representing the file location.
    */
-  @CheckReturnValue
   Location location();
 
   /**
@@ -75,7 +73,6 @@ public interface CharSource extends AutoCloseable {
    *
    * @return the name of the file.
    */
-  @CheckReturnValue
   String name();
 
   /**
@@ -87,7 +84,6 @@ public interface CharSource extends AutoCloseable {
    * @return the character codepoint, or {@link #EOF}.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
-  @CheckReturnValue
   int peek(int offset) throws IOException;
 
   /**
@@ -98,7 +94,6 @@ public interface CharSource extends AutoCloseable {
    * @return the character codepoint, or {@link #EOF}.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
-  @CheckReturnValue
   int read() throws IOException;
 
   /**
@@ -120,7 +115,6 @@ public interface CharSource extends AutoCloseable {
    * @return the read character sequence.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
-  @CheckReturnValue
   CharSequence readString(int count) throws IOException;
 
   /**
@@ -133,6 +127,5 @@ public interface CharSource extends AutoCloseable {
    *     {@code false} if it does not.
    * @throws IOException if an {@link IOException} is thrown internally.
    */
-  @CheckReturnValue
   boolean startsWith(CharSequence match) throws IOException;
 }

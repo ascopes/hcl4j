@@ -16,7 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.lexer;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.io.IOException;
 
@@ -35,6 +34,5 @@ public interface LexerStrategy {
    * @throws IOException if an {@link IOException} occurs internally while reading the input
    *                     source.
    */
-  @CheckReturnValue
   Token nextToken() throws IOException;
 }

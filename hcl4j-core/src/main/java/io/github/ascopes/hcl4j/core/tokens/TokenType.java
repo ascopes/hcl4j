@@ -16,7 +16,7 @@
 
 package io.github.ascopes.hcl4j.core.tokens;
 
-import io.github.ascopes.hcl4j.core.annotations.Nullable;
+import io.github.ascopes.hcl4j.core.intern.Nullable;
 
 /**
  * Enum of acceptable types of token that a lexer mode can emit.

@@ -16,7 +16,6 @@
 
 package io.github.ascopes.hcl4j.core.lexer;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.io.IOException;
@@ -55,7 +54,6 @@ public final class Lexer {
    *
    * @return the character source.
    */
-  @CheckReturnValue
   public CharSource charSource() {
     return charSource;
   }
@@ -85,7 +83,6 @@ public final class Lexer {
    *
    * @throws NoSuchElementException if the stack is empty.
    */
-  @CheckReturnValue
   public Token nextToken() throws IOException {
     var strategy = strategyStack.peek();
 

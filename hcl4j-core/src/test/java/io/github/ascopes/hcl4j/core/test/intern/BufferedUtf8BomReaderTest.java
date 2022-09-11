@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.test.inputs;
+package io.github.ascopes.hcl4j.core.test.intern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.github.ascopes.hcl4j.core.inputs.BufferedUtf8BomReader;
+import io.github.ascopes.hcl4j.core.intern.BufferedUtf8BomReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;

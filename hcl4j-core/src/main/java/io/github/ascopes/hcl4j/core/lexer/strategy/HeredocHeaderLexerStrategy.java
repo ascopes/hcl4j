@@ -18,8 +18,7 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.annotations.CheckReturnValue;
-import io.github.ascopes.hcl4j.core.annotations.Nullable;
+import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
@@ -78,7 +77,6 @@ public final class HeredocHeaderLexerStrategy extends CommonLexerStrategy {
     identifier = null;
   }
 
-  @CheckReturnValue
   @Override
   public Token nextToken() throws IOException {
     var next = context.charSource().peek(0);
