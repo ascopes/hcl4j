@@ -26,7 +26,6 @@ import io.github.ascopes.hcl4j.core.intern.Nullable;
  */
 public enum TokenType {
   END_OF_FILE("end of file"),
-  WTF("error"),
   NEW_LINE("new line"),
   WHITESPACE("whitespace"),
 

@@ -16,6 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.parser;
 
+import io.github.ascopes.hcl4j.core.ex.HclIoException;
+import io.github.ascopes.hcl4j.core.ex.HclSyntaxException;
 import java.io.IOException;
 
 /**
@@ -31,7 +33,8 @@ public interface Parser<T> {
    * Parse the root node of the document.
    *
    * @return the root node of the document.
-   * @throws IOException if an {@link IOException} occurs reading the config file.
+   * @throws HclIoException     if an {@link IOException} occurs reading the input file.
+   * @throws HclSyntaxException if invalid syntax is encountered in the file.
    */
-  T root() throws IOException;
+  T root() throws HclIoException, HclSyntaxException;
 }

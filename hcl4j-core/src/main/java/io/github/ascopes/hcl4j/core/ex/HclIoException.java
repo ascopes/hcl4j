@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.ex;
 
-import io.github.ascopes.hcl4j.core.inputs.Location;
+import java.io.IOException;
 
 /**
- * Implementation of token that represents an error.
+ * Exception thrown if any underlying {@link IOException} is thrown while reading or writing files.
  *
- * @param errorMessage the error message.
- * @param raw          the raw content that triggered the error.
- * @param start        the start location.
- * @param end          the end location.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record ErrorToken(
-    TokenErrorMessage errorMessage,
-    @Override CharSequence raw,
-    @Override Location start,
-    @Override Location end
-) implements Token {
+public final class HclIoException extends HclProcessingException {
+
+  /**
+   * Initialise this exception.
+   *
+   * @param message the associated error message.
+   * @param cause   the {@link IOException} that caused this exception to be thrown.
+   */
+  public HclIoException(String message, IOException cause) {
+    super(message, cause);
+  }
 
   @Override
-  public TokenType type() {
-    // Always "error".
-    return TokenType.WTF;
+  public IOException getCause() {
+    return (IOException) super.getCause();
   }
 }

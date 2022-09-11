@@ -16,9 +16,8 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
+import io.github.ascopes.hcl4j.core.ex.HclIoException;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 /**
  * A character stream for reading an HCL source file.
@@ -27,11 +26,6 @@ import java.nio.charset.StandardCharsets;
  * @since 0.0.1
  */
 public interface CharSource extends AutoCloseable {
-
-  /**
-   * The charset. This is always UTF-8 for HCL source files.
-   */
-  Charset CHARSET = StandardCharsets.UTF_8;
 
   /**
    * Marker to represent that the end of the file has been reached when calling {@link #peek}.
@@ -47,17 +41,17 @@ public interface CharSource extends AutoCloseable {
    * Advance the current location forwards by {@code count} characters.
    *
    * @param count the number of characters to advance the position by.
-   * @throws IOException if an {@link IOException} is thrown internally.
+   * @throws HclIoException if an {@link IOException} is thrown internally.
    */
-  void advance(int count) throws IOException;
+  void advance(int count) throws HclIoException;
 
   /**
    * Close the internal resource providing data to this stream.
    *
-   * @throws IOException if an {@link IOException} is thrown internally.
+   * @throws HclIoException if an {@link IOException} is thrown internally.
    */
   @Override
-  void close() throws IOException;
+  void close() throws HclIoException;
 
   /**
    * Create a new immutable object representing the current location in the file.
@@ -82,9 +76,9 @@ public interface CharSource extends AutoCloseable {
    *
    * @param offset the offset from the current location to peek.
    * @return the character codepoint, or {@link #EOF}.
-   * @throws IOException if an {@link IOException} is thrown internally.
+   * @throws HclIoException if an {@link IOException} is thrown internally.
    */
-  int peek(int offset) throws IOException;
+  int peek(int offset) throws HclIoException;
 
   /**
    * Read the next character and return it.
@@ -92,9 +86,9 @@ public interface CharSource extends AutoCloseable {
    * <p>This will advance the current position.
    *
    * @return the character codepoint, or {@link #EOF}.
-   * @throws IOException if an {@link IOException} is thrown internally.
+   * @throws HclIoException if an {@link IOException} is thrown internally.
    */
-  int read() throws IOException;
+  int read() throws HclIoException;
 
   /**
    * Read up to {@code count} characters from the current position in the stream and return them
@@ -113,9 +107,9 @@ public interface CharSource extends AutoCloseable {
    *
    * @param count the number of characters to read.
    * @return the read character sequence.
-   * @throws IOException if an {@link IOException} is thrown internally.
+   * @throws HclIoException if an {@link IOException} is thrown internally.
    */
-  CharSequence readString(int count) throws IOException;
+  CharSequence readString(int count) throws HclIoException;
 
   /**
    * Determine if the next characters in the input stream match the given character sequence.
@@ -125,7 +119,7 @@ public interface CharSource extends AutoCloseable {
    * @param match the character sequence to match.
    * @return {@code true} if the character sequence occurs at the current location in the input, or
    *     {@code false} if it does not.
-   * @throws IOException if an {@link IOException} is thrown internally.
+   * @throws HclIoException if an {@link IOException} is thrown internally.
    */
-  boolean startsWith(CharSequence match) throws IOException;
+  boolean startsWith(CharSequence match) throws HclIoException;
 }

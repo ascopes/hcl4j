@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.lexer;
-
-import io.github.ascopes.hcl4j.core.ex.HclIoException;
-import io.github.ascopes.hcl4j.core.tokens.Token;
-import java.io.IOException;
+package io.github.ascopes.hcl4j.core.ex;
 
 /**
- * Base interface for an active lexer mode.
+ * Base for any exception raised by HCL4J libraries.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface LexerStrategy {
+public abstract class HclException extends RuntimeException {
 
   /**
-   * Get the next token in the file.
+   * Initialise this exception.
    *
-   * @return the next token.
-   * @throws HclIoException if an {@link IOException} occurs internally while reading the input
-   *                        source.
+   * @param message the exception message.
    */
-  Token nextToken() throws HclIoException;
+  protected HclException(String message) {
+    super(message);
+  }
+
+  /**
+   * Initialise this exception.
+   *
+   * @param message the exception message.
+   * @param cause   the exception cause.
+   */
+  protected HclException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

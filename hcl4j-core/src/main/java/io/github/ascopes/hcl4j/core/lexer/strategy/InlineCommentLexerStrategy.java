@@ -18,12 +18,12 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import java.io.IOException;
 
 /**
  * Lexer strategy for parsing an inline comment.
@@ -60,7 +60,7 @@ public final class InlineCommentLexerStrategy extends CommonLexerStrategy {
   }
 
   @Override
-  public Token nextToken() throws IOException {
+  public Token nextToken() throws HclProcessingException {
     if (context.charSource().startsWith("*/")) {
       context.popStrategy();
       return newToken(TokenType.INLINE_COMMENT_END, 2);

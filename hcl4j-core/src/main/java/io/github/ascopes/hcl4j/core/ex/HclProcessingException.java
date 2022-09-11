@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-package io.github.ascopes.hcl4j.core.tokens;
+package io.github.ascopes.hcl4j.core.ex;
 
 /**
- * Errors that the lexer can emit.
+ * Base for any exception raised when something goes wrong with the processing of HCL content.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public enum TokenErrorMessage {
-  UNRECOGNISED_CHAR("unrecognised character"),
-  MALFORMED_ESCAPE_SEQUENCE("malformed escape sequence"),
-  INVALID_UNICODE_CODE_POINT("invalid unicode code point"),
-  UNKNOWN_OPERATOR("unknown operator"),
-  USE_DOUBLE_QUOTES("unrecognised character, use a double quote instead");
+public abstract class HclProcessingException extends HclException {
 
-  private final String value;
-
-  TokenErrorMessage(String value) {
-    this.value = value;
+  /**
+   * Initialise this exception.
+   *
+   * @param message the exception message.
+   */
+  protected HclProcessingException(String message) {
+    super(message);
   }
 
-  @Override
-  public String toString() {
-    return value;
+  /**
+   * Initialise this exception.
+   *
+   * @param message the exception message.
+   * @param cause   the exception cause.
+   */
+  protected HclProcessingException(String message, Throwable cause) {
+    super(message, cause);
   }
 }

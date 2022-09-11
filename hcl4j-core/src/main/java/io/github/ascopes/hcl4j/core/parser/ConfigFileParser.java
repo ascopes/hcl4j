@@ -19,7 +19,6 @@ package io.github.ascopes.hcl4j.core.parser;
 import io.github.ascopes.hcl4j.core.ast.BodyItem;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.lexer.strategy.ConfigLexerStrategy;
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -41,7 +40,7 @@ public final class ConfigFileParser extends CommonParser<List<? extends BodyItem
   }
 
   @Override
-  public List<? extends BodyItem> root() throws IOException {
+  public List<? extends BodyItem> root() {
     throw new UnsupportedOperationException();
   }
 }

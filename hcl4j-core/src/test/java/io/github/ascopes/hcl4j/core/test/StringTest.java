@@ -30,7 +30,7 @@ class StringTest {
   @Test
   void testString() throws IOException {
     var source = """
-            foo = "\\n\\nhi\\n\\n";
+            foo = "\\n\\nhi\\n\\n"
         """.stripIndent();
 
     try (

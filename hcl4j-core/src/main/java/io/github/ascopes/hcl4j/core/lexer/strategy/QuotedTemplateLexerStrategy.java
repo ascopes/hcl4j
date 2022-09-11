@@ -18,17 +18,13 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
-import io.github.ascopes.hcl4j.core.inputs.Location;
+import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
+import io.github.ascopes.hcl4j.core.ex.HclSyntaxException;
 import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
-import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * Lexer strategy to handle quoted templates.
@@ -47,15 +43,10 @@ import java.util.Queue;
  *   <li>A new line will be emitted (although it should be considered an error by the parser).</li>
  *   <li>A closing quote will pop the current mode and emit the closing quote token.</li>
  *   <li>An interpolation opening with tilde "<code>$&#123;~</code>" will emit a
- *      {@link TokenType#LEFT_INTERPOLATION_TRIM} token, and a new {@link ConfigLexerStrategy}
- *      will be pushed onto the lexer strategy stack.</li>
- *   <li>An interpolation opening without a tilde "<code>$&#123;</code>" will emit a
+ *   <li>An interpolation opening "<code>$&#123;</code>" will emit a
  *      {@link TokenType#LEFT_INTERPOLATION} token, and a new {@link ConfigLexerStrategy}
  *      will be pushed onto the lexer strategy stack.</li>
- *   <li>A directive opening with tilde "<code>%&#123;~</code>" will emit a
- *      {@link TokenType#LEFT_DIRECTIVE_TRIM} token, and a new {@link ConfigLexerStrategy}
- *      will be pushed onto the lexer strategy stack.</li>
- *   <li>A directive opening without a tilde "<code>%&#123;</code>" will emit a
+ *   <li>A directive opening "<code>%&#123;</code>" will emit a
  *      {@link TokenType#LEFT_DIRECTIVE} token, and a new {@link ConfigLexerStrategy}
  *      will be pushed onto the lexer strategy stack.</li>
  *   <li>Anything else will be collected into a buffer until one of the above cases occurs.
@@ -93,8 +84,6 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
   private static final int BMP_DIGITS = 4;
   private static final int SUPP_DIGITS = 8;
 
-  private final Queue<Token> errors;
-
   /**
    * Initialize the strategy.
    *
@@ -102,18 +91,10 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
    */
   public QuotedTemplateLexerStrategy(Lexer context) {
     super(context);
-
-    // We can emit encoding errors for bad escape sequences. Do this using a stack to
-    // keep things simple.
-    errors = new LinkedList<>();
   }
 
   @Override
-  public Token nextToken() throws IOException {
-    if (!errors.isEmpty()) {
-      return errors.remove();
-    }
-
+  public Token nextToken() throws HclProcessingException {
     if (context.charSource().startsWith("${")) {
       // Next expression is an interpolation.
       context.pushStrategy(new TemplateExpressionLexerStrategy(context));
@@ -141,7 +122,7 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  private Token consumeSomeText() throws IOException {
+  private Token consumeSomeText() throws HclProcessingException {
     var start = context.charSource().location();
     var raw = new RawContentBuffer();
     var content = new RawContentBuffer();
@@ -195,7 +176,9 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     return new RawTextToken(raw.content(), content.content(), start, end);
   }
 
-  private void consumeEscape(RawContentBuffer raw, RawContentBuffer content) throws IOException {
+  private void consumeEscape(RawContentBuffer raw, RawContentBuffer content)
+      throws HclProcessingException {
+
     switch (context.charSource().peek(1)) {
       case 'n' -> {
         raw.append(context.charSource().readString(2));
@@ -228,19 +211,26 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
         raw.append(next);
         var end = context.charSource().location();
 
-        emitError(new ErrorToken(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, next, start, end));
+        throw new HclSyntaxException(
+            context.charSource().name(),
+            next,
+            start,
+            end,
+            "Unrecognised string escape sequence"
+        );
       }
     }
   }
 
   private void consumeUtf8Escape(RawContentBuffer raw, RawContentBuffer content)
-      throws IOException {
+      throws HclProcessingException {
+
     var start = context.charSource().location();
     var startSequence = context.charSource().readString(2);
     raw.append(startSequence);
 
     var digits = new RawContentBuffer();
-    var length = startSequence.equals("\\u") ? BMP_DIGITS : SUPP_DIGITS;
+    var length = escapeSequenceLength(startSequence);
     var i = 0;
 
     for (; i < length; ++i) {
@@ -249,10 +239,14 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
       raw.append(nextChar);
 
       if (nextChar == EOF || !isHexadecimal(nextChar)) {
-        emitEscapeError(TokenErrorMessage.MALFORMED_ESCAPE_SEQUENCE, startSequence, digits, start);
-
-        // Syntax error, but handle this best-effort for now.
-        break;
+        throw new HclSyntaxException(
+            context.charSource().name(),
+            raw.content(),
+            start,
+            context.charSource().location(),
+            "Expected " + length + " hexadecimal digits for " + escapeSequenceName(startSequence)
+                + " but got " + i
+        );
       }
 
       digits.append(nextChar);
@@ -267,28 +261,25 @@ public final class QuotedTemplateLexerStrategy extends CommonLexerStrategy {
     } catch (IllegalArgumentException ex) {
       // We cannot handle the codepoint. Emit an error at the end of the
       // string and skip this escape sequence for now.
-      emitEscapeError(TokenErrorMessage.INVALID_UNICODE_CODE_POINT, startSequence, digits, start);
+      throw new HclSyntaxException(
+          context.charSource().name(),
+          raw.content(),
+          start,
+          context.charSource().location(),
+          "Invalid unicode codepoint",
+          ex
+      );
     }
   }
 
-  private void emitEscapeError(
-      TokenErrorMessage errorMessage,
-      CharSequence startSequence,
-      RawContentBuffer digits,
-      Location start
-  ) {
-    var end = context.charSource().location();
-
-    var err = new ErrorToken(
-        errorMessage,
-        String.join("", startSequence, digits.content()),
-        start,
-        end
-    );
-    emitError(err);
+  private int escapeSequenceLength(CharSequence start) {
+    return start.equals("\\u")
+        ? BMP_DIGITS : SUPP_DIGITS;
   }
 
-  private void emitError(ErrorToken error) {
-    errors.add(error);
+  private String escapeSequenceName(CharSequence start) {
+    return start.equals("\\u")
+        ? "basic multilingual plane escape sequence"
+        : "supplementary plane escape sequence";
   }
 }

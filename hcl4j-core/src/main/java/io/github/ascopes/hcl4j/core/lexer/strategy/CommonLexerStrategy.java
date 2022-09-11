@@ -16,15 +16,15 @@
 
 package io.github.ascopes.hcl4j.core.lexer.strategy;
 
+import io.github.ascopes.hcl4j.core.ex.HclIoException;
+import io.github.ascopes.hcl4j.core.ex.HclSyntaxException;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.lexer.LexerStrategy;
 import io.github.ascopes.hcl4j.core.tokens.EofToken;
-import io.github.ascopes.hcl4j.core.tokens.ErrorToken;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
 import java.io.IOException;
 
@@ -56,6 +56,136 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
     // We fill this after we hit EOF to prevent allocating lots of duplicate object descriptors
     // for the end of the file. This is just a minor optimisation.
     cachedEofToken = null;
+  }
+
+  /**
+   * Construct a token from the given number of characters.
+   *
+   * @param type   the type of token to use.
+   * @param length the character count to read.
+   * @return the token.
+   * @throws HclIoException if an {@link IOException} occurred internally.
+   */
+  protected Token newToken(TokenType type, int length) throws HclIoException {
+    var start = context.charSource().location();
+    var raw = context.charSource().readString(length);
+    var end = context.charSource().location();
+
+    assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
+    return new SimpleToken(type, raw, start, end);
+  }
+
+  /**
+   * Construct an error from the given number of characters.
+   *
+   * @param message the error message to use.
+   * @param length  the character count to read.
+   * @return the error to raise.
+   * @throws HclIoException if an IO error occurs reading the erroneous content.
+   */
+  protected HclSyntaxException syntaxError(String message, int length)
+      throws HclIoException {
+    var start = context.charSource().location();
+    var raw = context.charSource().readString(length);
+    var end = context.charSource().location();
+
+    assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
+    return new HclSyntaxException(context.charSource().name(), raw, start, end, message);
+  }
+
+  /**
+   * Consume an end-of-file token.
+   *
+   * @return the token.
+   */
+  protected Token consumeEndOfFile() {
+    return cachedEofToken == null
+        ? (cachedEofToken = new EofToken(context.charSource().location()))
+        : cachedEofToken;
+  }
+
+  /**
+   * Consume an unknown character and emit it as an error.
+   *
+   * @return the error to raise.
+   * @throws HclIoException if preparing the exception failed with an {@link IOException}.
+   */
+  protected HclSyntaxException errorUnrecognisedCharacter() throws HclIoException {
+    throw syntaxError("Unrecognised character in input", 1);
+  }
+
+  /**
+   * Consume an identifier, given the assumption that the first character is an ID_START.
+   *
+   * @return the token.
+   * @throws HclIoException if an {@link HclIoException} occurs during parsing.
+   */
+  protected Token consumeIdentifier() throws HclIoException {
+    var start = context.charSource().location();
+    var buff = new RawContentBuffer()
+        .append(context.charSource().read());
+
+    while (true) {
+      var next = context.charSource().peek(0);
+      if (isIdContinue(next)) {
+        buff.append(next);
+        context.charSource().advance(1);
+      } else {
+        break;
+      }
+    }
+
+    var end = context.charSource().location();
+
+    return new SimpleToken(TokenType.IDENTIFIER, buff.content(), start, end);
+  }
+
+  /**
+   * Consume some whitespace, given the assumption that the current character is whitespace.
+   *
+   * @return the token.
+   * @throws HclIoException if an {@link IOException} occurs during parsing.
+   */
+  protected Token consumeWhitespace() throws HclIoException {
+    var start = context.charSource().location();
+    var buff = new RawContentBuffer()
+        .append(context.charSource().read());
+
+    while (true) {
+      var nextChar = context.charSource().peek(0);
+
+      if (nextChar != ' ' && nextChar != '\t') {
+        break;
+      }
+
+      buff.append(nextChar);
+      context.charSource().advance(1);
+    }
+
+    var end = context.charSource().location();
+
+    return new SimpleToken(TokenType.WHITESPACE, buff.content(), start, end);
+  }
+
+  /**
+   * Consume some whitespace, given the assumption that the current character is a newline start. or
+   * a line feed.
+   *
+   * @return the token.
+   * @throws HclIoException if an {@link IOException} occurs during parsing.
+   */
+  protected Token consumeNewLine() throws HclIoException {
+    return switch (context.charSource().peek(0)) {
+      case '\r' -> {
+        if (context.charSource().peek(1) == '\n') {
+          yield newToken(TokenType.NEW_LINE, 2);
+        } else {
+          throw errorUnrecognisedCharacter();
+        }
+      }
+      case '\n' -> newToken(TokenType.NEW_LINE, 1);
+      default -> throw errorUnrecognisedCharacter();
+    };
   }
 
   /**
@@ -120,130 +250,5 @@ public abstract class CommonLexerStrategy implements LexerStrategy {
    */
   protected static boolean isNewLineStart(int codePoint) {
     return '\r' == codePoint || '\n' == codePoint;
-  }
-
-  /**
-   * Construct a token from the given number of characters.
-   *
-   * @param type   the type of token to use.
-   * @param length the character count to read.
-   * @return the token.
-   * @throws IOException if an {@link IOException} occurred internally.
-   */
-  protected Token newToken(TokenType type, int length) throws IOException {
-    var start = context.charSource().location();
-    var raw = context.charSource().readString(length);
-    var end = context.charSource().location();
-
-    assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new SimpleToken(type, raw, start, end);
-  }
-
-  /**
-   * Construct an error from the given number of characters.
-   *
-   * @param error  the error to use.
-   * @param length the character count to read.
-   * @return the error token.
-   * @throws IOException if an {@link IOException} occurred internally.
-   */
-  protected Token newError(TokenErrorMessage error, int length) throws IOException {
-    var start = context.charSource().location();
-    var raw = context.charSource().readString(length);
-    var end = context.charSource().location();
-
-    assert raw.length() == length : "EOF reached prematurely, missing check occurred elsewhere";
-    return new ErrorToken(error, raw, start, end);
-  }
-
-  /**
-   * Consume an end-of-file token.
-   *
-   * @return the token.
-   */
-  protected Token consumeEndOfFile() {
-    return cachedEofToken == null
-        ? (cachedEofToken = new EofToken(context.charSource().location()))
-        : cachedEofToken;
-  }
-
-  /**
-   * Consume an unknown character and emit it as an error.
-   *
-   * @return the error.
-   * @throws IOException if an {@link IOException} occurs during parsing.
-   */
-  protected Token consumeUnrecognisedCharacter() throws IOException {
-    return newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
-  }
-
-  /**
-   * Consume an identifier, given the assumption that the first character is an ID_START.
-   *
-   * @return the token.
-   * @throws IOException if an {@link IOException} occurs during parsing.
-   */
-  protected Token consumeIdentifier() throws IOException {
-    var start = context.charSource().location();
-    var buff = new RawContentBuffer()
-        .append(context.charSource().read());
-
-    while (true) {
-      var next = context.charSource().peek(0);
-      if (isIdContinue(next)) {
-        buff.append(next);
-        context.charSource().advance(1);
-      } else {
-        break;
-      }
-    }
-
-    var end = context.charSource().location();
-
-    return new SimpleToken(TokenType.IDENTIFIER, buff.content(), start, end);
-  }
-
-  /**
-   * Consume some whitespace, given the assumption that the current character is whitespace.
-   *
-   * @return the token.
-   * @throws IOException if an {@link IOException} occurs during parsing.
-   */
-  protected Token consumeWhitespace() throws IOException {
-    var start = context.charSource().location();
-    var buff = new RawContentBuffer()
-        .append(context.charSource().read());
-
-    while (true) {
-      var nextChar = context.charSource().peek(0);
-
-      if (nextChar != ' ' && nextChar != '\t') {
-        break;
-      }
-
-      buff.append(nextChar);
-      context.charSource().advance(1);
-    }
-
-    var end = context.charSource().location();
-
-    return new SimpleToken(TokenType.WHITESPACE, buff.content(), start, end);
-  }
-
-  /**
-   * Consume some whitespace, given the assumption that the current character is a newline start. or
-   * a line feed.
-   *
-   * @return the token.
-   * @throws IOException if an {@link IOException} occurs during parsing.
-   */
-  protected Token consumeNewLine() throws IOException {
-    return switch (context.charSource().peek(0)) {
-      case '\r' -> context.charSource().peek(1) == '\n'
-          ? newToken(TokenType.NEW_LINE, 2)
-          : newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
-      case '\n' -> newToken(TokenType.NEW_LINE, 1);
-      default -> newError(TokenErrorMessage.UNRECOGNISED_CHAR, 1);
-    };
   }
 }

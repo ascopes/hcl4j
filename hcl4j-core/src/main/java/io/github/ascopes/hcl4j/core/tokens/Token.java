@@ -27,7 +27,7 @@ import io.github.ascopes.hcl4j.core.inputs.Location;
  */
 public sealed interface Token
     extends Locatable
-    permits EofToken, ErrorToken, RawTextToken, SimpleToken {
+    permits EofToken, RawTextToken, SimpleToken {
 
   /**
    * Get the token type.

@@ -18,10 +18,10 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import java.io.IOException;
 
 /**
  * Strategy for tokenizing content that occurs within interpolation blocks or directive blocks.
@@ -47,7 +47,7 @@ public final class TemplateExpressionLexerStrategy extends CommonLexerStrategy {
   }
 
   @Override
-  public Token nextToken() throws IOException {
+  public Token nextToken() throws HclProcessingException {
     return switch (context.charSource().peek(0)) {
       case EOF -> {
         context.popStrategy();
@@ -59,11 +59,11 @@ public final class TemplateExpressionLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  private Token consumeTilde() throws IOException {
+  private Token consumeTilde() throws HclProcessingException {
     return newToken(TokenType.TRIM, 1);
   }
 
-  private Token consumeRightBrace() throws IOException {
+  private Token consumeRightBrace() throws HclProcessingException {
     var token = newToken(TokenType.RIGHT_BRACE, 1);
     context.popStrategy();
     return token;

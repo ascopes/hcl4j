@@ -17,6 +17,7 @@
 package io.github.ascopes.hcl4j.core.parser;
 
 import io.github.ascopes.hcl4j.core.ast.Template;
+import io.github.ascopes.hcl4j.core.ex.HclSyntaxException;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.lexer.strategy.ConfigLexerStrategy;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public final class TemplateFileParser extends CommonParser<Template> {
   }
 
   @Override
-  public Template root() throws IOException {
+  public Template root() {
     throw new UnsupportedOperationException();
   }
 }

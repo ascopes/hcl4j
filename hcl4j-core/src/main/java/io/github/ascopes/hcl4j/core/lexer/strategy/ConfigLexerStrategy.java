@@ -18,13 +18,14 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.ex.HclIoException;
+import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
+import io.github.ascopes.hcl4j.core.ex.HclSyntaxException;
 import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
-import io.github.ascopes.hcl4j.core.tokens.TokenErrorMessage;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -50,7 +51,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
   }
 
   @Override
-  public Token nextToken() throws IOException {
+  public Token nextToken() throws HclProcessingException {
     if (!lookAheadQueue.isEmpty()) {
       return lookAheadQueue.remove();
     }
@@ -98,12 +99,12 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
       case '[' -> consumeLeftSquareBracket();
       case ']' -> consumeRightSquareBracket();
       case '#' -> consumeHash();
-      case '\'' -> newError(TokenErrorMessage.USE_DOUBLE_QUOTES, 1);
-      default -> consumeUnrecognisedCharacter();
+      case '\'' -> throw syntaxError("Use double quotes for quoted templates", 1);
+      default -> throw errorUnrecognisedCharacter();
     };
   }
 
-  private Token consumeNumber() throws IOException {
+  private Token consumeNumber() throws HclProcessingException {
     var start = context.charSource().location();
     var buff = new RawContentBuffer();
 
@@ -130,7 +131,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     return new SimpleToken(type, buff.content(), start, end);
   }
 
-  private void tryConsumeIntegerPart(RawContentBuffer buff) throws IOException {
+  private void tryConsumeIntegerPart(RawContentBuffer buff) throws HclProcessingException {
     // We always consume as many digits as possible here.
     buff.append(context.charSource().read());
 
@@ -145,7 +146,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     }
   }
 
-  private void tryConsumeFractionPart(RawContentBuffer buff) throws IOException {
+  private void tryConsumeFractionPart(RawContentBuffer buff) throws HclProcessingException {
     // We purposely don't consume the dot if we don't have a digit after it. That enables
     // us to have expressions like 123.name. Might be invalid later, but it gives better error
     // messages.
@@ -160,7 +161,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     tryConsumeIntegerPart(buff);
   }
 
-  private void tryConsumeExponentPart(RawContentBuffer buff) throws IOException {
+  private void tryConsumeExponentPart(RawContentBuffer buff) throws HclProcessingException {
     // We purposely don't consume the E if we don't have a + and digit or - and digit after it.
     // This enables us to treat other garbage as separate tokens to give better error messages.
 
@@ -179,30 +180,30 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     }
   }
 
-  private Token consumePlus() throws IOException {
+  private Token consumePlus() throws HclProcessingException {
     return newToken(TokenType.PLUS, 1);
   }
 
-  private Token consumeMinus() throws IOException {
+  private Token consumeMinus() throws HclProcessingException {
     return newToken(TokenType.MINUS, 1);
   }
 
-  private Token consumeAsterisk() throws IOException {
+  private Token consumeAsterisk() throws HclProcessingException {
     return newToken(TokenType.STAR, 1);
   }
 
-  private Token consumePercent() throws IOException {
+  private Token consumePercent() throws HclProcessingException {
     return newToken(TokenType.MODULO, 1);
   }
 
-  private Token consumeAmpersand() throws IOException {
+  private Token consumeAmpersand() throws HclProcessingException {
     return switch (context.charSource().peek(1)) {
       case '&' -> newToken(TokenType.AND, 2);
-      default -> newError(TokenErrorMessage.UNKNOWN_OPERATOR, 2);
+      default -> throw errorUnknownOperator(2);
     };
   }
 
-  private Token consumeSlash() throws IOException {
+  private Token consumeSlash() throws HclProcessingException {
     return switch (context.charSource().peek(1)) {
       case '/' -> consumeLineComment();
       case '*' -> consumeInlineComment();
@@ -210,21 +211,21 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  private Token consumePipe() throws IOException {
+  private Token consumePipe() throws HclProcessingException {
     return switch (context.charSource().peek(1)) {
       case '|' -> newToken(TokenType.OR, 2);
-      default -> newError(TokenErrorMessage.UNKNOWN_OPERATOR, 2);
+      default -> throw errorUnknownOperator(2);
     };
   }
 
-  private Token consumeBang() throws IOException {
+  private Token consumeBang() throws HclProcessingException {
     return switch (context.charSource().peek(1)) {
       case '=' -> newToken(TokenType.NOT_EQUAL, 2);
       default -> newToken(TokenType.NOT, 1);
     };
   }
 
-  private Token consumeEquals() throws IOException {
+  private Token consumeEquals() throws HclProcessingException {
     return switch (context.charSource().peek(1)) {
       case '=' -> newToken(TokenType.EQUAL, 2);
       case '>' -> newToken(TokenType.FAT_ARROW, 2);
@@ -232,7 +233,7 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  private Token consumeLess() throws IOException {
+  private Token consumeLess() throws HclProcessingException {
     return switch (context.charSource().peek(1)) {
       case '<' -> consumeHeredocAnchor();
       case '=' -> newToken(TokenType.LESS_EQUAL, 2);
@@ -240,38 +241,38 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  private Token consumeGreater() throws IOException {
+  private Token consumeGreater() throws HclProcessingException {
     return switch (context.charSource().peek(1)) {
       case '=' -> newToken(TokenType.GREATER_EQUAL, 2);
       default -> newToken(TokenType.GREATER, 1);
     };
   }
 
-  private Token consumeDot() throws IOException {
+  private Token consumeDot() throws HclProcessingException {
     return context.charSource().startsWith("...")
         ? newToken(TokenType.ELLIPSIS, 3)
         : newToken(TokenType.DOT, 1);
   }
 
-  private Token consumeQuestionMark() throws IOException {
+  private Token consumeQuestionMark() throws HclProcessingException {
     return newToken(TokenType.QUESTION_MARK, 1);
   }
 
-  private Token consumeColon() throws IOException {
+  private Token consumeColon() throws HclProcessingException {
     return newToken(TokenType.COLON, 1);
   }
 
-  private Token consumeComma() throws IOException {
+  private Token consumeComma() throws HclProcessingException {
     return newToken(TokenType.COMMA, 1);
   }
 
-  private Token consumeQuote() throws IOException {
+  private Token consumeQuote() throws HclProcessingException {
     var token = newToken(TokenType.OPENING_QUOTE, 1);
     context.pushStrategy(new QuotedTemplateLexerStrategy(context));
     return token;
   }
 
-  private Token consumeLeftBrace() throws IOException {
+  private Token consumeLeftBrace() throws HclProcessingException {
     // Push this mode. This can be overridden by a different block of logic for anything
     // subclassing or delegating to this lexer mode (e.g. template lexer modes). We push
     // this mode to enable popping it again afterwards when the block closes.
@@ -279,33 +280,33 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
     return newToken(TokenType.LEFT_BRACE, 1);
   }
 
-  private Token consumeRightBrace() throws IOException {
+  private Token consumeRightBrace() throws HclProcessingException {
     // Drop out of the current block, whatever that is.
     context.popStrategy();
     return newToken(TokenType.RIGHT_BRACE, 1);
   }
 
-  private Token consumeLeftParenthesis() throws IOException {
+  private Token consumeLeftParenthesis() throws HclProcessingException {
     return newToken(TokenType.LEFT_PAREN, 1);
   }
 
-  private Token consumeRightParenthesis() throws IOException {
+  private Token consumeRightParenthesis() throws HclProcessingException {
     return newToken(TokenType.RIGHT_PAREN, 1);
   }
 
-  private Token consumeLeftSquareBracket() throws IOException {
+  private Token consumeLeftSquareBracket() throws HclProcessingException {
     return newToken(TokenType.LEFT_SQUARE, 1);
   }
 
-  private Token consumeRightSquareBracket() throws IOException {
+  private Token consumeRightSquareBracket() throws HclProcessingException {
     return newToken(TokenType.RIGHT_SQUARE, 1);
   }
 
-  private Token consumeHash() throws IOException {
+  private Token consumeHash() throws HclProcessingException {
     return consumeLineComment();
   }
 
-  private Token consumeLineComment() throws IOException {
+  private Token consumeLineComment() throws HclProcessingException {
     context.pushStrategy(new LineCommentLexerStrategy(context));
 
     // We know we either have # or //.
@@ -314,13 +315,17 @@ public final class ConfigLexerStrategy extends CommonLexerStrategy {
         : newToken(TokenType.LINE_COMMENT_SLASH_START, 2);
   }
 
-  private Token consumeInlineComment() throws IOException {
+  private Token consumeInlineComment() throws HclProcessingException {
     context.pushStrategy(new InlineCommentLexerStrategy(context));
     return newToken(TokenType.INLINE_COMMENT_START, 2);
   }
 
-  private Token consumeHeredocAnchor() throws IOException {
+  private Token consumeHeredocAnchor() throws HclProcessingException {
     context.pushStrategy(new HeredocHeaderLexerStrategy(context));
     return newToken(TokenType.HEREDOC_ANCHOR, 2);
+  }
+
+  private HclSyntaxException errorUnknownOperator(int length) throws HclIoException {
+    return syntaxError("Unknown operator", length);
   }
 }

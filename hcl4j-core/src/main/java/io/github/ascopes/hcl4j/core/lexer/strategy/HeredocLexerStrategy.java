@@ -18,13 +18,13 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.RawTextToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import java.io.IOException;
 
 /**
  * Lexer strategy for tokenizing content within a heredoc directive until the heredoc is
@@ -83,7 +83,7 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
   }
 
   @Override
-  public Token nextToken() throws IOException {
+  public Token nextToken() throws HclProcessingException {
     if (isClosingIdentifierAhead()) {
       // Time to pop the lexer mode, we have reached the end of the heredoc.
       context.popStrategy();
@@ -112,7 +112,7 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
   }
 
   @Nullable
-  private boolean isClosingIdentifierAhead() throws IOException {
+  private boolean isClosingIdentifierAhead() throws HclProcessingException {
     var i = 0;
     for (; i < identifier.length(); ++i) {
       if (context.charSource().peek(i) != identifier.charAt(i)) {
@@ -129,7 +129,7 @@ public final class HeredocLexerStrategy extends CommonLexerStrategy {
     };
   }
 
-  private Token consumeSomeText() throws IOException {
+  private Token consumeSomeText() throws HclProcessingException {
     var start = context.charSource().location();
     var raw = new RawContentBuffer();
     var content = new RawContentBuffer();

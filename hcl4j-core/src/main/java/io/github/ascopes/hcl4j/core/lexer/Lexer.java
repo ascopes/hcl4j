@@ -16,6 +16,7 @@
 
 package io.github.ascopes.hcl4j.core.lexer;
 
+import io.github.ascopes.hcl4j.core.ex.HclIoException;
 import io.github.ascopes.hcl4j.core.inputs.CharSource;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import java.io.IOException;
@@ -82,8 +83,10 @@ public final class Lexer {
    * Retrieve the next token.
    *
    * @throws NoSuchElementException if the stack is empty.
+   * @throws HclIoException         if an {@link IOException} occurs internally while reading the
+   *                                input source.
    */
-  public Token nextToken() throws IOException {
+  public Token nextToken() throws HclIoException {
     var strategy = strategyStack.peek();
 
     if (strategy == null) {

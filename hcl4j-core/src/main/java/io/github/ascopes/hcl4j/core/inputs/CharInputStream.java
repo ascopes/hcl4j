@@ -16,6 +16,7 @@
 
 package io.github.ascopes.hcl4j.core.inputs;
 
+import io.github.ascopes.hcl4j.core.ex.HclIoException;
 import io.github.ascopes.hcl4j.core.intern.BufferedUtf8BomReader;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import java.io.BufferedReader;
@@ -65,23 +66,31 @@ public final class CharInputStream implements CharSource {
   }
 
   @Override
-  public void advance(int count) throws IOException {
+  public void advance(int count) throws HclIoException {
     if (count <= 0) {
       throw new IllegalArgumentException("Cannot advance by less than 1 character");
     }
 
-    for (var i = 0; i < count; ++i) {
-      var next = reader.read();
-      processNextChar(next);
-      if (next == EOF) {
-        break;
+    try {
+      for (var i = 0; i < count; ++i) {
+        var next = reader.read();
+        processNextChar(next);
+        if (next == EOF) {
+          break;
+        }
       }
+    } catch (IOException ex) {
+      throw new HclIoException("Call to CharSource#advance failed due to an IO error", ex);
     }
   }
 
   @Override
-  public void close() throws IOException {
-    reader.close();
+  public void close() throws HclIoException {
+    try {
+      reader.close();
+    } catch (IOException ex) {
+      throw new HclIoException("Call to CharSource#close failed due to an IO error", ex);
+    }
   }
 
   @Override
@@ -100,67 +109,83 @@ public final class CharInputStream implements CharSource {
 
   @Override
   @SuppressWarnings("ResultOfMethodCallIgnored")
-  public int peek(int offset) throws IOException {
+  public int peek(int offset) throws HclIoException {
     if (offset < 0) {
       throw new IllegalArgumentException("Cannot peek by a negative offset");
     }
 
-    reader.mark(offset + 1);
-
     try {
-      reader.skip(offset);
-      return reader.read();
-    } finally {
-      reader.reset();
+      reader.mark(offset + 1);
+
+      try {
+        reader.skip(offset);
+        return reader.read();
+      } finally {
+        reader.reset();
+      }
+    } catch (IOException ex) {
+      throw new HclIoException("Call to CharSource#peek failed due to an IO error", ex);
     }
   }
 
   @Override
-  public int read() throws IOException {
-    var next = reader.read();
-    processNextChar(next);
-    return next;
+  public int read() throws HclIoException {
+    try {
+      var next = reader.read();
+      processNextChar(next);
+      return next;
+    } catch (IOException ex) {
+      throw new HclIoException("Call to CharSource#read failed due to an IO error", ex);
+    }
   }
 
   @Override
-  public CharSequence readString(int count) throws IOException {
+  public CharSequence readString(int count) throws HclIoException {
     if (count < 0) {
       throw new IllegalArgumentException("Cannot read a negative number of characters");
     }
 
     var buff = new StringBuilder();
 
-    for (var i = 0; i < count; ++i) {
-      var next = reader.read();
-      processNextChar(next);
-      if (next == EOF) {
-        break;
+    try {
+      for (var i = 0; i < count; ++i) {
+        var next = reader.read();
+        processNextChar(next);
+        if (next == EOF) {
+          break;
+        }
+        buff.append((char) next);
       }
-      buff.append((char) next);
+    } catch (IOException ex) {
+      throw new HclIoException("Call to CharSource#readString failed due to an IO error", ex);
     }
 
     return buff.toString();
   }
 
   @Override
-  public boolean startsWith(CharSequence match) throws IOException {
+  public boolean startsWith(CharSequence match) throws HclIoException {
     var len = match.length();
 
-    reader.mark(len);
-
     try {
-      for (var i = 0; i < len; ++i) {
-        var expect = (int) match.charAt(i);
-        var actual = reader.read();
+      reader.mark(len);
 
-        if (actual != expect) {
-          return false;
+      try {
+        for (var i = 0; i < len; ++i) {
+          var expect = (int) match.charAt(i);
+          var actual = reader.read();
+
+          if (actual != expect) {
+            return false;
+          }
         }
-      }
 
-      return true;
-    } finally {
-      reader.reset();
+        return true;
+      } finally {
+        reader.reset();
+      }
+    } catch (IOException ex) {
+      throw new HclIoException("Call to CharSource#startsWith failed due to an IO error", ex);
     }
   }
 
@@ -174,9 +199,7 @@ public final class CharInputStream implements CharSource {
         ++line;
         column = INITIAL_COLUMN;
       }
-      default -> {
-        ++column;
-      }
+      default -> ++column;
     }
 
     ++position;

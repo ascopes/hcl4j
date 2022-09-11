@@ -18,12 +18,12 @@ package io.github.ascopes.hcl4j.core.lexer.strategy;
 
 import static io.github.ascopes.hcl4j.core.inputs.CharSource.EOF;
 
+import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.intern.RawContentBuffer;
 import io.github.ascopes.hcl4j.core.lexer.Lexer;
 import io.github.ascopes.hcl4j.core.tokens.SimpleToken;
 import io.github.ascopes.hcl4j.core.tokens.Token;
 import io.github.ascopes.hcl4j.core.tokens.TokenType;
-import java.io.IOException;
 
 /**
  * Lexer strategy for consuming files that are purely template literals.
@@ -50,7 +50,7 @@ public final class TemplateFileLexerStrategy extends CommonLexerStrategy {
   }
 
   @Override
-  public Token nextToken() throws IOException {
+  public Token nextToken() throws HclProcessingException {
     if (context.charSource().peek(0) == EOF) {
       // EOF.
       context.popStrategy();
@@ -72,7 +72,7 @@ public final class TemplateFileLexerStrategy extends CommonLexerStrategy {
     return consumeSomeText();
   }
 
-  private Token consumeSomeText() throws IOException {
+  private Token consumeSomeText() throws HclProcessingException {
     var start = context.charSource().location();
     var buff = new RawContentBuffer()
         .append(context.charSource().read());
