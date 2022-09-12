@@ -19,37 +19,54 @@ package io.github.ascopes.hcl4j.core.parser;
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.ex.HclUnexpectedTokenException;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+import io.github.ascopes.hcl4j.core.intern.Indexed;
 import io.github.ascopes.hcl4j.core.lexer.HclLexer;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
-import java.util.Arrays;
-import java.util.Deque;
 import java.util.EnumSet;
 import java.util.LinkedList;
 
 /**
  * A simple wrapper around a lexer that provides useful stream-oriented operations for parsers to
- * consume tokens with.
+ * consume tokens with. This enables parsers to become {@code LL(k)} look-ahead, and will discard
+ * whitespace automatically.
  *
  * <p>This class is <strong>not</strong> thread-safe.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public final class HclSimpleTokenStream implements HclTokenStream {
+public final class HclDefaultTokenStream implements HclTokenStream {
 
   private final HclLexer lexer;
-
   private final LinkedList<HclToken> tokens;
+  private EnumSet<HclTokenType> skipMask;
 
   /**
    * Initialize this stream.
    *
    * @param lexer the lexer to wrap.
    */
-  public HclSimpleTokenStream(HclLexer lexer) {
+  public HclDefaultTokenStream(HclLexer lexer) {
     this.lexer = lexer;
     tokens = new LinkedList<>();
+    skipMask = EnumSet.noneOf(HclTokenType.class);
+  }
+
+  @Override
+  public void ignoreToken(HclTokenType tokenType) {
+    if (skipMask.size() == HclTokenType.values().length - 1 && !skipMask.contains(tokenType)) {
+      throw new IllegalArgumentException(
+          "Cannot exclude all token types, that would lead to an infinite loop"
+      );
+    }
+
+    skipMask.add(tokenType);
+  }
+
+  @Override
+  public void unignoreToken(HclTokenType tokenType) {
+    skipMask.remove(tokenType);
   }
 
   @Override
@@ -59,23 +76,23 @@ public final class HclSimpleTokenStream implements HclTokenStream {
 
   @Override
   public HclToken peek(int offset) throws HclProcessingException {
-    while (tokens.size() < offset + 1) {
-      tokens.push(lexer.nextToken());
-    }
-
-    return tokens.get(offset);
+    return retrieveToken(offset).object();
   }
 
   @Override
   public HclToken eat(HclTokenType type, HclTokenType... types) throws HclProcessingException {
-    var token = peek(0);
+    var indexedToken = retrieveToken(0);
+    var index = indexedToken.index();
+    var token = indexedToken.object();
 
     if (token.type() == type) {
+      removeCachedTokensUntilIndex(index);
       return token;
     }
 
     for (var anotherType : types) {
       if (token.type() == anotherType) {
+        removeCachedTokensUntilIndex(index);
         return token;
       }
     }
@@ -86,5 +103,51 @@ public final class HclSimpleTokenStream implements HclTokenStream {
         lexer.charSource().name(),
         "Unexpected token in input"
     );
+  }
+
+  private Indexed<HclToken> retrieveToken(int offset) {
+    var currentOffset = 0;
+    var index = 0;
+
+    for (HclToken next : tokens) {
+      if (!skipMask.contains(next.type())) {
+        ++currentOffset;
+        ++index;
+        continue;
+      }
+
+      if (currentOffset == offset) {
+        return new Indexed<>(index, next);
+      }
+
+      ++index;
+    }
+
+    while (true) {
+      var next = lexer.nextToken();
+      tokens.add(next);
+
+      if (!skipMask.contains(next.type())) {
+        ++currentOffset;
+        ++index;
+        continue;
+      }
+
+      if (currentOffset == offset) {
+        return new Indexed<>(index, next);
+      }
+
+      ++index;
+    }
+  }
+
+  private void removeCachedTokensUntilIndex(int index) {
+    var iter = tokens.iterator();
+    var currentIndex = 0;
+
+    while (iter.hasNext() && currentIndex < index) {
+      iter.remove();
+      ++currentIndex;
+    }
   }
 }

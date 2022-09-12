@@ -36,6 +36,22 @@ import java.io.IOException;
 public interface HclTokenStream {
 
   /**
+   * Instruct the stream to ignore tokens of the given type.
+   *
+   * @param tokenType the token type to ignore.
+   * @throws IllegalArgumentException if ignoring this token type would result in all tokens being
+   *                                  ignored, and the stream being locked in an infinite loop.
+   */
+  void ignoreToken(HclTokenType tokenType);
+
+  /**
+   * Instruct the stream to not ignore tokens of the given type.
+   *
+   * @param tokenType the token type to not ignore.
+   */
+  void unignoreToken(HclTokenType tokenType);
+
+  /**
    * Get the current location of the token stream.
    *
    * @return the current location.
@@ -44,7 +60,8 @@ public interface HclTokenStream {
 
   /**
    * Peek at the token at the given offset from the current position without advancing the token
-   * stream state.
+   * stream state. This will ignore tokens that are part of the
+   * {@link #ignoreToken(HclTokenType) ignored token type mask}.
    *
    * @param offset the offset (greater or equal to 0) to peek at.
    * @return the token we peeked at.

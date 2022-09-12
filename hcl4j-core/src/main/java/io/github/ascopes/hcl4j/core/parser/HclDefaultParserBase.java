@@ -57,6 +57,13 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    */
   public HclDefaultParserBase(HclTokenStream tokenStream) {
     this.tokenStream = tokenStream;
+
+    tokenStream.ignoreToken(HclTokenType.WHITESPACE);
+    tokenStream.ignoreToken(HclTokenType.INLINE_COMMENT_START);
+    tokenStream.ignoreToken(HclTokenType.INLINE_COMMENT_END);
+    tokenStream.ignoreToken(HclTokenType.LINE_COMMENT_HASH_START);
+    tokenStream.ignoreToken(HclTokenType.LINE_COMMENT_SLASH_START);
+    tokenStream.ignoreToken(HclTokenType.COMMENT_CONTENT);
   }
 
   /**

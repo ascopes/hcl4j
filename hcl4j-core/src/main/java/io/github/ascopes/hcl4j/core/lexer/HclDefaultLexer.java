@@ -18,6 +18,7 @@ package io.github.ascopes.hcl4j.core.lexer;
 
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.inputs.HclCharSource;
+import io.github.ascopes.hcl4j.core.tokens.HclEofToken;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -71,7 +72,7 @@ public final class HclDefaultLexer implements HclLexer {
     var strategy = strategyStack.peek();
 
     if (strategy == null) {
-      throw expectAtLeastOne();
+      return new HclEofToken(charSource.location());
     }
 
     return strategy.nextToken();

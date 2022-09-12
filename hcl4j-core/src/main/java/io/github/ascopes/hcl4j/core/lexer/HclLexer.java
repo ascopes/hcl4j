@@ -21,6 +21,7 @@ import io.github.ascopes.hcl4j.core.ex.HclStreamException;
 import io.github.ascopes.hcl4j.core.ex.HclSyntaxException;
 import io.github.ascopes.hcl4j.core.inputs.HclCharSource;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
+import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
@@ -54,12 +55,12 @@ public interface HclLexer {
   void popStrategy() throws NoSuchElementException;
 
   /**
-   * Retrieve the next token.
+   * Retrieve the next token. If the stack is empty, a {@link HclTokenType#END_OF_FILE} token will
+   * be returned as default behaviour.
    *
-   * @throws NoSuchElementException if the stack is empty.
-   * @throws HclStreamException     if an {@link IOException} occurs internally while reading the
-   *                                input source.
-   * @throws HclSyntaxException     if the next token is unknown or fails to be consumed.
+   * @throws HclStreamException if an {@link IOException} occurs internally while reading the input
+   *                            source.
+   * @throws HclSyntaxException if the next token is unknown or fails to be consumed.
    */
   HclToken nextToken() throws HclProcessingException;
 }

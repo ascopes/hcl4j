@@ -48,6 +48,6 @@ public final class HclConfigFileParser extends HclDefaultParserBase<HclBodyNode>
     var lexer = new HclDefaultLexer(charSource);
     var defaultMode = new HclConfigLexerStrategy(lexer);
     lexer.pushStrategy(defaultMode);
-    return new HclSimpleTokenStream(lexer);
+    return new HclDefaultTokenStream(lexer);
   }
 }
