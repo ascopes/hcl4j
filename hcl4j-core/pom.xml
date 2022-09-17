@@ -2,21 +2,17 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>hcl4j-parent</artifactId>
+    <groupId>io.github.ascopes.hcl4j</groupId>
+    <relativePath>../pom.xml</relativePath>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  
   <artifactId>hcl4j-core</artifactId>
-
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>jacoco-maven-plugin</artifactId>
-        <groupId>org.jacoco</groupId>
-      </plugin>
-
-      <plugin>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <groupId>org.apache.maven.plugins</groupId>
-      </plugin>
-    </plugins>
-  </build>
 
   <dependencies>
     <dependency>
@@ -31,13 +27,18 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <groupId>org.jacoco</groupId>
+      </plugin>
 
-  <modelVersion>4.0.0</modelVersion>
-
-  <parent>
-    <artifactId>hcl4j-parent</artifactId>
-    <groupId>io.github.ascopes.hcl4j</groupId>
-    <relativePath>../pom.xml</relativePath>
-    <version>0.0.1-SNAPSHOT</version>
-  </parent>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
