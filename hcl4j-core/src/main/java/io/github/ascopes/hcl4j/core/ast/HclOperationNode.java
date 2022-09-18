@@ -25,7 +25,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface HclOperationNode extends HclExprTermNode, HclExpressionNode {
+public sealed interface HclOperationNode extends HclExpressionNode {
 
   /**
    * A unary operation.

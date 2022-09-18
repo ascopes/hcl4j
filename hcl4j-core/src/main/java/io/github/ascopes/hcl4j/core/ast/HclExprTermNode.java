@@ -30,6 +30,5 @@ public sealed interface HclExprTermNode extends HclExpressionNode permits
     HclFunctionCallNode,
     HclLiteralValueNode,
     HclWrappedExpressionNode,
-    HclOperationNode,
     HclTemplateExprNode,
     HclVariableExprNode {}
