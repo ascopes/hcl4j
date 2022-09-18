@@ -37,7 +37,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
  * end-of-file marker is reached. The content will be emitted within a
  * {@link HclTokenType#COMMENT_CONTENT} token if at least one character has been consumed.
  *
- * <p>The {@link HclTokenType#END_OF_FILE} or {@link HclTokenType#NEW_LINE} will be emitted before
+ * <p>The {@link HclTokenType#EOF} or {@link HclTokenType#NEW_LINE} will be emitted before
  * the lexer strategy is popped.
  *
  * @author Ashley Scopes

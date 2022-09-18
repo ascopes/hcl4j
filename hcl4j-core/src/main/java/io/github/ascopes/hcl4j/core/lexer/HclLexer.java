@@ -55,7 +55,7 @@ public interface HclLexer {
   void popStrategy() throws NoSuchElementException;
 
   /**
-   * Retrieve the next token. If the stack is empty, a {@link HclTokenType#END_OF_FILE} token will
+   * Retrieve the next token. If the stack is empty, a {@link HclTokenType#EOF} token will
    * be returned as default behaviour.
    *
    * @throws HclStreamException if an {@link IOException} occurs internally while reading the input

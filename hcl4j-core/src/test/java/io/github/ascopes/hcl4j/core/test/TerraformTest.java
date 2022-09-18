@@ -88,7 +88,7 @@ class TerraformTest {
       do {
         next = lex.nextToken();
         System.out.println(next);
-      } while (next.type() != HclTokenType.END_OF_FILE);
+      } while (next.type() != HclTokenType.EOF);
     }
   }
 }

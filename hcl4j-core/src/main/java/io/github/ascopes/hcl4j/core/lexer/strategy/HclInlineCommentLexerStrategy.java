@@ -37,7 +37,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
  *
  * <ul>
  *   <li>Next character is the end-of-file marker - the lexer strategy is popped and a
- *      {@link HclTokenType#END_OF_FILE}</li>
+ *      {@link HclTokenType#EOF}</li>
  *   <li>The next two characters are "{@code *}" and "{@code /}" - the lexer will emit a
  *      {@link HclTokenType#INLINE_COMMENT_END} token and pop the current strategy.
  *   <li>Any other characters are consumed until one of the above cases occurs, and will be

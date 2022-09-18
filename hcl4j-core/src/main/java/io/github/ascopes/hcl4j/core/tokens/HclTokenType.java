@@ -25,7 +25,7 @@ import io.github.ascopes.hcl4j.core.intern.Nullable;
  * @since 0.0.1
  */
 public enum HclTokenType {
-  END_OF_FILE("end of file"),
+  EOF("end-of-file"),
   NEW_LINE("new line"),
   WHITESPACE("whitespace"),
 
@@ -70,7 +70,7 @@ public enum HclTokenType {
   RIGHT_PAREN("right parenthesis", ")"),
   COMMA("comma operator", ","),
 
-  IDENTIFIER("identifier"),
+  IDENTIFIER("identifier or keyword"),
   INTEGER("integer literal"),
   REAL("real literal"),
 

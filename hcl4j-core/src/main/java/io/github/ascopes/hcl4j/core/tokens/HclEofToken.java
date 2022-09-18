@@ -29,7 +29,7 @@ public record HclEofToken(@Override HclLocation start) implements HclToken {
 
   @Override
   public HclTokenType type() {
-    return HclTokenType.END_OF_FILE;
+    return HclTokenType.EOF;
   }
 
   @Override
@@ -41,5 +41,20 @@ public record HclEofToken(@Override HclLocation start) implements HclToken {
   @Override
   public CharSequence raw() {
     return "\0";
+  }
+
+  @Override
+  public CharSequence content() {
+    return "";
+  }
+
+  @Override
+  public boolean rawEquals(CharSequence string) {
+    return false;
+  }
+
+  @Override
+  public boolean contentEquals(CharSequence string) {
+    return false;
   }
 }
