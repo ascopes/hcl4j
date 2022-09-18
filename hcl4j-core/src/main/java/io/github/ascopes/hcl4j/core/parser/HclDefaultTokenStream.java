@@ -41,7 +41,7 @@ public final class HclDefaultTokenStream implements HclTokenStream {
 
   private final HclLexer lexer;
   private final LinkedList<HclToken> tokens;
-  private final EnumSet<HclTokenType> skipMask;
+  private EnumSet<HclTokenType> skipMask;
 
   /**
    * Initialize this stream.
@@ -106,13 +106,12 @@ public final class HclDefaultTokenStream implements HclTokenStream {
 
   @Override
   public <T> T scoped(Supplier<T> supplier) {
-    var ignored = EnumSet.copyOf(skipMask);
+    var initialMask = EnumSet.copyOf(skipMask);
 
     try {
       return supplier.get();
     } finally {
-      skipMask.clear();
-      skipMask.addAll(ignored);
+      skipMask = initialMask;
     }
   }
 
