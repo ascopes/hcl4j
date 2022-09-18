@@ -25,6 +25,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.function.Supplier;
 
 /**
  * A simple wrapper around a lexer that provides useful stream-oriented operations for parsers to
@@ -40,7 +41,7 @@ public final class HclDefaultTokenStream implements HclTokenStream {
 
   private final HclLexer lexer;
   private final LinkedList<HclToken> tokens;
-  private EnumSet<HclTokenType> skipMask;
+  private final EnumSet<HclTokenType> skipMask;
 
   /**
    * Initialize this stream.
@@ -55,10 +56,8 @@ public final class HclDefaultTokenStream implements HclTokenStream {
 
   @Override
   public void ignoreToken(HclTokenType tokenType) {
-    if (skipMask.size() == HclTokenType.values().length - 1 && !skipMask.contains(tokenType)) {
-      throw new IllegalArgumentException(
-          "Cannot exclude all token types, that would lead to an infinite loop"
-      );
+    if (tokenType == HclTokenType.EOF) {
+      throw new IllegalArgumentException("Cannot ignore EOF");
     }
 
     skipMask.add(tokenType);
@@ -86,13 +85,13 @@ public final class HclDefaultTokenStream implements HclTokenStream {
     var token = indexedToken.object();
 
     if (token.type() == type) {
-      removeCachedTokensUntilIndex(index);
+      removeCachedTokensUntilIndex(index + 1);
       return token;
     }
 
     for (var anotherType : types) {
       if (token.type() == anotherType) {
-        removeCachedTokensUntilIndex(index);
+        removeCachedTokensUntilIndex(index + 1);
         return token;
       }
     }
@@ -105,21 +104,33 @@ public final class HclDefaultTokenStream implements HclTokenStream {
     );
   }
 
+  @Override
+  public <T> T scoped(Supplier<T> supplier) {
+    var ignored = EnumSet.copyOf(skipMask);
+
+    try {
+      return supplier.get();
+    } finally {
+      skipMask.clear();
+      skipMask.addAll(ignored);
+    }
+  }
+
   private Indexed<HclToken> retrieveToken(int offset) {
     var currentOffset = 0;
     var index = 0;
 
     for (HclToken next : tokens) {
-      if (!skipMask.contains(next.type())) {
-        ++currentOffset;
+      if (skipMask.contains(next.type())) {
         ++index;
         continue;
       }
 
-      if (currentOffset == offset) {
+      if (currentOffset == offset || next.type() == HclTokenType.EOF) {
         return new Indexed<>(index, next);
       }
 
+      ++currentOffset;
       ++index;
     }
 
@@ -127,26 +138,25 @@ public final class HclDefaultTokenStream implements HclTokenStream {
       var next = lexer.nextToken();
       tokens.add(next);
 
-      if (!skipMask.contains(next.type())) {
-        ++currentOffset;
+      if (skipMask.contains(next.type())) {
         ++index;
         continue;
       }
 
-      if (currentOffset == offset) {
+      if (currentOffset == offset || next.type() == HclTokenType.EOF) {
         return new Indexed<>(index, next);
       }
 
+      ++currentOffset;
       ++index;
     }
   }
 
   private void removeCachedTokensUntilIndex(int index) {
-    var iter = tokens.iterator();
     var currentIndex = 0;
 
-    while (iter.hasNext() && currentIndex < index) {
-      iter.remove();
+    while (!tokens.isEmpty() && currentIndex < index) {
+      tokens.removeFirst();
       ++currentIndex;
     }
   }

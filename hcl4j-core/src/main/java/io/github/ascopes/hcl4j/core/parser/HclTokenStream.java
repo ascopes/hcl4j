@@ -24,6 +24,7 @@ import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 /**
  * A stream of tokens that supports arbitrary look-ahead.
@@ -85,4 +86,14 @@ public interface HclTokenStream {
    * @throws HclUnexpectedTokenException if the next token does not match any of the given types.
    */
   HclToken eat(HclTokenType type, HclTokenType... types) throws HclProcessingException;
+
+  /**
+   * Run the given closure in a scope, resetting the ignored token types to their previous values
+   * after the scope terminates.
+   *
+   * @param supplier the supplier of the result to output.
+   * @param <T>      the return value type.
+   * @return the returned value.
+   */
+  <T> T scoped(Supplier<T> supplier);
 }
