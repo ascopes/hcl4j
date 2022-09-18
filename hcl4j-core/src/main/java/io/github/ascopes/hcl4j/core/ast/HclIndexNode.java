@@ -16,14 +16,33 @@
 
 package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+import io.github.ascopes.hcl4j.core.tokens.HclToken;
 
 /**
- * Valid types of expression terms.
+ * An index operation.
  *
+ * @param exprTerm    the expression being indexed.
+ * @param leftSquare  the left square bracket.
+ * @param expression  the index expression.
+ * @param rightSquare the right square expression.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface HclExprTermNode extends HclExpressionNode permits HclCollectionValueNode,
-    HclForExprNode, HclFunctionCallNode, HclGetAttrNode, HclIndexNode, HclLegacyIndexNode,
-    HclLiteralValueNode, HclSplatNode, HclTemplateExprNode, HclVariableExprNode,
-    HclWrappedExpressionNode {}
+public record HclIndexNode(
+    HclExprTermNode exprTerm,
+    HclToken leftSquare,
+    HclExpressionNode expression,
+    HclToken rightSquare
+) implements HclExprTermNode {
+
+  @Override
+  public HclLocation start() {
+    return exprTerm.start();
+  }
+
+  @Override
+  public HclLocation end() {
+    return rightSquare.end();
+  }
+}

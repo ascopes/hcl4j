@@ -19,6 +19,7 @@ package io.github.ascopes.hcl4j.core.test;
 import io.github.ascopes.hcl4j.core.inputs.HclCharInputStream;
 import io.github.ascopes.hcl4j.core.lexer.HclDefaultLexer;
 import io.github.ascopes.hcl4j.core.lexer.strategy.HclConfigLexerStrategy;
+import io.github.ascopes.hcl4j.core.parser.HclConfigFileParser;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.ByteArrayInputStream;
@@ -28,57 +29,57 @@ import org.junit.jupiter.api.Test;
 
 class TerraformTest {
 
+  byte[] source = """
+      # Terraform config block
+      terraform {
+        // Required terraform providers
+        // go here.
+        required_providers {
+          aws = {
+            source  = "hashicorp/aws"
+            version = "~> 4.16"
+          }
+        }
+
+        required_version = ">= 1.2.0"
+      }
+
+      provider "aws" {
+        /* We operate in eu-west-1 on AWS
+           because Ireland is cool */
+        region  = "eu-west-1"
+      }
+
+      resource "aws_instance" "app_server" {
+        ami           = "ami-08d70e59c07c61a3a"
+        instance_type = "t3a.micro"
+      }
+              
+      resource "aws_s3_bucket" "b" {
+        bucket = "s3-website-test.hashicorp.com"
+        acl    = "public-read"
+        policy = file("policy.json")
+        
+        website {
+          index_document = "index.html"
+          error_document = "error.html"
+              
+          routing_rules = <<EOF
+      [{
+          "Condition": {
+              "KeyPrefixEquals": "docs/"
+          },
+          "Redirect": {
+              "ReplaceKeyPrefixWith": "documents/"
+          }
+      }]
+      EOF
+        }
+      }
+      """.stripIndent().getBytes(StandardCharsets.UTF_8);
+
   @Test
   void testReadTerraformOnce() throws IOException {
-    var source = """
-        # Terraform config block
-        terraform {
-          // Required terraform providers
-          // go here.
-          required_providers {
-            aws = {
-              source  = "hashicorp/aws"
-              version = "~> 4.16"
-            }
-          }
-
-          required_version = ">= 1.2.0"
-        }
-
-        provider "aws" {
-          /* We operate in eu-west-1 on AWS
-             because Ireland is cool */
-          region  = "eu-west-1"
-        }
-
-        resource "aws_instance" "app_server" {
-          ami           = "ami-08d70e59c07c61a3a"
-          instance_type = "t3a.micro"
-        }
-                
-        resource "aws_s3_bucket" "b" {
-          bucket = "s3-website-test.hashicorp.com"
-          acl    = "public-read"
-          policy = file("policy.json")
-          
-          website {
-            index_document = "index.html"
-            error_document = "error.html"
-                
-            routing_rules = <<EOF
-        [{
-            "Condition": {
-                "KeyPrefixEquals": "docs/"
-            },
-            "Redirect": {
-                "ReplaceKeyPrefixWith": "documents/"
-            }
-        }]
-        EOF
-          }
-        }
-        """.stripIndent().getBytes(StandardCharsets.UTF_8);
-
     try (var in = new HclCharInputStream("example.tf", new ByteArrayInputStream(source))) {
       var lex = new HclDefaultLexer(in);
       lex.pushStrategy(new HclConfigLexerStrategy(lex));
@@ -89,6 +90,14 @@ class TerraformTest {
         next = lex.nextToken();
         System.out.println(next);
       } while (next.type() != HclTokenType.EOF);
+    }
+  }
+
+  @Test
+  void testParseTerraformOnce() throws IOException {
+    try (var in = new HclCharInputStream("example.tf", new ByteArrayInputStream(source))) {
+      var parser = new HclConfigFileParser(in);
+      System.out.println(parser.parseFile());
     }
   }
 }

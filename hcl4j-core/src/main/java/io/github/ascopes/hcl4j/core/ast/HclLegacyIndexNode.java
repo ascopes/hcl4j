@@ -16,14 +16,32 @@
 
 package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclIntegerLiteralNode;
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+import io.github.ascopes.hcl4j.core.tokens.HclToken;
 
 /**
- * Valid types of expression terms.
+ * A legacy index operation.
  *
+ * @param exprTerm the expression being indexed.
+ * @param dot the dot token.
+ * @param digits the digits of the index.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface HclExprTermNode extends HclExpressionNode permits HclCollectionValueNode,
-    HclForExprNode, HclFunctionCallNode, HclGetAttrNode, HclIndexNode, HclLegacyIndexNode,
-    HclLiteralValueNode, HclSplatNode, HclTemplateExprNode, HclVariableExprNode,
-    HclWrappedExpressionNode {}
+public record HclLegacyIndexNode(
+    HclExprTermNode exprTerm,
+    HclToken dot,
+    HclIntegerLiteralNode digits
+) implements HclExprTermNode {
+
+  @Override
+  public HclLocation start() {
+    return exprTerm.start();
+  }
+
+  @Override
+  public HclLocation end() {
+    return digits.end();
+  }
+}

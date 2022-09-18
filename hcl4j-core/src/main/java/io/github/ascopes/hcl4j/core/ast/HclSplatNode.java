@@ -20,61 +20,64 @@ import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 
 /**
- * Valid types of operation.
+ * A splat operation.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public sealed interface HclOperationNode extends HclExpressionNode {
+public sealed interface HclSplatNode extends HclExprTermNode {
 
   /**
-   * A unary operation.
+   * An attribute splat node.
    *
-   * @param operatorToken the operator being applied to the term.
-   * @param value         the value of the operation.
+   * @param exprTerm the expression term to splat.
+   * @param dot the dot.
+   * @param star the star.
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record HclUnaryOperationNode(
-      HclToken operatorToken,
-      HclExpressionNode value
-  ) implements HclOperationNode {
+  record HclAttrSplatNode(
+      HclExprTermNode exprTerm,
+      HclToken dot,
+      HclToken star
+  ) implements HclSplatNode {
 
     @Override
     public HclLocation start() {
-      return operatorToken.start();
+      return exprTerm.start();
     }
 
     @Override
     public HclLocation end() {
-      return value.end();
+      return star.end();
     }
   }
 
   /**
-   * A binary operation.
+   * An full splat node.
    *
-   * @param leftValue     the left-hand side of the binary operation.
-   * @param operatorToken the binary operator token.
-   * @param rightValue    the right-hand side of the binary operation.
+   * @param exprTerm the expression term to splat.
+   * @param leftSquare the left square node.
+   * @param star the star.
+   * @param rightSquare the right square node.
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record HclBinaryOperationNode(
-      HclExpressionNode leftValue,
-      HclToken operatorToken,
-      HclExpressionNode rightValue
-  ) implements HclOperationNode {
+  record HclFullSplatNode(
+      HclExprTermNode exprTerm,
+      HclToken leftSquare,
+      HclToken star,
+      HclToken rightSquare
+  ) implements HclSplatNode {
 
     @Override
     public HclLocation start() {
-      return leftValue.start();
+      return exprTerm.start();
     }
 
     @Override
     public HclLocation end() {
-      return rightValue.end();
+      return rightSquare.end();
     }
   }
-
 }

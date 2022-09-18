@@ -19,15 +19,17 @@ package io.github.ascopes.hcl4j.core.ast;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
+import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.util.List;
 
 /**
  * A function call.
  *
- * @param identifier the function name.
- * @param leftToken  the left parenthesis token.
- * @param arguments  the function parameters.
- * @param rightToken the right parenthesis token.
+ * @param identifier    the function name.
+ * @param leftToken     the left parenthesis token.
+ * @param arguments     the function parameters.
+ * @param trailingToken the trailing token, either a comma, ellipsis, or {@code null}.
+ * @param rightToken    the right parenthesis token.
  * @author Ashley Scopes
  * @since 0.0.1
  */
@@ -35,6 +37,7 @@ public record HclFunctionCallNode(
     HclIdentifierLikeNode identifier,
     HclToken leftToken,
     List<HclParameterNode> arguments,
+    @Nullable HclToken trailingToken,
     HclToken rightToken
 ) implements HclExprTermNode {
 
@@ -49,28 +52,37 @@ public record HclFunctionCallNode(
   }
 
   /**
+   * Determine if the function call ends with ellipsis before the right parenthesis.
+   *
+   * @return {@code true} if the function call ends with ellipsis, or {@code false} otherwise.
+   */
+  public boolean hasTrailingEllipsis() {
+    return trailingToken != null && trailingToken.type() == HclTokenType.ELLIPSIS;
+  }
+
+  /**
    * A function call parameter.
    *
    * @param expression the expression for the parameter.
-   * @param commaToken the trailing comma token (can be {@code null} for the last parameter).
+   * @param commaToken the leading comma token (should be {@code null} for the first argument).
    * @author Ashley Scopes
    * @since 0.0.1
    */
   public record HclParameterNode(
-      HclExpressionNode expression,
-      @Nullable HclToken commaToken
+      @Nullable HclToken commaToken,
+      HclExpressionNode expression
   ) implements HclNode {
 
     @Override
     public HclLocation start() {
-      return expression.start();
+      return commaToken == null
+          ? expression.start()
+          : commaToken.start();
     }
 
     @Override
     public HclLocation end() {
-      return commaToken == null
-          ? expression.end()
-          : commaToken.end();
+      return expression.end();
     }
   }
 }

@@ -20,19 +20,36 @@ import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode;
 import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode.HclAttributeNode;
 import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode.HclBlockNode;
 import io.github.ascopes.hcl4j.core.ast.HclBodyNode;
+import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode;
+import io.github.ascopes.hcl4j.core.ast.HclConditionalNode;
+import io.github.ascopes.hcl4j.core.ast.HclExprTermNode;
 import io.github.ascopes.hcl4j.core.ast.HclExpressionNode;
+import io.github.ascopes.hcl4j.core.ast.HclForExprNode;
+import io.github.ascopes.hcl4j.core.ast.HclFunctionCallNode;
+import io.github.ascopes.hcl4j.core.ast.HclFunctionCallNode.HclParameterNode;
+import io.github.ascopes.hcl4j.core.ast.HclGetAttrNode;
 import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode;
 import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode.HclIdentifierNode;
 import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode.HclStringLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.HclIndexNode;
+import io.github.ascopes.hcl4j.core.ast.HclLegacyIndexNode;
+import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclBooleanLiteralNode;
 import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclIntegerLiteralNode;
-import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclNumericLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclNullLiteralNode;
 import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclRealLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.HclOperationNode.HclBinaryOperationNode;
+import io.github.ascopes.hcl4j.core.ast.HclOperationNode.HclUnaryOperationNode;
+import io.github.ascopes.hcl4j.core.ast.HclSplatNode.HclAttrSplatNode;
+import io.github.ascopes.hcl4j.core.ast.HclSplatNode.HclFullSplatNode;
+import io.github.ascopes.hcl4j.core.ast.HclTemplateExprNode;
+import io.github.ascopes.hcl4j.core.ast.HclVariableExprNode;
+import io.github.ascopes.hcl4j.core.ast.HclWrappedExpressionNode;
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
+import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implementation of the bulk of the HCL parser functionality without defining the root node
@@ -82,9 +99,11 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
     }
 
     var openingQuote = tokenStream.eat(HclTokenType.OPENING_QUOTE);
+
     var content = tokenStream.peek(0).type() == HclTokenType.CLOSING_QUOTE
         ? null
         : tokenStream.eat(HclTokenType.RAW_TEXT);
+
     var closingQuote = tokenStream.eat(HclTokenType.CLOSING_QUOTE);
 
     return new HclStringLiteralNode(openingQuote, content, closingQuote);
@@ -99,29 +118,8 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    *
    * @return the node.
    */
-  protected HclIdentifierLikeNode identifier() throws HclProcessingException {
+  protected HclIdentifierNode identifier() throws HclProcessingException {
     return new HclIdentifierNode(tokenStream.eat(HclTokenType.IDENTIFIER));
-  }
-
-  /**
-   * Parse a numeric literal.
-   *
-   * <pre><code>
-   *   numericLit = INTEGER | REAL ;
-   * </code></pre>
-   *
-   * @return the node.
-   */
-  protected HclNumericLiteralNode<?> numericLit() {
-    var token = tokenStream.eat(HclTokenType.INTEGER, HclTokenType.REAL);
-
-    if (token.type() == HclTokenType.INTEGER) {
-      var value = new BigInteger(token.raw().toString());
-      return new HclIntegerLiteralNode(token, value);
-    } else {
-      var value = new BigDecimal(token.raw().toString());
-      return new HclRealLiteralNode(token, value);
-    }
   }
 
   /**
@@ -134,21 +132,24 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    * @return the node.
    */
   protected HclBodyNode body() {
-    var start = tokenStream.location();
-    var items = new ArrayList<HclBodyItemNode>();
+    return tokenStream.scoped(() -> {
+      tokenStream.ignoreToken(HclTokenType.NEW_LINE);
 
-    while (tokenStream.peek(0).type() == HclTokenType.IDENTIFIER) {
-      var nextItem = tokenStream.peek(1).type() == HclTokenType.ASSIGN
-          ? attribute()
-          : block();
+      var start = tokenStream.location();
+      var items = new ArrayList<HclBodyItemNode>();
 
-      items.add(nextItem);
-    }
+      while (tokenStream.peek(0).type() == HclTokenType.IDENTIFIER) {
+        var nextItem = tokenStream.peek(1).type() == HclTokenType.ASSIGN
+            ? attribute()
+            : block();
 
-    var end = tokenStream.location();
+        items.add(nextItem);
+      }
 
-    // Create an immutable copy.
-    return new HclBodyNode(List.copyOf(items), start, end);
+      var end = tokenStream.location();
+
+      return new HclBodyNode(items, start, end);
+    });
   }
 
   /**
@@ -163,7 +164,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
   protected HclAttributeNode attribute() {
     var identifier = identifier();
     var assignToken = tokenStream.eat(HclTokenType.ASSIGN);
-    var expression = expression();
+    var expression = expr();
     return new HclAttributeNode(identifier, assignToken, expression);
   }
 
@@ -215,11 +216,498 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
   }
 
   /**
-   * TODO: implement me.
+   * Parse an expression node that can have a conditional at the end.
    *
-   * @return nothing, this is not implemented yet.
+   * <pre><code>
+   *   expr = operation , QUESTION_MARK , expr , COLON , expr
+   *        | operation
+   *        ;
+   * </code></pre>
+   *
+   * @return the node.
    */
-  protected HclExpressionNode expression() {
+  protected HclExpressionNode expr() {
+    var expr = orOp();
+
+    if (tokenStream.peek(0).type() != HclTokenType.QUESTION_MARK) {
+      return expr;
+    }
+
+    var questionMark = tokenStream.eat(HclTokenType.QUESTION_MARK);
+    var trueExpr = expr();
+    var colon = tokenStream.eat(HclTokenType.COLON);
+    var falseExpr = expr();
+
+    return new HclConditionalNode(expr, questionMark, trueExpr, colon, falseExpr);
+  }
+
+  /**
+   * Parse an operation that may contain an OR after it.
+   *
+   * <pre><code>
+   *   orOp = andOp , OR , orOp
+   *        | andOp
+   *        ;
+   * </code></pre>
+   *
+   * @return the operation.
+   */
+  protected HclExpressionNode orOp() {
+    var left = andOp();
+
+    if (tokenStream.peek(0).type() == HclTokenType.OR) {
+      var operator = tokenStream.eat(HclTokenType.OR);
+      var right = orOp();
+      return new HclBinaryOperationNode(left, operator, right);
+    }
+
+    return left;
+  }
+
+  /**
+   * Parse an operation that may contain an AND after it.
+   *
+   * <pre><code>
+   *   andOp = eqOp , AND , andOp
+   *         | eqOp
+   *         ;
+   * </code></pre>
+   *
+   * @return the operation.
+   */
+  protected HclExpressionNode andOp() {
+    var left = eqOp();
+
+    if (tokenStream.peek(0).type() == HclTokenType.AND) {
+      var operator = tokenStream.eat(HclTokenType.AND);
+      var right = andOp();
+      return new HclBinaryOperationNode(left, operator, right);
+    }
+
+    return left;
+  }
+
+  /**
+   * Parse an operation that may contain an equality or inequality operation after it.
+   *
+   * <pre><code>
+   *   eqOp = compOp , EQUAL , eqOp
+   *        | compOp , NOT_EQUAL , eqOp
+   *        | compOp
+   *        ;
+   * </code></pre>
+   *
+   * @return the operation.
+   */
+  protected HclExpressionNode eqOp() {
+    var left = compOp();
+    var next = tokenStream.peek(0).type();
+
+    return switch (next) {
+      case EQUAL, NOT_EQUAL -> {
+        var operator = tokenStream.eat(next);
+        var right = eqOp();
+        yield new HclBinaryOperationNode(left, operator, right);
+      }
+      default -> left;
+    };
+  }
+
+  /**
+   * Parse an operation that may contain a comparative operation after it.
+   *
+   * <pre><code>
+   *   compOp = addOp , LESS , compOp
+   *          | addOp , LESS_EQUAL , compOp
+   *          | addOp , GREATER , compOp
+   *          | addOp , GREATER_EQUAL , compOp
+   *          | addOp
+   *          ;
+   * </code></pre>
+   *
+   * @return the operation.
+   */
+  protected HclExpressionNode compOp() {
+    var left = addOp();
+    var next = tokenStream.peek(0).type();
+
+    return switch (next) {
+      case LESS, GREATER, LESS_EQUAL, GREATER_EQUAL -> {
+        var operator = tokenStream.eat(next);
+        var right = compOp();
+        yield new HclBinaryOperationNode(left, operator, right);
+      }
+      default -> left;
+    };
+  }
+
+  /**
+   * Parse an operation that may contain an additive operation after it.
+   *
+   * <pre><code>
+   *   addOp = mulOp , PLUS , addOp
+   *         | mulOp , MINUS , addOp
+   *         | mulOp
+   *         ;
+   * </code></pre>
+   *
+   * @return the operation.
+   */
+  protected HclExpressionNode addOp() {
+    var left = mulOp();
+    var next = tokenStream.peek(0).type();
+
+    return switch (next) {
+      case PLUS, MINUS -> {
+        var operator = tokenStream.eat(next);
+        var right = addOp();
+        yield new HclBinaryOperationNode(left, operator, right);
+      }
+      default -> left;
+    };
+  }
+
+  /**
+   * Parse an operation that may contain a multiplicative operation after it.
+   *
+   * <pre><code>
+   *   mulOp = unaryOp , STAR , mulOp
+   *         | unaryOp , DIVIDE , mulOp
+   *         | unaryOp , MODULO , mulOp
+   *         | unaryOp
+   *         ;
+   * </code></pre>
+   *
+   * @return the operation.
+   */
+  protected HclExpressionNode mulOp() {
+    var left = unaryOp();
+    var next = tokenStream.peek(0).type();
+
+    return switch (next) {
+      case STAR, DIVIDE, MODULO -> {
+        var operator = tokenStream.eat(next);
+        var right = mulOp();
+        yield new HclBinaryOperationNode(left, operator, right);
+      }
+      default -> left;
+    };
+  }
+
+  /**
+   * Parse an operation that may be a unary operator or just an expression term.
+   *
+   * <pre><code>
+   *   unaryOp =
+   *           | MINUS , unaryOp
+   *           | NOT , unaryOp
+   *           | exprTerm
+   *           ;
+   * </code></pre>
+   *
+   * @return the operation.
+   */
+  protected HclExpressionNode unaryOp() {
+    var next = tokenStream.peek(0).type();
+
+    return switch (next) {
+      case MINUS, NOT -> {
+        var operator = tokenStream.eat(next);
+        var right = unaryOp();
+        yield new HclUnaryOperationNode(operator, right);
+      }
+      default -> exprTerm();
+    };
+  }
+
+  /**
+   * Parse an expression term that may have an optional chained index, attribute getter, or splat on
+   * the end.
+   *
+   * <pre><code>
+   *   exprTerm = splattableExprTerm , legacyIndex
+   *            | splattableExprTerm , (getAttr | index)+ ;
+   *            | splattableExprTerm
+   *            ;
+   *
+   *   legacyIndex = DOT , INTEGER ;
+   *   getAttr = DOT , IDENTIFIER ;
+   *   index = LEFT_SQUARE , expr , RIGHT_SQUARE ;
+   * </code></pre>
+   *
+   * @return the parsed expression term.
+   */
+  protected HclExprTermNode exprTerm() {
+    var exprTerm = splattableExprTerm();
+
+    loop:
+    while (true) {
+      var firstToken = tokenStream.peek(0);
+      var secondToken = tokenStream.peek(1);
+
+      switch (firstToken.type()) {
+        case LEFT_SQUARE -> {
+          var open = tokenStream.eat(HclTokenType.LEFT_SQUARE);
+          var expr = expr();
+          var close = tokenStream.eat(HclTokenType.RIGHT_SQUARE);
+          exprTerm = new HclIndexNode(exprTerm, open, expr, close);
+        }
+
+        case DOT -> {
+          switch (secondToken.type()) {
+            case INTEGER -> {
+              var dot = tokenStream.eat(HclTokenType.DOT);
+              var valueToken = tokenStream.eat(HclTokenType.INTEGER);
+              var value = new BigInteger(valueToken.raw().toString());
+              var index = new HclIntegerLiteralNode(valueToken, value);
+              return new HclLegacyIndexNode(exprTerm, dot, index);
+            }
+
+            case IDENTIFIER -> {
+              var dot = tokenStream.eat(HclTokenType.DOT);
+              var attr = identifier();
+              exprTerm = new HclGetAttrNode(exprTerm, dot, attr);
+            }
+
+            default -> {
+              break loop;
+            }
+          }
+        }
+
+        default -> {
+          break loop;
+        }
+      }
+    }
+
+    return exprTerm;
+  }
+
+  /**
+   * Parse a splattable expression term.
+   *
+   * <pre><code>
+   *   splattableExprTerm = singleExprTerm , LEFT_SQUARE , STAR , RIGHT_SQUARE
+   *                      | singleExprTerm , DOT , STAR
+   *                      | singleExprTerm
+   *                      ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclExprTermNode splattableExprTerm() {
+    var exprTerm = singleExprTerm();
+
+    var firstToken = tokenStream.peek(0);
+    var secondToken = tokenStream.peek(1);
+
+    if ((firstToken.type() == HclTokenType.LEFT_SQUARE || firstToken.type() == HclTokenType.DOT)
+        && secondToken.type() == HclTokenType.STAR) {
+      var open = tokenStream.eat(HclTokenType.DOT, HclTokenType.LEFT_SQUARE);
+      var splat = tokenStream.eat(HclTokenType.STAR);
+
+      if (open.type() == HclTokenType.LEFT_SQUARE) {
+        var close = tokenStream.eat(HclTokenType.RIGHT_SQUARE);
+        return new HclFullSplatNode(exprTerm, open, splat, close);
+      }
+
+      return new HclAttrSplatNode(exprTerm, open, splat);
+    }
+
+    return exprTerm;
+  }
+
+  /**
+   * Parse a singular expression term.
+   *
+   * <pre><code>
+   *   singleExprTerm = realLit
+   *                  | integerLit
+   *                  | softKeywordLit
+   *                  | functionCall
+   *                  | forExpr
+   *                  | collectionValue
+   *                  | templateExpr
+   *                  | variableExpr
+   *                  | wrappedExpr
+   *                  ;
+   *
+   *   realLit = REAL ;
+   *   integerLit = INTEGER ;
+   *   softKeywordLit = "true" | "false" | "null" ;
+   *
+   * </code></pre>
+   *
+   * <p>...where a {@code softKeywordLit} is an {@code IDENTIFIER} acting as a soft keyword
+   * under the hood.</p>
+   *
+   * @return the node.
+   */
+  protected HclExprTermNode singleExprTerm() {
+    var token = tokenStream.eat(
+        HclTokenType.INTEGER,
+        HclTokenType.REAL,
+        HclTokenType.IDENTIFIER,
+        HclTokenType.LEFT_SQUARE,
+        HclTokenType.LEFT_BRACE,
+        HclTokenType.LEFT_PAREN,
+        HclTokenType.HEREDOC_ANCHOR,
+        HclTokenType.OPENING_QUOTE
+    );
+
+    return switch (token.type()) {
+      case REAL -> {
+        var value = new BigDecimal(token.raw().toString());
+        yield new HclRealLiteralNode(token, value);
+      }
+
+      case INTEGER -> {
+        var value = new BigInteger(token.raw().toString());
+        yield new HclIntegerLiteralNode(token, value);
+      }
+
+      case IDENTIFIER -> {
+        if (tokenStream.peek(0).type() == HclTokenType.LEFT_PAREN) {
+          yield functionCall();
+        }
+
+        if (token.rawEquals("true")) {
+          yield new HclBooleanLiteralNode(tokenStream.eat(HclTokenType.IDENTIFIER), true);
+        }
+
+        if (token.rawEquals("false")) {
+          yield new HclBooleanLiteralNode(tokenStream.eat(HclTokenType.IDENTIFIER), false);
+        }
+
+        if (token.rawEquals("null")) {
+          yield new HclNullLiteralNode(tokenStream.eat(HclTokenType.IDENTIFIER));
+        }
+
+        yield variableExpr();
+      }
+
+      case LEFT_SQUARE, LEFT_BRACE -> token.rawEquals("for")
+          ? forExpr()
+          : collectionValue();
+
+      case LEFT_PAREN -> wrappedExpr();
+
+      default -> templateExpr();
+    };
+  }
+
+  /**
+   * Parse a function call node.
+   *
+   * <pre><code>
+   *   functionCall = identifier , LEFT_PAREN , RIGHT_PAREN
+   *                | identifier , LEFT_PAREN , arguments , trailer? , RIGHT_PAREN
+   *                ;
+   *
+   *   arguments = expr , ( COMMA expr )* ;
+   *
+   *   trailer = COMMA | ellipsis ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclFunctionCallNode functionCall() {
+    var identifier = identifier();
+    var leftParen = tokenStream.eat(HclTokenType.LEFT_PAREN);
+    return tokenStream.scoped(() -> {
+      tokenStream.ignoreToken(HclTokenType.NEW_LINE);
+
+      var arguments = new ArrayList<HclParameterNode>();
+
+      if (tokenStream.peek(0).type() != HclTokenType.RIGHT_PAREN) {
+        var firstExpr = tokenStream.scoped(() -> {
+          tokenStream.unignoreToken(HclTokenType.NEW_LINE);
+          return expr();
+        });
+
+        arguments.add(new HclParameterNode(null, firstExpr));
+
+        while (true) {
+          if (tokenStream.peek(0).type() != HclTokenType.COMMA) {
+            break;
+          }
+
+          var afterComma = tokenStream.peek(1);
+
+          if (afterComma.type() == HclTokenType.ELLIPSIS
+              || afterComma.type() == HclTokenType.RIGHT_PAREN) {
+            break;
+          }
+
+          var expr = tokenStream.scoped(() -> {
+            tokenStream.unignoreToken(HclTokenType.NEW_LINE);
+            return expr();
+          });
+
+          arguments.add(new HclParameterNode(tokenStream.eat(HclTokenType.COMMA), expr));
+        }
+      }
+
+      HclToken trailer = null;
+
+      if (!arguments.isEmpty()) {
+        if (tokenStream.peek(0).type() == HclTokenType.ELLIPSIS) {
+          trailer = tokenStream.eat(HclTokenType.ELLIPSIS);
+        } else if (tokenStream.peek(0).type() == HclTokenType.COMMA) {
+          trailer = tokenStream.eat(HclTokenType.COMMA);
+        }
+      }
+
+      var rightParen = tokenStream.eat(HclTokenType.RIGHT_PAREN);
+
+      return new HclFunctionCallNode(identifier, leftParen, arguments, trailer, rightParen);
+    });
+  }
+
+  /**
+   * Parse a variable expression.
+   *
+   * <pre><code>
+   *   variableExpr = identifier ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclVariableExprNode variableExpr() {
+    return new HclVariableExprNode(identifier());
+  }
+
+  protected HclForExprNode forExpr() {
     throw new UnsupportedOperationException();
+  }
+
+  protected HclCollectionValueNode collectionValue() {
+    throw new UnsupportedOperationException();
+  }
+
+  protected HclTemplateExprNode templateExpr() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * Parse a wrapped expression node.
+   *
+   * <pre><code>
+   *   wrappedExpr = LEFT_PAREN , expr , RIGHT_PAREN ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclWrappedExpressionNode wrappedExpr() {
+    var left = tokenStream.eat(HclTokenType.LEFT_PAREN);
+
+    return tokenStream.scoped(() -> {
+      tokenStream.ignoreToken(HclTokenType.NEW_LINE);
+      var expr = expr();
+      var right = tokenStream.eat(HclTokenType.RIGHT_PAREN);
+
+      return new HclWrappedExpressionNode(left, expr, right);
+    });
   }
 }

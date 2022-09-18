@@ -41,7 +41,7 @@ public final class HclConfigFileParser extends HclDefaultParserBase<HclBodyNode>
 
   @Override
   public HclBodyNode parseFile() throws HclProcessingException {
-    throw new UnsupportedOperationException("not implemented");
+    return body();
   }
 
   private static HclTokenStream initializeTokenStream(HclCharSource charSource) {
