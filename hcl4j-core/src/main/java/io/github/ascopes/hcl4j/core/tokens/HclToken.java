@@ -68,4 +68,45 @@ public sealed interface HclToken
    * @return the location end of the token.
    */
   HclLocation end();
+
+  /**
+   * Determine if the raw content of this token equals the given string.
+   *
+   * @param string the string to compare to.
+   * @return {@code true} if the string has the same raw content as this token, or {@code false}
+   *     otherwise.
+   */
+  default boolean rawEquals(CharSequence string) {
+    return charSequencesSame(raw(), string);
+  }
+
+  /**
+   * Determine if the interpreted content of this token equals the given string.
+   *
+   * @param string the string to compare to.
+   * @return {@code true} if the string has the same content as this token, or {@code false}
+   *     otherwise.
+   */
+  default boolean contentEquals(CharSequence string) {
+    return charSequencesSame(content(), string);
+  }
+
+
+  // Perform these checks manually, as there is no guarantee two different types of CharSequence
+  // will be considered equal when tested.
+  private static boolean charSequencesSame(CharSequence a, CharSequence b) {
+    var len = a.length();
+
+    if (len != b.length()) {
+      return false;
+    }
+
+    for (var i = 0; i < len; ++i) {
+      if (a.charAt(i) != b.charAt(i)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
