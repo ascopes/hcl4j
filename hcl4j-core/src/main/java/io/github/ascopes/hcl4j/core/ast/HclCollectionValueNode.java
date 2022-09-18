@@ -46,7 +46,7 @@ public sealed interface HclCollectionValueNode extends HclExprTermNode {
    * @author Ashley Scopes
    * @since 0.0.1
    */
-  record HclTupleNodeNode(
+  record HclTupleNode(
       HclToken leftToken,
       List<HclTupleElementNode> elements,
       HclToken rightToken
