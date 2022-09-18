@@ -20,7 +20,7 @@ import io.github.ascopes.hcl4j.core.inputs.HclLocatable;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 
 /**
- * Abstract representation of a token emitted by a lexer mode.
+ * Trait representing the interface of a token emitted by the lexer.
  *
  * @author Ashley Scopes
  * @since 0.0.1
