@@ -398,8 +398,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    * Parse an operation that may be a unary operator or just an expression term.
    *
    * <pre><code>
-   *   unaryOp =
-   *           | MINUS , unaryOp
+   *   unaryOp = MINUS , unaryOp
    *           | NOT , unaryOp
    *           | exprTerm
    *           ;
