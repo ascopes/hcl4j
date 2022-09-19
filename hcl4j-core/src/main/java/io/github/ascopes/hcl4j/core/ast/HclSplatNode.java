@@ -31,8 +31,8 @@ public sealed interface HclSplatNode extends HclExprTermNode {
    * An attribute splat node.
    *
    * @param exprTerm the expression term to splat.
-   * @param dot the dot.
-   * @param star the star.
+   * @param dot      the dot.
+   * @param star     the star.
    * @author Ashley Scopes
    * @since 0.0.1
    */
@@ -56,9 +56,9 @@ public sealed interface HclSplatNode extends HclExprTermNode {
   /**
    * An full splat node.
    *
-   * @param exprTerm the expression term to splat.
-   * @param leftSquare the left square node.
-   * @param star the star.
+   * @param exprTerm    the expression term to splat.
+   * @param leftSquare  the left square node.
+   * @param star        the star.
    * @param rightSquare the right square node.
    * @author Ashley Scopes
    * @since 0.0.1

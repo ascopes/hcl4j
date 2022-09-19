@@ -258,7 +258,7 @@ public sealed interface HclTemplateItemNode extends HclNode {
    * @param leftTrimToken    the trim marker for the left token, or {@code null} if not provided.
    * @param forToken         the {@code for} keyword.
    * @param firstIdentifier  the first identifier.
-   * @param commaToken       the optional comma before the optional second identifier.
+   * @param commaToken       the optional commaToken before the optional second identifier.
    * @param secondIdentifier the optional second identifier.
    * @param inToken          the {@code in} keyword.
    * @param expression       the expression that evaluates to a tuple.

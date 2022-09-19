@@ -72,7 +72,7 @@ public sealed interface HclIdentifierLikeNode extends HclNode {
    * An HCL string literal identifier.
    *
    * @param openingQuoteToken the opening quote token.
-   * @param contentToken the text token node, if present, otherwise {@code null}.
+   * @param contentToken      the text token node, if present, otherwise {@code null}.
    * @param closingQuoteToken the closing quote token.
    * @author Ashley Scopes
    * @since 0.0.1
@@ -82,6 +82,7 @@ public sealed interface HclIdentifierLikeNode extends HclNode {
       @Nullable @Override HclToken contentToken,
       HclToken closingQuoteToken
   ) implements HclIdentifierLikeNode {
+
     @Override
     public HclLocation start() {
       return openingQuoteToken.start();

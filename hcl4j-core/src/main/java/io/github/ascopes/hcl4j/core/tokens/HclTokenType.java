@@ -68,7 +68,7 @@ public enum HclTokenType {
   COLON("colon operator", ":"),
   LEFT_PAREN("left parenthesis", "("),
   RIGHT_PAREN("right parenthesis", ")"),
-  COMMA("comma operator", ","),
+  COMMA("commaToken operator", ","),
 
   IDENTIFIER("identifier or keyword"),
   INTEGER("integer literal"),

@@ -24,8 +24,8 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
  * A legacy index operation.
  *
  * @param exprTerm the expression being indexed.
- * @param dot the dot token.
- * @param digits the digits of the index.
+ * @param dot      the dot token.
+ * @param digits   the digits of the index.
  * @author Ashley Scopes
  * @since 0.0.1
  */

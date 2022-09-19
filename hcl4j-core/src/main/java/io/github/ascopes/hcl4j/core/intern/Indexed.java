@@ -19,9 +19,9 @@ package io.github.ascopes.hcl4j.core.intern;
 /**
  * Tuple of an index and a corresponding element at that index.
  *
- * @param index the index.
+ * @param index  the index.
  * @param object the object.
- * @param <T> the object type.
+ * @param <T>    the object type.
  * @author Ashley Scopes
  * @since 0.0.1
  */

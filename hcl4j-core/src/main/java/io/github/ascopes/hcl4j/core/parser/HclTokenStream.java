@@ -128,13 +128,13 @@ public interface HclTokenStream {
   /**
    * Eat a token if the token type matches the given type. Otherwise, return {@code null}.
    *
-   * @param tokenType the token type to attempt to eat.
+   * @param tokenType  the token type to attempt to eat.
    * @param tokenTypes additional token types to attempt to eat.
    * @return the token, or {@code null} if a token of this type is not up next.
-   * @throws HclStreamException          if the input stream cannot be read due to an internal
-   *                                     {@link IOException}.
-   * @throws HclBadTokenException        if the next token is unable to be tokenized to a known
-   *                                     token type (e.g. a malformed input is consumed).
+   * @throws HclStreamException   if the input stream cannot be read due to an internal
+   *                              {@link IOException}.
+   * @throws HclBadTokenException if the next token is unable to be tokenized to a known token type
+   *                              (e.g. a malformed input is consumed).
    */
   @Nullable
   default HclToken eatIfMatches(

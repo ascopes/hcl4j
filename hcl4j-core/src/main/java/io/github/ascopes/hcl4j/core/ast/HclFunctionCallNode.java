@@ -28,7 +28,7 @@ import java.util.List;
  * @param identifier    the function name.
  * @param leftToken     the left parenthesis token.
  * @param arguments     the function parameters.
- * @param trailingToken the trailing token, either a comma, ellipsis, or {@code null}.
+ * @param trailingToken the trailing token, either a commaToken, ellipsis, or {@code null}.
  * @param rightToken    the right parenthesis token.
  * @author Ashley Scopes
  * @since 0.0.1
@@ -64,7 +64,8 @@ public record HclFunctionCallNode(
    * A function call parameter.
    *
    * @param expression the expression for the parameter.
-   * @param commaToken the leading comma token (should be {@code null} for the first argument).
+   * @param commaToken the leading commaToken token (should be {@code null} for the first
+   *                   argument).
    * @author Ashley Scopes
    * @since 0.0.1
    */

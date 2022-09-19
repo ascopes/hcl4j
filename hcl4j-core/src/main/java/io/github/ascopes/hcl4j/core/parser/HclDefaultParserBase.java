@@ -21,6 +21,10 @@ import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode.HclAttributeNode;
 import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode.HclBlockNode;
 import io.github.ascopes.hcl4j.core.ast.HclBodyNode;
 import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode;
+import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclObjectElementNode;
+import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclObjectNode;
+import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclTupleElementNode;
+import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclTupleNode;
 import io.github.ascopes.hcl4j.core.ast.HclConditionalNode;
 import io.github.ascopes.hcl4j.core.ast.HclExprTermNode;
 import io.github.ascopes.hcl4j.core.ast.HclExpressionNode;
@@ -545,26 +549,17 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    * @return the node.
    */
   protected HclExprTermNode singleExprTerm() {
-    var token = tokenStream.eat(
-        HclTokenType.INTEGER,
-        HclTokenType.REAL,
-        HclTokenType.IDENTIFIER,
-        HclTokenType.LEFT_SQUARE,
-        HclTokenType.LEFT_BRACE,
-        HclTokenType.LEFT_PAREN,
-        HclTokenType.HEREDOC_ANCHOR,
-        HclTokenType.OPENING_QUOTE
-    );
+    var token = tokenStream.peek(0);
 
     return switch (token.type()) {
       case REAL -> {
         var value = new BigDecimal(token.raw().toString());
-        yield new HclRealLiteralNode(token, value);
+        yield new HclRealLiteralNode(tokenStream.eat(HclTokenType.REAL), value);
       }
 
       case INTEGER -> {
         var value = new BigInteger(token.raw().toString());
-        yield new HclIntegerLiteralNode(token, value);
+        yield new HclIntegerLiteralNode(tokenStream.eat(HclTokenType.INTEGER), value);
       }
 
       case IDENTIFIER -> {
@@ -676,6 +671,138 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
   }
 
   /**
+   * Parse an object or tuple literal.
+   *
+   * <pre><code>
+   *   collectionValue = tuple | object ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclCollectionValueNode collectionValue() {
+    return tokenStream.peek(0).type() == HclTokenType.LEFT_SQUARE
+        ? tuple()
+        : object();
+  }
+
+  /**
+   * Parse a tuple literal.
+   *
+   * <pre><code>
+   *   tuple = LEFT_SQUARE , RIGHT_SQUARE
+   *         | LEFT_SQUARE , expr , ( COMMA , expr )* , COMMA? , RIGHT_SQUARE
+   *         ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclTupleNode tuple() {
+    var leftToken = tokenStream.eat(HclTokenType.LEFT_SQUARE);
+    var elements = new ArrayList<HclTupleElementNode>();
+
+    if (tokenStream.peek(0).type() != HclTokenType.RIGHT_SQUARE) {
+      elements.add(new HclTupleElementNode(null, expr()));
+
+      while (true) {
+        if (tokenStream.peek(0).type() != HclTokenType.COMMA) {
+          break;
+        }
+
+        var afterComma = tokenStream.peek(1);
+
+        if (afterComma.type() == HclTokenType.RIGHT_SQUARE) {
+          break;
+        }
+
+        var commaToken = tokenStream.eatIfMatches(HclTokenType.COMMA);
+        var expression = expr();
+        elements.add(new HclTupleElementNode(commaToken, expression));
+      }
+    }
+
+    var trailerComma = elements.isEmpty()
+        ? null
+        : tokenStream.eatIfMatches(HclTokenType.COMMA);
+
+    var rightToken = tokenStream.eat(HclTokenType.RIGHT_SQUARE);
+
+    return new HclTupleNode(leftToken, elements, trailerComma, rightToken);
+  }
+
+  /**
+   * Parse an object literal.
+   *
+   * <pre><code>
+   *   object = LEFT_BRACE , RIGHT_BRACE
+   *          | LEFT_BRACE , objectElem+ , COMMA? , RIGHT_BRACE
+   *          ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclObjectNode object() {
+    var leftToken = tokenStream.eat(HclTokenType.LEFT_BRACE);
+    var elements = new ArrayList<HclObjectElementNode>();
+
+    if (tokenStream.peek(0).type() != HclTokenType.RIGHT_BRACE) {
+      elements.add(objectElem(true));
+
+      while (true) {
+        var afterComma = tokenStream.peek(1);
+
+        if (afterComma.type() == HclTokenType.RIGHT_BRACE) {
+          break;
+        }
+
+        elements.add(objectElem(false));
+      }
+    }
+
+    var trailerComma = elements.isEmpty()
+        ? null
+        : tokenStream.eatIfMatches(HclTokenType.COMMA);
+
+    var rightToken = tokenStream.eat(HclTokenType.RIGHT_BRACE);
+
+    return new HclObjectNode(leftToken, elements, trailerComma, rightToken);
+  }
+
+  /**
+   * Parse an object element.
+   *
+   * <pre><code>
+   *   objectElem = (variableExpr | expr) , (ASSIGN | COLON) , expr ;
+   * </code></pre>
+   *
+   * <p>If the left-hand-side is a {@link #variableExpr()}, then the identifier is used as-is as
+   * the
+   * key. If it is anything else, then the key is evaluated as a {@link #expr()} to get the actual
+   * key to use by the interpreter later.
+   *
+   * @param first if {@code true}, then a leading comma is not allowed.
+   * @return the node.
+   */
+  protected HclObjectElementNode objectElem(boolean first) {
+    var commaToken = first ? null : tokenStream.eatIfMatches(HclTokenType.COMMA);
+    var keyIsExpression = tokenStream.peek(0).type() == HclTokenType.IDENTIFIER;
+    var keyExpression = expr();
+    var mapperToken = tokenStream.eat(HclTokenType.ASSIGN, HclTokenType.COLON);
+    var valueExpression = expr();
+
+    return new HclObjectElementNode(
+        commaToken,
+        keyExpression,
+        keyIsExpression,
+        mapperToken,
+        valueExpression
+    );
+  }
+
+  protected HclTemplateExprNode templateExpr() {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
    * Parse a for-expression.
    *
    * <pre><code>
@@ -722,7 +849,8 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    *
    * <pre><code>
    *   forObjectExpr = LEFT_BRACE , forIntro , expr , FAT_ARROW
-   *                 , expr , ELLIPSIS? , forCond? , RIGHT_BRACE ;
+   *                 , expr , ELLIPSIS? , forCond? , RIGHT_BRACE
+   *                 ;
    * </code></pre>
    *
    * @return the node.
@@ -803,14 +931,6 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
     var ifToken = tokenStream.eatKeyword("if");
     var ifExpression = expr();
     return new HclForConditionNode(ifToken, ifExpression);
-  }
-
-  protected HclCollectionValueNode collectionValue() {
-    throw new UnsupportedOperationException();
-  }
-
-  protected HclTemplateExprNode templateExpr() {
-    throw new UnsupportedOperationException();
   }
 
   /**

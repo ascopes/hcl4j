@@ -34,7 +34,7 @@ public sealed interface HclForExprNode extends HclExprTermNode {
    *
    * @param forToken         the {@code for} keyword token.
    * @param firstIdentifier  the first identifier (mandatory).
-   * @param commaToken       the optional comma before the optional second identifier.
+   * @param commaToken       the optional commaToken before the optional second identifier.
    * @param secondIdentifier the optional second identifier.
    * @param inToken          the {@code in} keyword token.
    * @param inExpression     the expression to iterate across and unwrap.

@@ -79,6 +79,7 @@ class TerraformTest {
       }
       """.stripIndent().getBytes(StandardCharsets.UTF_8);
 
+  @Disabled
   @Test
   void testReadTerraformOnce() throws IOException {
     try (var in = new HclCharInputStream("example.tf", new ByteArrayInputStream(source))) {
@@ -94,7 +95,7 @@ class TerraformTest {
     }
   }
 
-  @Disabled
+  //@Disabled
   @Test
   void testParseTerraformOnce() throws IOException {
     try (var in = new HclCharInputStream("example.tf", new ByteArrayInputStream(source))) {
