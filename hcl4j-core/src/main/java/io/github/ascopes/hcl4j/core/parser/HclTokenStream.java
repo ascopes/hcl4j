@@ -37,6 +37,13 @@ import java.util.function.Supplier;
 public interface HclTokenStream {
 
   /**
+   * Get the file name for the token stream.
+   *
+   * @return the file name.
+   */
+  String name();
+
+  /**
    * Instruct the stream to ignore tokens of the given type.
    *
    * @param tokenType the token type to ignore.

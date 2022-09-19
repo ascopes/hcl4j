@@ -55,6 +55,11 @@ public final class HclDefaultTokenStream implements HclTokenStream {
   }
 
   @Override
+  public String name() {
+    return lexer.charSource().name();
+  }
+
+  @Override
   public void ignoreToken(HclTokenType tokenType) {
     if (tokenType == HclTokenType.EOF) {
       throw new IllegalArgumentException("Cannot ignore EOF");
