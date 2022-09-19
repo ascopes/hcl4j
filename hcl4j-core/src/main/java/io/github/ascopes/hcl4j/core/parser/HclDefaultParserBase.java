@@ -615,6 +615,9 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
   protected HclFunctionCallNode functionCall() {
     var identifier = identifier();
     var leftParen = tokenStream.eat(HclTokenType.LEFT_PAREN);
+
+    // Scoping needed to work around changing newline rules.
+    // TODO(ascopes): simplify this, where possible.
     return tokenStream.scoped(() -> {
       tokenStream.ignoreToken(HclTokenType.NEW_LINE);
 
@@ -672,12 +675,30 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
     return new HclVariableExprNode(identifier());
   }
 
+  /**
+   * Parse a for-expression.
+   *
+   * <pre><code>
+   *   forExpr = forTupleExpr | forObjectExpr ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
   protected HclForExprNode forExpr() {
     return tokenStream.peek(0).type() == HclTokenType.LEFT_SQUARE
         ? forTupleExpr()
         : forObjectExpr();
   }
 
+  /**
+   * Parse a for-tuple expression.
+   *
+   * <pre><code>
+   *   forTupleExpr = LEFT_SQUARE , forIntro , expr , forCond? , RIGHT_SQUARE ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
   protected HclForTupleExprNode forTupleExpr() {
     var leftToken = tokenStream.eat(HclTokenType.LEFT_SQUARE);
     var intro = forIntro();
@@ -696,6 +717,16 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
     );
   }
 
+  /**
+   * Parse a for-object expression.
+   *
+   * <pre><code>
+   *   forObjectExpr = LEFT_BRACE , forIntro , expr , FAT_ARROW
+   *                 , expr , ELLIPSIS? , forCond? , RIGHT_BRACE ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
   protected HclForObjectExprNode forObjectExpr() {
     var leftToken = tokenStream.eat(HclTokenType.LEFT_BRACE);
     var intro = forIntro();
@@ -766,7 +797,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    *   IF = "if" (* identifier with specific content *) ;
    * </code></pre>
    *
-   * @return the node
+   * @return the node.
    */
   protected HclForConditionNode forCond() {
     var ifToken = tokenStream.eatKeyword("if");
