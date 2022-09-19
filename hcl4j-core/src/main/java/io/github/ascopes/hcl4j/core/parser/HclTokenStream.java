@@ -21,9 +21,11 @@ import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.ex.HclStreamException;
 import io.github.ascopes.hcl4j.core.ex.HclUnexpectedTokenException;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.IOException;
+import java.util.EnumSet;
 import java.util.function.Supplier;
 
 /**
@@ -93,6 +95,70 @@ public interface HclTokenStream {
    * @throws HclUnexpectedTokenException if the next token does not match any of the given types.
    */
   HclToken eat(HclTokenType type, HclTokenType... types) throws HclProcessingException;
+
+  /**
+   * Attempt to eat a soft-keyword.
+   *
+   * <p>This is the equivalent to calling {@link #eat} with {@link HclTokenType#IDENTIFIER},
+   * and then performing a check on the identifier value.
+   *
+   * @param identifier the identifier value to expect.
+   * @return the token.
+   * @throws HclStreamException          if the input stream cannot be read due to an internal
+   *                                     {@link IOException}.
+   * @throws HclBadTokenException        if the next token is unable to be tokenized to a known
+   *                                     token type (e.g. a malformed input is consumed).
+   * @throws HclUnexpectedTokenException if the next token is not an identifier, or if the
+   *                                     identifier does not match the given string value.
+   */
+  default HclToken eatKeyword(CharSequence identifier) throws HclProcessingException {
+    var token = eat(HclTokenType.IDENTIFIER);
+    if (!token.rawEquals(identifier)) {
+      throw new HclUnexpectedTokenException(
+          token,
+          EnumSet.of(HclTokenType.IDENTIFIER),
+          name(),
+          "Unexpected identifier, expected keyword '" + identifier + "'"
+      );
+    }
+
+    return token;
+  }
+
+  /**
+   * Eat a token if the token type matches the given type. Otherwise, return {@code null}.
+   *
+   * @param tokenType the token type to attempt to eat.
+   * @param tokenTypes additional token types to attempt to eat.
+   * @return the token, or {@code null} if a token of this type is not up next.
+   * @throws HclStreamException          if the input stream cannot be read due to an internal
+   *                                     {@link IOException}.
+   * @throws HclBadTokenException        if the next token is unable to be tokenized to a known
+   *                                     token type (e.g. a malformed input is consumed).
+   */
+  @Nullable
+  default HclToken eatIfMatches(
+      HclTokenType tokenType,
+      HclTokenType... tokenTypes
+  ) throws HclProcessingException {
+    boolean matches = false;
+    var next = peek(0).type();
+
+    if (tokenType == next) {
+      matches = true;
+    } else {
+      for (var type : tokenTypes) {
+        if (type == next) {
+          matches = true;
+          break;
+        }
+      }
+    }
+
+    return matches
+        ? eat(tokenType, tokenTypes)
+        : null;
+  }
 
   /**
    * Run the given closure in a scope, resetting the ignored token types to their previous values

@@ -16,10 +16,10 @@
 
 package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode.HclIdentifierNode;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
-import java.util.List;
 
 /**
  * Valid types of element within a template.
@@ -90,7 +90,7 @@ public sealed interface HclTemplateItemNode extends HclNode {
    */
   record HclTemplateIfNode(
       HclTemplateIfPartNode ifPart,
-      @Nullable HclTemplateItemNode.HclTemplateElsePartNode elsePart,
+      @Nullable HclTemplateElsePartNode elsePart,
       HclTemplateEndPartNode endIfPart
   ) implements HclTemplateItemNode {
 
@@ -254,18 +254,17 @@ public sealed interface HclTemplateItemNode extends HclNode {
   /**
    * The {@code for} condition in a {@link HclTemplateForNode}.
    *
-   * @param leftToken                the opening delimiter.
-   * @param leftTrimToken            the trim marker for the left token, or {@code null} if not
-   *                                 provided.
-   * @param forToken                 the {@code for} keyword.
-   * @param identifier               the first identifier.
-   * @param additionalForIdentifiers a list of additional identifiers to unwrap.
-   * @param inToken                  the {@code in} keyword.
-   * @param expression               the expression that evaluates to a tuple.
-   * @param rightTrimToken           the trim marker for the right token, or {@code null} if not
-   *                                 provided.
-   * @param rightToken               the closing delimiter.
-   * @param template                 the template to evaluate for each iteration.
+   * @param leftToken        the opening delimiter.
+   * @param leftTrimToken    the trim marker for the left token, or {@code null} if not provided.
+   * @param forToken         the {@code for} keyword.
+   * @param firstIdentifier  the first identifier.
+   * @param commaToken       the optional comma before the optional second identifier.
+   * @param secondIdentifier the optional second identifier.
+   * @param inToken          the {@code in} keyword.
+   * @param expression       the expression that evaluates to a tuple.
+   * @param rightTrimToken   the trim marker for the right token, or {@code null} if not provided.
+   * @param rightToken       the closing delimiter.
+   * @param template         the template to evaluate for each iteration.
    * @author Ashley Scopes
    * @since 0.0.1
    */
@@ -273,8 +272,9 @@ public sealed interface HclTemplateItemNode extends HclNode {
       HclToken leftToken,
       @Nullable HclToken leftTrimToken,
       HclToken forToken,
-      HclIdentifierLikeNode identifier,
-      List<HclAdditionalForIdentifier> additionalForIdentifiers,
+      HclIdentifierNode firstIdentifier,
+      @Nullable HclToken commaToken,
+      @Nullable HclIdentifierNode secondIdentifier,
       HclToken inToken,
       HclExpressionNode expression,
       @Nullable HclToken rightTrimToken,

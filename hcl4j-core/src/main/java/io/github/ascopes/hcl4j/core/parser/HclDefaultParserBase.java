@@ -25,6 +25,10 @@ import io.github.ascopes.hcl4j.core.ast.HclConditionalNode;
 import io.github.ascopes.hcl4j.core.ast.HclExprTermNode;
 import io.github.ascopes.hcl4j.core.ast.HclExpressionNode;
 import io.github.ascopes.hcl4j.core.ast.HclForExprNode;
+import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForConditionNode;
+import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForIntroNode;
+import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForObjectExprNode;
+import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForTupleExprNode;
 import io.github.ascopes.hcl4j.core.ast.HclFunctionCallNode;
 import io.github.ascopes.hcl4j.core.ast.HclFunctionCallNode.HclParameterNode;
 import io.github.ascopes.hcl4j.core.ast.HclGetAttrNode;
@@ -195,9 +199,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
 
     var leftBrace = tokenStream.eat(HclTokenType.LEFT_BRACE);
 
-    if (tokenStream.peek(0).type() == HclTokenType.NEW_LINE) {
-      tokenStream.eat(HclTokenType.NEW_LINE);
-    }
+    tokenStream.eatIfMatches(HclTokenType.NEW_LINE);
 
     // Body will pick up both the single-attribute case that makes up a one-line block,
     // and the nested body case for multi-line blocks.
@@ -534,12 +536,11 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    *
    *   realLit = REAL ;
    *   integerLit = INTEGER ;
-   *   softKeywordLit = "true" | "false" | "null" ;
-   *
+   *   softKeywordLit = TRUE | FALSE | NULL ;
+   *   TRUE = "true" (* identifier with specific content *) ;
+   *   FALSE = "false" (* identifier with specific content *) ;
+   *   NULL = "null" (* identifier with specific content *) ;
    * </code></pre>
-   *
-   * <p>...where a {@code softKeywordLit} is an {@code IDENTIFIER} acting as a soft keyword
-   * under the hood.</p>
    *
    * @return the node.
    */
@@ -648,15 +649,9 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
         }
       }
 
-      HclToken trailer = null;
-
-      if (!arguments.isEmpty()) {
-        if (tokenStream.peek(0).type() == HclTokenType.ELLIPSIS) {
-          trailer = tokenStream.eat(HclTokenType.ELLIPSIS);
-        } else if (tokenStream.peek(0).type() == HclTokenType.COMMA) {
-          trailer = tokenStream.eat(HclTokenType.COMMA);
-        }
-      }
+      var trailer = arguments.isEmpty()
+          ? tokenStream.eatIfMatches(HclTokenType.ELLIPSIS, HclTokenType.COMMA)
+          : null;
 
       var rightParen = tokenStream.eat(HclTokenType.RIGHT_PAREN);
 
@@ -678,7 +673,105 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
   }
 
   protected HclForExprNode forExpr() {
-    throw new UnsupportedOperationException();
+    return tokenStream.peek(0).type() == HclTokenType.LEFT_SQUARE
+        ? forTupleExpr()
+        : forObjectExpr();
+  }
+
+  protected HclForTupleExprNode forTupleExpr() {
+    var leftToken = tokenStream.eat(HclTokenType.LEFT_SQUARE);
+    var intro = forIntro();
+    var expression = expr();
+    var forCondition = tokenStream.peek(0).type() == HclTokenType.IDENTIFIER
+        ? forCond()
+        : null;
+    var rightToken = tokenStream.eat(HclTokenType.RIGHT_SQUARE);
+
+    return new HclForTupleExprNode(
+        leftToken,
+        intro,
+        expression,
+        forCondition,
+        rightToken
+    );
+  }
+
+  protected HclForObjectExprNode forObjectExpr() {
+    var leftToken = tokenStream.eat(HclTokenType.LEFT_BRACE);
+    var intro = forIntro();
+    var keyExpression = expr();
+    var fatArrowToken = tokenStream.eat(HclTokenType.FAT_ARROW);
+    var valueExpression = expr();
+    var ellipsisToken = tokenStream.eatIfMatches(HclTokenType.ELLIPSIS);
+    var forCondition = tokenStream.peek(0).type() == HclTokenType.IDENTIFIER
+        ? forCond()
+        : null;
+    var rightToken = tokenStream.eat(HclTokenType.RIGHT_BRACE);
+
+    return new HclForObjectExprNode(
+        leftToken,
+        intro,
+        keyExpression,
+        fatArrowToken,
+        valueExpression,
+        ellipsisToken,
+        forCondition,
+        rightToken
+    );
+  }
+
+  /**
+   * Parse a for-intro.
+   *
+   * <pre><code>
+   *   forIntro = FOR , identifier , ( COMMA , identifier )? , IN , expr , COLON ;
+   *   FOR = "for" (* identifier with specific content *) ;
+   *   IN = "in" (* identifier with specific content *) ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
+  protected HclForIntroNode forIntro() {
+    var forToken = tokenStream.eatKeyword("for");
+    var firstIdentifier = identifier();
+
+    HclToken commaToken = null;
+    HclIdentifierNode secondIdentifier = null;
+
+    if (tokenStream.peek(0).type() == HclTokenType.COMMA) {
+      commaToken = tokenStream.eat(HclTokenType.COMMA);
+      secondIdentifier = identifier();
+    }
+
+    var inToken = tokenStream.eatKeyword("in");
+    var inExpression = expr();
+    var colonToken = tokenStream.eat(HclTokenType.COLON);
+
+    return new HclForIntroNode(
+        forToken,
+        firstIdentifier,
+        commaToken,
+        secondIdentifier,
+        inToken,
+        inExpression,
+        colonToken
+    );
+  }
+
+  /**
+   * Parse a for-condition.
+   *
+   * <pre><code>
+   *   forCond = IF , expr ;
+   *   IF = "if" (* identifier with specific content *) ;
+   * </code></pre>
+   *
+   * @return the node
+   */
+  protected HclForConditionNode forCond() {
+    var ifToken = tokenStream.eatKeyword("if");
+    var ifExpression = expr();
+    return new HclForConditionNode(ifToken, ifExpression);
   }
 
   protected HclCollectionValueNode collectionValue() {

@@ -16,10 +16,10 @@
 
 package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode.HclIdentifierNode;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
-import java.util.List;
 
 /**
  * Valid types of for-expression.
@@ -32,19 +32,21 @@ public sealed interface HclForExprNode extends HclExprTermNode {
   /**
    * For expression header.
    *
-   * @param forToken              the {@code for} keyword token.
-   * @param identifier            the initial identifier.
-   * @param additionalIdentifiers additional identifiers to unwrap.
-   * @param inToken               the {@code in} keyword token.
-   * @param inExpression          the expression to iterate across and unwrap.
-   * @param colonToken            the {@code :} keyword token.
+   * @param forToken         the {@code for} keyword token.
+   * @param firstIdentifier  the first identifier (mandatory).
+   * @param commaToken       the optional comma before the optional second identifier.
+   * @param secondIdentifier the optional second identifier.
+   * @param inToken          the {@code in} keyword token.
+   * @param inExpression     the expression to iterate across and unwrap.
+   * @param colonToken       the {@code :} keyword token.
    * @author Ashley Scopes
    * @since 0.0.1
    */
   record HclForIntroNode(
       HclToken forToken,
-      HclIdentifierLikeNode identifier,
-      List<HclAdditionalForIdentifier> additionalIdentifiers,
+      HclIdentifierNode firstIdentifier,
+      @Nullable HclToken commaToken,
+      HclIdentifierNode secondIdentifier,
       HclToken inToken,
       HclExpressionNode inExpression,
       HclToken colonToken
@@ -100,7 +102,7 @@ public sealed interface HclForExprNode extends HclExprTermNode {
       HclToken leftToken,
       HclForIntroNode intro,
       HclExpressionNode expression,
-      @Nullable HclForExprNode.HclForConditionNode condition,
+      @Nullable HclForConditionNode condition,
       HclToken rightToken
   ) implements HclForExprNode {
 
@@ -136,7 +138,7 @@ public sealed interface HclForExprNode extends HclExprTermNode {
       HclToken fatArrowToken,
       HclExpressionNode valueExpression,
       @Nullable HclToken ellipsisToken,
-      @Nullable HclForExprNode.HclForConditionNode condition,
+      @Nullable HclForConditionNode condition,
       HclToken rightToken
   ) implements HclForExprNode {
 
