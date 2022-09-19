@@ -56,15 +56,19 @@ public sealed interface HclTemplateItemNode extends HclNode {
   /**
    * An interpolation template expression.
    *
-   * @param leftToken  the opening delimiter token.
-   * @param expression the expression to evaluate and interpolate.
-   * @param rightToken the closing delimiter token.
+   * @param leftToken      the opening delimiter token.
+   * @param leftTrimToken  the optional left trim token, if present.
+   * @param expression     the expression to evaluate and interpolate.
+   * @param rightTrimToken the optional right trim token, if present.
+   * @param rightToken     the closing delimiter token.
    * @author Ashley Scopes
    * @since 0.0.1
    */
   record HclTemplateInterpNode(
       HclToken leftToken,
+      @Nullable HclToken leftTrimToken,
       HclExpressionNode expression,
+      @Nullable HclToken rightTrimToken,
       HclToken rightToken
   ) implements HclTemplateItemNode {
 
@@ -264,7 +268,6 @@ public sealed interface HclTemplateItemNode extends HclNode {
    * @param expression       the expression that evaluates to a tuple.
    * @param rightTrimToken   the trim marker for the right token, or {@code null} if not provided.
    * @param rightToken       the closing delimiter.
-   * @param template         the template to evaluate for each iteration.
    * @author Ashley Scopes
    * @since 0.0.1
    */
@@ -278,8 +281,7 @@ public sealed interface HclTemplateItemNode extends HclNode {
       HclToken inToken,
       HclExpressionNode expression,
       @Nullable HclToken rightTrimToken,
-      HclToken rightToken,
-      HclTemplateNode template
+      HclToken rightToken
   ) implements HclNode {
 
     public boolean leftTrimmed() {
@@ -297,7 +299,7 @@ public sealed interface HclTemplateItemNode extends HclNode {
 
     @Override
     public HclLocation end() {
-      return template.end();
+      return rightToken.end();
     }
   }
 }

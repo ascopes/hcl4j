@@ -25,7 +25,6 @@ import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class TerraformTest {
@@ -37,7 +36,7 @@ class TerraformTest {
         // go here.
         required_providers {
           aws = {
-            source = "hashicorp/aws"
+            source = "hashicorp/aws",
             version = "~> 4.16"
           }
         }
@@ -94,7 +93,6 @@ class TerraformTest {
     }
   }
 
-  @Disabled
   @Test
   void testParseTerraformOnce() throws IOException {
     try (var in = new HclCharInputStream("example.tf", new ByteArrayInputStream(source))) {

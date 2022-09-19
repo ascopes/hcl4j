@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Exception thrown if the parser comes across a token that it does not expect during parsing.
@@ -97,8 +96,8 @@ public final class HclUnexpectedTokenException extends HclSyntaxException {
         .map(type -> {
           var symbol = type.symbol();
           return symbol == null
-            ? " - " + type.displayName()
-            : " - " + type.displayName() + " (" + safeRepr(type.symbol()) + ")";
+              ? " - " + type.displayName()
+              : " - " + type.displayName() + " (" + safeRepr(type.symbol()) + ")";
         })
         .collect(Collectors.joining("\n"));
 

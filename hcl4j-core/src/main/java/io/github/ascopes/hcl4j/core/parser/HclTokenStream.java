@@ -26,9 +26,8 @@ import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.IOException;
-import java.util.EnumSet;
-import java.util.Set;
-import java.util.function.Supplier;
+import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * A stream of tokens that supports arbitrary look-ahead.
@@ -55,13 +54,6 @@ public interface HclTokenStream {
    *                                  ignored, and the stream being locked in an infinite loop.
    */
   void ignoreToken(HclTokenType tokenType);
-
-  /**
-   * Instruct the stream to not ignore tokens of the given type.
-   *
-   * @param tokenType the token type to not ignore.
-   */
-  void unignoreToken(HclTokenType tokenType);
 
   /**
    * Get the current location of the token stream.
@@ -104,7 +96,8 @@ public interface HclTokenStream {
    * <p>This is the equivalent to calling {@link #eat} with {@link HclTokenType#IDENTIFIER},
    * and then performing a check on the identifier value.
    *
-   * @param identifier the identifier value to expect.
+   * @param identifier  the identifier value to expect.
+   * @param identifiers any additional identifiers to expect.
    * @return the token.
    * @throws HclStreamException            if the input stream cannot be read due to an internal
    *                                       {@link IOException}.
@@ -114,18 +107,32 @@ public interface HclTokenStream {
    * @throws HclUnexpectedKeywordException if the next token is an identifier but does not match the
    *                                       expected keyword.
    */
-  default HclToken eatKeyword(CharSequence identifier) throws HclProcessingException {
+  default HclToken eatKeyword(
+      CharSequence identifier,
+      CharSequence... identifiers
+  ) throws HclProcessingException {
     var token = eat(HclTokenType.IDENTIFIER);
-    if (!token.rawEquals(identifier)) {
-      throw new HclUnexpectedKeywordException(
-          token,
-          Set.of(identifier),
-          name(),
-          "Unexpected identifier in input, expected specific keyword"
-      );
+
+    if (token.rawEquals(identifier)) {
+      return token;
     }
 
-    return token;
+    for (var otherIdentifier : identifiers) {
+      if (token.rawEquals(otherIdentifier)) {
+        return token;
+      }
+    }
+
+    var allIdentifiers = new HashSet<CharSequence>();
+    allIdentifiers.add(identifier);
+    allIdentifiers.addAll(Arrays.asList(identifiers));
+
+    throw new HclUnexpectedKeywordException(
+        token,
+        allIdentifiers,
+        name(),
+        "Unexpected identifier in input, expected specific keyword"
+    );
   }
 
   /**
@@ -140,7 +147,7 @@ public interface HclTokenStream {
    *                              (e.g. a malformed input is consumed).
    */
   @Nullable
-  default HclToken eatIfMatches(
+  default HclToken tryEat(
       HclTokenType tokenType,
       HclTokenType... tokenTypes
   ) throws HclProcessingException {
@@ -162,14 +169,4 @@ public interface HclTokenStream {
         ? eat(tokenType, tokenTypes)
         : null;
   }
-
-  /**
-   * Run the given closure in a scope, resetting the ignored token types to their previous values
-   * after the scope terminates.
-   *
-   * @param supplier the supplier of the result to output.
-   * @param <T>      the return value type.
-   * @return the returned value.
-   */
-  <T> T scoped(Supplier<T> supplier);
 }

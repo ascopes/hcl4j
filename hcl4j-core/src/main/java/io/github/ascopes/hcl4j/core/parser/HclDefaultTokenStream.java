@@ -25,7 +25,6 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.util.EnumSet;
 import java.util.LinkedList;
-import java.util.function.Supplier;
 
 /**
  * A simple wrapper around a lexer that provides useful stream-oriented operations for parsers to
@@ -69,11 +68,6 @@ public final class HclDefaultTokenStream implements HclTokenStream {
   }
 
   @Override
-  public void unignoreToken(HclTokenType tokenType) {
-    skipMask.remove(tokenType);
-  }
-
-  @Override
   public HclLocation location() {
     return peek(0).start();
   }
@@ -107,17 +101,6 @@ public final class HclDefaultTokenStream implements HclTokenStream {
         lexer.charSource().name(),
         "Unexpected token in input"
     );
-  }
-
-  @Override
-  public <T> T scoped(Supplier<T> supplier) {
-    var initialMask = EnumSet.copyOf(skipMask);
-
-    try {
-      return supplier.get();
-    } finally {
-      skipMask = initialMask;
-    }
   }
 
   private Indexed<HclToken> retrieveToken(int offset) {
