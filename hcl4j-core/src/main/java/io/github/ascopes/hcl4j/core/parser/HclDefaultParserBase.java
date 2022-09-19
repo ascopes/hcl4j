@@ -582,7 +582,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
         yield variableExpr();
       }
 
-      case LEFT_SQUARE, LEFT_BRACE -> token.rawEquals("for")
+      case LEFT_SQUARE, LEFT_BRACE -> tokenStream.peek(1).rawEquals("for")
           ? forExpr()
           : collectionValue();
 

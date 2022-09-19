@@ -19,6 +19,7 @@ package io.github.ascopes.hcl4j.core.parser;
 import io.github.ascopes.hcl4j.core.ex.HclBadTokenException;
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.ex.HclStreamException;
+import io.github.ascopes.hcl4j.core.ex.HclUnexpectedKeywordException;
 import io.github.ascopes.hcl4j.core.ex.HclUnexpectedTokenException;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
@@ -26,6 +27,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
 import io.github.ascopes.hcl4j.core.tokens.HclTokenType;
 import java.io.IOException;
 import java.util.EnumSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -104,21 +106,22 @@ public interface HclTokenStream {
    *
    * @param identifier the identifier value to expect.
    * @return the token.
-   * @throws HclStreamException          if the input stream cannot be read due to an internal
-   *                                     {@link IOException}.
-   * @throws HclBadTokenException        if the next token is unable to be tokenized to a known
-   *                                     token type (e.g. a malformed input is consumed).
-   * @throws HclUnexpectedTokenException if the next token is not an identifier, or if the
-   *                                     identifier does not match the given string value.
+   * @throws HclStreamException            if the input stream cannot be read due to an internal
+   *                                       {@link IOException}.
+   * @throws HclBadTokenException          if the next token is unable to be tokenized to a known
+   *                                       token type (e.g. a malformed input is consumed).
+   * @throws HclUnexpectedTokenException   if the next token is not an identifier.
+   * @throws HclUnexpectedKeywordException if the next token is an identifier but does not match the
+   *                                       expected keyword.
    */
   default HclToken eatKeyword(CharSequence identifier) throws HclProcessingException {
     var token = eat(HclTokenType.IDENTIFIER);
     if (!token.rawEquals(identifier)) {
-      throw new HclUnexpectedTokenException(
+      throw new HclUnexpectedKeywordException(
           token,
-          EnumSet.of(HclTokenType.IDENTIFIER),
+          Set.of(identifier),
           name(),
-          "Unexpected identifier, expected keyword '" + identifier + "'"
+          "Unexpected identifier in input, expected specific keyword"
       );
     }
 
