@@ -893,7 +893,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    * Parse a template.
    *
    * <pre><code>
-   *   template = ( templateLiteral | templateInterpolation | templateDirective )* ;
+   *   template = (templateLiteral | templateInterpolation | templateDirective)* ;
    * </code></pre>
    *
    * @return the node.
@@ -934,6 +934,15 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
     return new HclTemplateLiteralNode(tokenStream.eat(HclTokenType.RAW_TEXT));
   }
 
+  /**
+   * Parse a template interpolation expression.
+   *
+   * <pre><code>
+   *   templateInterpolation = LEFT_INTERPOLATION TRIM? expr TRIM? RIGHT_BRACE ;
+   * </code></pre>
+   *
+   * @return the node.
+   */
   protected HclTemplateInterpNode templateInterpolation() {
     var leftToken = tokenStream.eat(HclTokenType.LEFT_INTERPOLATION);
     var leftTrimToken = tokenStream.tryEat(HclTokenType.TRIM);
