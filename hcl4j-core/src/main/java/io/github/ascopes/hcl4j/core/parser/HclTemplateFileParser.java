@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.parser;
 
-import io.github.ascopes.hcl4j.core.ast.HclTemplateNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateContentNode;
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.inputs.HclCharSource;
 import io.github.ascopes.hcl4j.core.lexer.HclDefaultLexer;
@@ -27,7 +27,7 @@ import io.github.ascopes.hcl4j.core.lexer.strategy.HclConfigLexerStrategy;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public final class HclTemplateFileParser extends HclDefaultParserBase<HclTemplateNode> {
+public final class HclTemplateFileParser extends HclDefaultParserBase<HclTemplateContentNode> {
 
   /**
    * Initialize the parser.
@@ -39,7 +39,7 @@ public final class HclTemplateFileParser extends HclDefaultParserBase<HclTemplat
   }
 
   @Override
-  public HclTemplateNode parseFile() throws HclProcessingException {
+  public HclTemplateContentNode parseFile() throws HclProcessingException {
     throw new UnsupportedOperationException("not implemented");
   }
 

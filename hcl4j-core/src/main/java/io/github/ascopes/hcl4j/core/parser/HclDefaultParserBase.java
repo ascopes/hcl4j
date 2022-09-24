@@ -15,53 +15,54 @@
  */
 package io.github.ascopes.hcl4j.core.parser;
 
-import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode;
-import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode.HclAttributeNode;
-import io.github.ascopes.hcl4j.core.ast.HclBodyItemNode.HclBlockNode;
-import io.github.ascopes.hcl4j.core.ast.HclBodyNode;
-import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode;
-import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclObjectElementNode;
-import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclObjectNode;
-import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclTupleElementNode;
-import io.github.ascopes.hcl4j.core.ast.HclCollectionValueNode.HclTupleNode;
-import io.github.ascopes.hcl4j.core.ast.HclConditionalNode;
-import io.github.ascopes.hcl4j.core.ast.HclExprTermNode;
-import io.github.ascopes.hcl4j.core.ast.HclExpressionNode;
-import io.github.ascopes.hcl4j.core.ast.HclForExprNode;
-import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForConditionNode;
-import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForIntroNode;
-import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForObjectExprNode;
-import io.github.ascopes.hcl4j.core.ast.HclForExprNode.HclForTupleExprNode;
-import io.github.ascopes.hcl4j.core.ast.HclFunctionCallNode;
-import io.github.ascopes.hcl4j.core.ast.HclFunctionCallNode.HclParameterNode;
-import io.github.ascopes.hcl4j.core.ast.HclGetAttrNode;
-import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode;
-import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode.HclIdentifierNode;
-import io.github.ascopes.hcl4j.core.ast.HclIdentifierLikeNode.HclStringLiteralNode;
-import io.github.ascopes.hcl4j.core.ast.HclIndexNode;
-import io.github.ascopes.hcl4j.core.ast.HclLegacyIndexNode;
-import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclBooleanLiteralNode;
-import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclIntegerLiteralNode;
-import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclNullLiteralNode;
-import io.github.ascopes.hcl4j.core.ast.HclLiteralValueNode.HclRealLiteralNode;
-import io.github.ascopes.hcl4j.core.ast.HclOperationNode.HclBinaryOperationNode;
-import io.github.ascopes.hcl4j.core.ast.HclOperationNode.HclUnaryOperationNode;
-import io.github.ascopes.hcl4j.core.ast.HclSplatNode.HclAttrSplatNode;
-import io.github.ascopes.hcl4j.core.ast.HclSplatNode.HclFullSplatNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateExprNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateExprNode.HclHeredocTemplateNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateExprNode.HclQuotedTemplateNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode.HclTemplateElsePartNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode.HclTemplateEndPartNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode.HclTemplateForNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode.HclTemplateForPartNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode.HclTemplateIfNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode.HclTemplateInterpNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateItemNode.HclTemplateLiteralNode;
-import io.github.ascopes.hcl4j.core.ast.HclTemplateNode;
-import io.github.ascopes.hcl4j.core.ast.HclVariableExprNode;
-import io.github.ascopes.hcl4j.core.ast.HclWrappedExpressionNode;
+import io.github.ascopes.hcl4j.core.ast.body.HclAttributeNode;
+import io.github.ascopes.hcl4j.core.ast.body.HclBlockNode;
+import io.github.ascopes.hcl4j.core.ast.body.HclBodyItemNode;
+import io.github.ascopes.hcl4j.core.ast.body.HclBodyNode;
+import io.github.ascopes.hcl4j.core.ast.collect.HclCollectionValueNode;
+import io.github.ascopes.hcl4j.core.ast.collect.HclObjectElementNode;
+import io.github.ascopes.hcl4j.core.ast.collect.HclObjectNode;
+import io.github.ascopes.hcl4j.core.ast.collect.HclTupleElementNode;
+import io.github.ascopes.hcl4j.core.ast.collect.HclTupleNode;
+import io.github.ascopes.hcl4j.core.ast.expr.HclBinaryOperationNode;
+import io.github.ascopes.hcl4j.core.ast.expr.HclConditionalNode;
+import io.github.ascopes.hcl4j.core.ast.expr.HclExprTermNode;
+import io.github.ascopes.hcl4j.core.ast.expr.HclExpressionNode;
+import io.github.ascopes.hcl4j.core.ast.expr.HclUnaryOperationNode;
+import io.github.ascopes.hcl4j.core.ast.expr.HclWrappedExpressionNode;
+import io.github.ascopes.hcl4j.core.ast.func.HclFunctionCallNode;
+import io.github.ascopes.hcl4j.core.ast.func.HclParameterNode;
+import io.github.ascopes.hcl4j.core.ast.getattr.HclGetAttrNode;
+import io.github.ascopes.hcl4j.core.ast.id.HclIdentifierLikeNode;
+import io.github.ascopes.hcl4j.core.ast.id.HclIdentifierNode;
+import io.github.ascopes.hcl4j.core.ast.id.HclStringLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.id.HclVariableExprNode;
+import io.github.ascopes.hcl4j.core.ast.index.HclIndexNode;
+import io.github.ascopes.hcl4j.core.ast.index.HclLegacyIndexNode;
+import io.github.ascopes.hcl4j.core.ast.iter.HclForConditionNode;
+import io.github.ascopes.hcl4j.core.ast.iter.HclForExprNode;
+import io.github.ascopes.hcl4j.core.ast.iter.HclForIntroNode;
+import io.github.ascopes.hcl4j.core.ast.iter.HclForObjectExprNode;
+import io.github.ascopes.hcl4j.core.ast.iter.HclForTupleExprNode;
+import io.github.ascopes.hcl4j.core.ast.literal.HclBooleanLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.literal.HclIntegerLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.literal.HclNullLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.literal.HclRealLiteralNode;
+import io.github.ascopes.hcl4j.core.ast.splat.HclAttrSplatNode;
+import io.github.ascopes.hcl4j.core.ast.splat.HclFullSplatNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclHeredocTemplateNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclQuotedTemplateNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateContentNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateElsePartNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateEndPartNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateExprNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateForNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateForPartNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateIfNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateIfPartNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateInterpolationNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateItemNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateLiteralNode;
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
@@ -897,7 +898,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    *
    * @return the node.
    */
-  protected HclTemplateNode template() {
+  protected HclTemplateContentNode template() {
     var templateItems = new ArrayList<HclTemplateItemNode>();
     var start = tokenStream.location();
 
@@ -918,7 +919,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
         }
         default -> {
           var end = tokenStream.location();
-          return new HclTemplateNode(templateItems, start, end);
+          return new HclTemplateContentNode(templateItems, start, end);
         }
       }
     }
@@ -942,14 +943,14 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    *
    * @return the node.
    */
-  protected HclTemplateInterpNode templateInterpolation() {
+  protected HclTemplateInterpolationNode templateInterpolation() {
     var leftToken = tokenStream.eat(HclTokenType.LEFT_INTERPOLATION);
     var leftTrimToken = tokenStream.tryEat(HclTokenType.TRIM);
     var expression = expr();
     var rightTrimToken = tokenStream.tryEat(HclTokenType.TRIM);
     var rightToken = tokenStream.eat(HclTokenType.RIGHT_BRACE);
 
-    return new HclTemplateInterpNode(
+    return new HclTemplateInterpolationNode(
         leftToken,
         leftTrimToken,
         expression,
@@ -973,9 +974,9 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
    *   ENDIF = "endif"  (* specific identifier *) ;
    * </code></pre>
    *
-   * @param forLeftBrace the left brace.
-   * @param forLeftTrim  the left trim, or {@code null} if not present.
-   * @param forKeyword   the {@code for} keyword.
+   * @param ifLeftBrace the left brace.
+   * @param ifLeftTrim  the left trim, or {@code null} if not present.
+   * @param ifKeyword   the {@code for} keyword.
    * @return the node.
    */
   protected HclTemplateIfNode templateIf(
@@ -989,7 +990,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
     var ifRightBrace = tokenStream.eat(HclTokenType.RIGHT_BRACE);
     var ifTemplate = template();
 
-    var ifPart = new HclTemplateItemNode.HclTemplateIfPartNode(
+    var ifPart = new HclTemplateIfPartNode(
         ifLeftBrace,
         ifLeftTrim,
         ifKeyword,

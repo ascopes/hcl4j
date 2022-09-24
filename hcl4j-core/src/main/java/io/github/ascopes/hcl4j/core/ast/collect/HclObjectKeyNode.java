@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-open module io.github.ascopes.hcl4j.core.test {
-  requires java.base;
+package io.github.ascopes.hcl4j.core.ast.collect;
 
-  requires transitive io.github.ascopes.hcl4j.core;
-  requires transitive net.bytebuddy;
-  requires transitive org.assertj.core;
-  requires transitive org.junit.jupiter;
-}
+import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+
+/**
+ * Base interface for valid types of object key identifier.
+ *
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public interface HclObjectKeyNode extends HclVisitable {}

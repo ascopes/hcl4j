@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.parser;
 
-import io.github.ascopes.hcl4j.core.ast.HclBodyNode;
+import io.github.ascopes.hcl4j.core.ast.body.HclBodyNode;
 import io.github.ascopes.hcl4j.core.ex.HclProcessingException;
 import io.github.ascopes.hcl4j.core.inputs.HclCharSource;
 import io.github.ascopes.hcl4j.core.lexer.HclDefaultLexer;

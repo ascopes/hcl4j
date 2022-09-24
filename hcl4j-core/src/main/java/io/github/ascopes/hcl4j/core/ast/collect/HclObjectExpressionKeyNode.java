@@ -13,11 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-open module io.github.ascopes.hcl4j.core.test {
-  requires java.base;
+package io.github.ascopes.hcl4j.core.ast.collect;
 
-  requires transitive io.github.ascopes.hcl4j.core;
-  requires transitive net.bytebuddy;
-  requires transitive org.assertj.core;
-  requires transitive org.junit.jupiter;
+import io.github.ascopes.hcl4j.core.ast.expr.HclExpressionNode;
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+
+/**
+ * An expression that should be evaluated to get the key identifier in an object key.
+ *
+ * @param expression the expression.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclObjectExpressionKeyNode(HclExpressionNode expression) implements HclObjectKeyNode {
+
+  @Override
+  public HclLocation start() {
+    return expression.start();
+  }
+
+  @Override
+  public HclLocation end() {
+    return expression.end();
+  }
 }

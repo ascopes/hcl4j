@@ -39,7 +39,7 @@ public final class HclDefaultTokenStream implements HclTokenStream {
 
   private final HclLexer lexer;
   private final LinkedList<HclToken> tokens;
-  private EnumSet<HclTokenType> skipMask;
+  private final EnumSet<HclTokenType> skipMask;
 
   /**
    * Initialize this stream.

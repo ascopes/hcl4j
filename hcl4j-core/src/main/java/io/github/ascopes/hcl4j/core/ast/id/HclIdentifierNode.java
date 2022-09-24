@@ -13,11 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-open module io.github.ascopes.hcl4j.core.test {
-  requires java.base;
+package io.github.ascopes.hcl4j.core.ast.id;
 
-  requires transitive io.github.ascopes.hcl4j.core;
-  requires transitive net.bytebuddy;
-  requires transitive org.assertj.core;
-  requires transitive org.junit.jupiter;
+import io.github.ascopes.hcl4j.core.inputs.HclLocation;
+import io.github.ascopes.hcl4j.core.tokens.HclToken;
+
+/**
+ * An HCL identifier.
+ *
+ * @param contentToken the text token node, always non-null.
+ * @author Ashley Scopes
+ * @since 0.0.1
+ */
+public record HclIdentifierNode(
+    @Override HclToken contentToken
+) implements HclIdentifierLikeNode {
+
+  @Override
+  public HclLocation start() {
+    return contentToken.start();
+  }
+
+  @Override
+  public HclLocation end() {
+    return contentToken.start();
+  }
 }
