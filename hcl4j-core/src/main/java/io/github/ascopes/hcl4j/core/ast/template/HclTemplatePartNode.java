@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.ascopes.hcl4j.core.ast;
+package io.github.ascopes.hcl4j.core.ast.template;
 
-import io.github.ascopes.hcl4j.core.inputs.HclLocatable;
+import io.github.ascopes.hcl4j.core.ast.HclNode;
 
 /**
- * Base interface for all types of node.
+ * Base interface for "parts" of HCL template structures.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclVisitable extends HclLocatable {
+public sealed interface HclTemplatePartNode extends HclNode permits
+    HclTemplateForPartNode,
+    HclTemplateIfPartNode,
+    HclTemplateElsePartNode,
+    HclTemplateEndPartNode {
 }

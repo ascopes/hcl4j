@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.collect;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.ast.HclNode;
 
 /**
  * Base interface for valid types of object key identifier.
@@ -23,4 +23,6 @@ import io.github.ascopes.hcl4j.core.ast.HclVisitable;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclObjectKeyNode extends HclVisitable {}
+public sealed interface HclObjectKeyNode
+    extends HclNode
+    permits HclObjectExpressionKeyNode, HclObjectIdentifierKeyNode {}

@@ -26,7 +26,9 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclLiteralValueNode<T> extends HclExprTermNode {
+public sealed interface HclLiteralValueNode<T>
+    extends HclExprTermNode
+    permits HclBooleanLiteralNode, HclNullLiteralNode, HclNumericLiteralNode {
 
   /**
    * Get the original token.

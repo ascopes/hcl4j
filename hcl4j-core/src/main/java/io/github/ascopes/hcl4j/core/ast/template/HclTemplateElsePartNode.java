@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.template;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.inputs.HclLocatable;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
@@ -39,7 +39,7 @@ public record HclTemplateElsePartNode(
     @Nullable HclToken rightTrimToken,
     HclToken rightToken,
     HclTemplateContentNode template
-) implements HclVisitable {
+) implements HclLocatable, HclTemplatePartNode {
 
   public boolean leftTrimmed() {
     return leftTrimToken != null;

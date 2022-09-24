@@ -29,7 +29,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
 public record HclUnaryOperationNode(
     HclToken operatorToken,
     HclExpressionNode value
-) implements HclOperationNode {
+) implements HclExpressionNode {
 
   @Override
   public HclLocation start() {

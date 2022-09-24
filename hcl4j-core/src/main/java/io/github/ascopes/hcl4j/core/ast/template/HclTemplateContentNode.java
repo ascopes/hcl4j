@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.template;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.inputs.HclLocatable;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import java.util.List;
 
@@ -32,5 +32,5 @@ public record HclTemplateContentNode(
     List<? extends HclTemplateItemNode> items,
     @Override HclLocation start,
     @Override HclLocation end
-) implements HclVisitable {
+) implements HclLocatable {
 }

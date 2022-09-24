@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.expr;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.ast.HclNode;
 
 /**
  * Valid types of expression.
@@ -23,4 +23,9 @@ import io.github.ascopes.hcl4j.core.ast.HclVisitable;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclExpressionNode extends HclVisitable {}
+public sealed interface HclExpressionNode extends HclNode permits
+    HclExprTermNode,
+    HclUnaryOperationNode,
+    HclBinaryOperationNode,
+    HclTernaryOperationNode {
+}

@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.id;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.ast.HclNode;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
 
@@ -25,7 +25,9 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclIdentifierLikeNode extends HclVisitable {
+public sealed interface HclIdentifierLikeNode
+    extends HclNode
+    permits HclIdentifierNode, HclStringLiteralNode {
 
   /**
    * The content of the identifier, or an empty-string where appropriate if no content is provided.

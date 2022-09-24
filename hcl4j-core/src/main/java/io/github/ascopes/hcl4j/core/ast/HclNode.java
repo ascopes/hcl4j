@@ -13,34 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.github.ascopes.hcl4j.core.ast.collect;
+package io.github.ascopes.hcl4j.core.ast;
 
+import io.github.ascopes.hcl4j.core.ast.body.HclBodyItemNode;
+import io.github.ascopes.hcl4j.core.ast.collect.HclObjectKeyNode;
 import io.github.ascopes.hcl4j.core.ast.expr.HclExpressionNode;
+import io.github.ascopes.hcl4j.core.ast.func.HclParameterNode;
+import io.github.ascopes.hcl4j.core.ast.id.HclIdentifierLikeNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateItemNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplatePartNode;
 import io.github.ascopes.hcl4j.core.inputs.HclLocatable;
-import io.github.ascopes.hcl4j.core.inputs.HclLocation;
-import io.github.ascopes.hcl4j.core.intern.Nullable;
-import io.github.ascopes.hcl4j.core.tokens.HclToken;
 
 /**
- * A tuple value element literal.
+ * Algebraic base for all HCL AST node types.
  *
- * @param expression the expression.
- * @param commaToken the commaToken. Can be {@code null} on the last item.
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record HclTupleElementNode(
-    @Nullable HclToken commaToken,
-    HclExpressionNode expression
-) implements HclLocatable {
-
-  @Override
-  public HclLocation start() {
-    return commaToken == null ? expression.start() : commaToken.start();
-  }
-
-  @Override
-  public HclLocation end() {
-    return expression.end();
-  }
+public sealed interface HclNode extends HclLocatable permits
+    HclBodyItemNode,
+    HclObjectKeyNode,
+    HclExpressionNode,
+    HclParameterNode,
+    HclIdentifierLikeNode,
+    HclTemplateItemNode,
+    HclTemplatePartNode {
 }

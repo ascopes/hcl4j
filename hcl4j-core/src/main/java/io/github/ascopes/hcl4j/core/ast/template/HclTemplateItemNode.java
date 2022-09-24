@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.template;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.ast.HclNode;
 
 /**
  * Valid types of element within a template.
@@ -23,5 +23,9 @@ import io.github.ascopes.hcl4j.core.ast.HclVisitable;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclTemplateItemNode extends HclVisitable {
+public sealed interface HclTemplateItemNode extends HclNode permits
+    HclTemplateForNode,
+    HclTemplateIfNode,
+    HclTemplateInterpolationNode,
+    HclTemplateLiteralNode {
 }

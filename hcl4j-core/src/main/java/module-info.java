@@ -16,7 +16,6 @@
 module io.github.ascopes.hcl4j.core {
   requires java.base;
 
-  exports io.github.ascopes.hcl4j.core.ast;
   exports io.github.ascopes.hcl4j.core.ast.body;
   exports io.github.ascopes.hcl4j.core.ast.collect;
   exports io.github.ascopes.hcl4j.core.ast.expr;

@@ -31,7 +31,7 @@ public record HclBinaryOperationNode(
     HclExpressionNode leftValue,
     HclToken operatorToken,
     HclExpressionNode rightValue
-) implements HclOperationNode {
+) implements HclExpressionNode {
 
   @Override
   public HclLocation start() {

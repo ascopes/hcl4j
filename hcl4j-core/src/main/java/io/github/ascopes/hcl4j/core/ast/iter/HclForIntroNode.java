@@ -15,9 +15,9 @@
  */
 package io.github.ascopes.hcl4j.core.ast.iter;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
 import io.github.ascopes.hcl4j.core.ast.expr.HclExpressionNode;
 import io.github.ascopes.hcl4j.core.ast.id.HclIdentifierNode;
+import io.github.ascopes.hcl4j.core.inputs.HclLocatable;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
 import io.github.ascopes.hcl4j.core.tokens.HclToken;
@@ -43,7 +43,7 @@ public record HclForIntroNode(
     HclToken inToken,
     HclExpressionNode inExpression,
     HclToken colonToken
-) implements HclVisitable {
+) implements HclLocatable {
 
   @Override
   public HclLocation start() {

@@ -15,10 +15,32 @@
  */
 package io.github.ascopes.hcl4j.core.ast.expr;
 
+import io.github.ascopes.hcl4j.core.ast.collect.HclCollectionValueNode;
+import io.github.ascopes.hcl4j.core.ast.func.HclFunctionCallNode;
+import io.github.ascopes.hcl4j.core.ast.getattr.HclGetAttrNode;
+import io.github.ascopes.hcl4j.core.ast.id.HclVariableExprNode;
+import io.github.ascopes.hcl4j.core.ast.index.HclIndexNode;
+import io.github.ascopes.hcl4j.core.ast.index.HclLegacyIndexNode;
+import io.github.ascopes.hcl4j.core.ast.iter.HclForExprNode;
+import io.github.ascopes.hcl4j.core.ast.literal.HclLiteralValueNode;
+import io.github.ascopes.hcl4j.core.ast.splat.HclSplatNode;
+import io.github.ascopes.hcl4j.core.ast.template.HclTemplateExprNode;
+
 /**
  * Valid types of expression terms.
  *
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclExprTermNode extends HclExpressionNode {}
+public sealed interface HclExprTermNode extends HclExpressionNode permits
+    HclCollectionValueNode,
+    HclWrappedExpressionNode,
+    HclFunctionCallNode,
+    HclGetAttrNode,
+    HclVariableExprNode,
+    HclIndexNode,
+    HclLegacyIndexNode,
+    HclForExprNode,
+    HclLiteralValueNode,
+    HclSplatNode,
+    HclTemplateExprNode {}

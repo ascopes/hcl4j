@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.func;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.ast.HclNode;
 import io.github.ascopes.hcl4j.core.ast.expr.HclExpressionNode;
 import io.github.ascopes.hcl4j.core.inputs.HclLocation;
 import io.github.ascopes.hcl4j.core.intern.Nullable;
@@ -32,7 +32,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
 public record HclParameterNode(
     @Nullable HclToken commaToken,
     HclExpressionNode expression
-) implements HclVisitable {
+) implements HclNode {
 
   @Override
   public HclLocation start() {

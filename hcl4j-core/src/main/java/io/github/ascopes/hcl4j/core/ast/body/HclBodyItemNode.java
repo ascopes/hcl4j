@@ -15,7 +15,7 @@
  */
 package io.github.ascopes.hcl4j.core.ast.body;
 
-import io.github.ascopes.hcl4j.core.ast.HclVisitable;
+import io.github.ascopes.hcl4j.core.ast.HclNode;
 
 /**
  * Valid body items.
@@ -23,5 +23,7 @@ import io.github.ascopes.hcl4j.core.ast.HclVisitable;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclBodyItemNode extends HclVisitable {
+public sealed interface HclBodyItemNode
+    extends HclNode
+    permits HclAttributeNode, HclBlockNode {
 }

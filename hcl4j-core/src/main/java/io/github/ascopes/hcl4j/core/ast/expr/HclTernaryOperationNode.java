@@ -29,7 +29,7 @@ import io.github.ascopes.hcl4j.core.tokens.HclToken;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public record HclConditionalNode(
+public record HclTernaryOperationNode(
     HclExpressionNode condition,
     HclToken questionToken,
     HclExpressionNode ifTrue,

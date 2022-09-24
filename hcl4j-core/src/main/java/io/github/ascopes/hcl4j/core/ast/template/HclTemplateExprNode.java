@@ -23,6 +23,7 @@ import io.github.ascopes.hcl4j.core.ast.expr.HclExprTermNode;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclTemplateExprNode extends HclExprTermNode {
-
+public sealed interface HclTemplateExprNode
+    extends HclExprTermNode
+    permits HclHeredocTemplateNode, HclQuotedTemplateNode {
 }

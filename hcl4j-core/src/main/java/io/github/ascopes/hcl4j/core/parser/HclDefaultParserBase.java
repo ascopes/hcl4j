@@ -25,9 +25,9 @@ import io.github.ascopes.hcl4j.core.ast.collect.HclObjectNode;
 import io.github.ascopes.hcl4j.core.ast.collect.HclTupleElementNode;
 import io.github.ascopes.hcl4j.core.ast.collect.HclTupleNode;
 import io.github.ascopes.hcl4j.core.ast.expr.HclBinaryOperationNode;
-import io.github.ascopes.hcl4j.core.ast.expr.HclConditionalNode;
 import io.github.ascopes.hcl4j.core.ast.expr.HclExprTermNode;
 import io.github.ascopes.hcl4j.core.ast.expr.HclExpressionNode;
+import io.github.ascopes.hcl4j.core.ast.expr.HclTernaryOperationNode;
 import io.github.ascopes.hcl4j.core.ast.expr.HclUnaryOperationNode;
 import io.github.ascopes.hcl4j.core.ast.expr.HclWrappedExpressionNode;
 import io.github.ascopes.hcl4j.core.ast.func.HclFunctionCallNode;
@@ -258,7 +258,7 @@ public abstract class HclDefaultParserBase<T> implements HclParser<T> {
     var colon = tokenStream.eat(HclTokenType.COLON);
     var falseExpr = expr();
 
-    return new HclConditionalNode(expr, questionMark, trueExpr, colon, falseExpr);
+    return new HclTernaryOperationNode(expr, questionMark, trueExpr, colon, falseExpr);
   }
 
   /**

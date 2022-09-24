@@ -22,4 +22,5 @@ package io.github.ascopes.hcl4j.core.ast.literal;
  * @author Ashley Scopes
  * @since 0.0.1
  */
-public interface HclNumericLiteralNode<N extends Number> extends HclLiteralValueNode<N> {}
+public non-sealed interface HclNumericLiteralNode<N extends Number> extends
+    HclLiteralValueNode<N> {}
