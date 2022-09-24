@@ -54,10 +54,11 @@ jobs:
           -T8C
           --no-transfer-progress
           '-Dcheckstyle.skip=true'
+          '-Dlicense.skip=true'
           '-Dstyle.color=always'
           '-Dmaven.artifact.threads=50'
           clean package
-          
+
       - name: Publish to codecov
         continue-on-error: true
         if: always()
@@ -82,13 +83,13 @@ jobs:
         uses: github/codeql-action/analyze@v2
         continue-on-error: true
 
-      - name: Perform Checkstyle Analysis
+      - name: Perform code style analysis
         if: always()
         run: ./mvnw
-          -B 
+          -B
           -U
           -T8C
           --no-transfer-progress
           '-Dstyle.color=always'
           '-Dmaven.artifact.threads=50'
-          checkstyle:checkstyle
+          validate

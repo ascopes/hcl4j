@@ -13,6 +13,8 @@
     <module>hcl4j-core</module>
   </modules>
 
+  <inceptionYear>2022</inceptionYear>
+
   <properties>
     <!-- Dependency versions -->
     <assertj-core.version>3.23.1</assertj-core.version>
@@ -20,6 +22,7 @@
 
     <!-- Plugin versions -->
     <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+    <license-maven-plugin.version>4.1</license-maven-plugin.version>
     <maven-checkstyle-plugin.version>3.2.0</maven-checkstyle-plugin.version>
     <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
     <maven-jar-plugin.version>3.3.0</maven-jar-plugin.version>
@@ -84,39 +87,46 @@
         </plugin>
 
         <plugin>
+          <!-- Enforces our license header and allows adding it automatically to code. -->
+          <groupId>com.mycila</groupId>
+          <artifactId>license-maven-plugin</artifactId>
+          <version>${license-maven-plugin.version}</version>
+
+          <configuration>
+            <!-- Useful flags: https://mycila.carbou.me/license-maven-plugin/ -->
+
+            <!--suppress MavenModelInspection -->
+            <header>${maven.multiModuleProjectDirectory}/.mvn/license/license-header.txt</header>
+
+            <mapping>
+              <java>SLASHSTAR_STYLE</java>
+            </mapping>
+            <includes>
+              <include>src/**/*.java</include>
+            </includes>
+            <properties>
+              <currentYear>2022</currentYear>
+              <inceptionYear>${project.inceptionYear}</inceptionYear>
+            </properties>
+            <strictCheck>true</strictCheck>
+          </configuration>
+
+          <executions>
+            <execution>
+              <id>check-license-headers</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
           <!-- Checking style of code matches the Google code style -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <version>${maven-checkstyle-plugin.version}</version>
-
-          <executions>
-            <execution>
-              <id>checkstyle</id>
-              <phase>compile</phase>
-              <goals>
-                <goal>check</goal>
-              </goals>
-              <configuration>
-                <configLocation>
-                  <!--suppress UnresolvedMavenProperty -->
-                  ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/checkstyle.xml
-                </configLocation>
-                <consoleOutput>true</consoleOutput>
-                <failsOnError>true</failsOnError>
-                <!--suppress UnresolvedMavenProperty -->
-                <headerLocation>
-                  ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/license-header.txt
-                </headerLocation>
-                <includeResources>true</includeResources>
-                <sourceDirectories>${project.basedir}/src</sourceDirectories>
-                <suppressionsLocation>
-                  <!--suppress UnresolvedMavenProperty -->
-                  ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/suppressions.xml
-                </suppressionsLocation>
-                <violationSeverity>info</violationSeverity>
-              </configuration>
-            </execution>
-          </executions>
 
           <dependencies>
             <dependency>
@@ -126,6 +136,35 @@
               <version>${checkstyle.version}</version>
             </dependency>
           </dependencies>
+
+          <configuration>
+            <!--suppress UnresolvedMavenProperty -->
+            <configLocation>
+              ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/checkstyle.xml
+            </configLocation>
+            <consoleOutput>true</consoleOutput>
+            <failsOnError>true</failsOnError>
+            <failOnViolation>true</failOnViolation>
+            <linkXRef>false</linkXRef>
+            <violationSeverity>info</violationSeverity>
+            <sourceDirectories>
+              <sourceDirectory>src/</sourceDirectory>
+            </sourceDirectories>
+            <!--suppress UnresolvedMavenProperty -->
+            <suppressionsLocation>
+              ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/suppressions.xml
+            </suppressionsLocation>
+          </configuration>
+
+          <executions>
+            <execution>
+              <id>check-code-style</id>
+              <phase>validate</phase>
+              <goals>
+                <goal>check</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
 
         <plugin>
