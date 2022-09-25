@@ -35,6 +35,9 @@
 
     <!-- Maven configuration -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- https://issues.apache.org/jira/browse/MNG-7038 -->
+    <!--suppress UnresolvedMavenProperty -->
+    <parent-pom-directory>${maven.multiModuleProjectDirectory}</parent-pom-directory>
   </properties>
 
   <dependencyManagement>
@@ -91,9 +94,7 @@
 
           <configuration>
             <!-- Useful flags: https://mycila.carbou.me/license-maven-plugin/ -->
-
-            <!--suppress MavenModelInspection -->
-            <header>${maven.multiModuleProjectDirectory}/.mvn/license/license-header.txt</header>
+            <header>${parent-pom-directory}/.mvn/license/license-header.txt</header>
 
             <mapping>
               <java>SLASHSTAR_STYLE</java>
@@ -135,9 +136,8 @@
           </dependencies>
 
           <configuration>
-            <!--suppress UnresolvedMavenProperty -->
             <configLocation>
-              ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/checkstyle.xml
+              ${parent-pom-directory}/.mvn/checkstyle/checkstyle.xml
             </configLocation>
             <consoleOutput>true</consoleOutput>
             <failsOnError>true</failsOnError>
@@ -147,9 +147,8 @@
             <sourceDirectories>
               <sourceDirectory>src/</sourceDirectory>
             </sourceDirectories>
-            <!--suppress UnresolvedMavenProperty -->
             <suppressionsLocation>
-              ${maven.multiModuleProjectDirectory}/.mvn/checkstyle/suppressions.xml
+              ${parent-pom-directory}/.mvn/checkstyle/suppressions.xml
             </suppressionsLocation>
           </configuration>
 
