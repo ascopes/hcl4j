@@ -17,7 +17,7 @@
 
   <properties>
     <!-- Dependency versions -->
-    <assertj-core.version>3.24.1</assertj-core.version>
+    <assertj-core.version>3.24.2</assertj-core.version>
     <junit.version>5.9.1</junit.version>
 
     <!-- Plugin versions -->
