@@ -1,7 +1,7 @@
 # Language Specification
 
 This language specification is based upon 
-[HCL 2.14](https://github.com/hashicorp/hcl/blob/v2.14.0/hclsyntax/spec.md).
+[HCL 2.17](https://github.com/hashicorp/hcl/blob/v2.17.0/hclsyntax/spec.md).
 
 The specification in this file is mostly defined using
 [EBNF](https://en.m.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form)
