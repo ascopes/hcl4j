@@ -139,7 +139,7 @@ Inline comments consume content across zero or more lines.
 
 ```
 inline comment         = "/*" , inline comment content , "*/" ;
-inline comment content = (* any characters until '*/' is observed *)
+inline comment content = (* any characters until '*/' is observed *) ;
 ```
 
 ### Line comment mode
@@ -152,7 +152,7 @@ the file does not have a trailing new line.
 
 ```
 line comment         = ( "#" | "//" ) , line comment content , ( newline | eof ) ;
-line comment content = (* any characters until newline is observed *)
+line comment content = (* any characters until newline is observed *) ;
 newline              = "\n" | "\r\n" ;
 ```
 
