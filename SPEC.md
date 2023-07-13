@@ -171,6 +171,8 @@ The template is terminated by a closing brace, which may or may not be preceeded
 
 If additional lexer modes are pushed, they take precedence over these two rules.
 
+It is worth noting the implementation in this repository may or may not choose to handle leading `~` before pushing this mode. This is just documented here for simplicity.
+
 ```
 
 trim                 = "~" ;
