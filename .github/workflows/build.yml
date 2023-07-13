@@ -19,7 +19,7 @@ jobs:
       matrix:
         java-version:
           - 17  # oldest supported JDK version
-          - 19  # latest JDK version
+          - 20  # latest JDK version
 
     permissions:
       actions: read
