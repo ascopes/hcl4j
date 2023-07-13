@@ -158,6 +158,8 @@ newline              = "\n" | "\r\n" ;
 
 ### Template mode
 
+Template mode tokenizes nested expressions within template interpolations.
+
 Template mode **extends** the **config file mode**, but adds 
 an additonal rule that deals with closing template directives
 and interpolation sequences. Outside of a template, this rule
@@ -208,7 +210,7 @@ If there is no cached identifier, then this will be
 considered a syntax error by the parser and to prevent further
 confusion, the current mode is popped.
 
-### Heredoc mode
+### Heredoc template mode
 
 The heredoc mode will read until the end of the file or the first occurance
 of the `identifier` followed by a `newline`. This information is passed from 
@@ -221,9 +223,7 @@ When the identifier followed by a newline is read, the current
 mode should be popped.
 
 ```
-interpolation start with strip = "${~" ;          (* push the template mode *)
-interpolation start            = "${" ;           (* push the template mode *)
-directive start with strip     = "%{~" ;          (* push the template mode *)
+interpolation start            = "${" ;           (* push the template mode *)   
 directive start                = "%{" ;           (* push the template mode *)
 
 text = { "$${" | "%%{" | any other character } ;
