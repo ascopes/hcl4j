@@ -133,6 +133,29 @@ ellipsis             = "..." ;
 dot                  = "." ;
 ```
 
+### Inline comment mode
+
+Inline comments consume content across zero or more lines.
+
+```
+inline comment         = "/*" , inline comment content , "*/" ;
+inline comment content = any characters - "*/" ;
+```
+
+### Line comments
+
+Line comments are similar to inline comments, but are terminated by a line ending or the end 
+of the file.
+
+Allowing EOF is important here as it allows files to contain trailing line comments even if 
+the file does not have a trailing new line.
+
+```
+line comment         = ( "#" | "//" ) , line comment content , ( newline | eof ) ;
+line comment content = any characters - newline ;
+newline              = "\n" | "\r\n" ;
+```
+
 ### Template mode
 
 Template mode **extends** the **config file mode**, but adds 
