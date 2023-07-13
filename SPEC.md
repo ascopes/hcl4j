@@ -163,8 +163,16 @@ an additonal rule that deals with closing template directives
 and interpolation sequences. Outside of a template, this rule
 is not a valid token.
 
+The very first token may be a `~` to indicate whitespace trimming for leading whitespace.
+
+The template is terminated by a closing brace, which may or may not be preceeded by a `~` to indicate trailing whitespace trimming.
+
+If additional lexer modes are pushed, they take precedence over these two rules.
+
 ```
-right brace with strip = "~}" ;
+
+trim                 = "~" ;
+template termination = [ trim ], "}" ;
 ```
 
 ### Template file mode 
@@ -172,9 +180,7 @@ right brace with strip = "~}" ;
 The template file mode will read characters until the end of the file.
 
 ```
-interpolation start with strip = "${~" ;         (* push the template mode *)
 interpolation start            = "${" ;          (* push the template mode *)
-directive start with strip     = "%{~" ;         (* push the template mode *)
 directive start                = "%{" ;          (* push the template mode *)
 
 text = { "$${" | "%%{" | any other character } ;
@@ -230,9 +236,7 @@ Likewise, `%%{` will result in a literal `%{`.
 
 ```
 quote                          = '"' ;               (* pop the current mode *)
-interpolation start with strip = "${~" ;             (* push the template mode *)
 interpolation start            = "${" ;              (* push the template mode *)
-directive start with strip     = "%{~" ;             (* push the template mode *)
 directive start                = "%{" ;              (* push the template mode *)
 
 
