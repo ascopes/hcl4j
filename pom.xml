@@ -18,7 +18,7 @@
   <properties>
     <!-- Dependency versions -->
     <assertj-core.version>3.24.2</assertj-core.version>
-    <junit.version>5.9.3</junit.version>
+    <junit.version>5.10.0</junit.version>
 
     <!-- Plugin versions -->
     <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
